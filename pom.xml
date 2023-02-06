@@ -19,8 +19,6 @@
     <properties>
         <java.version>11</java.version>
         <spring-boot-dependencies.version>2.7.8</spring-boot-dependencies.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <start-class>uk.gov.companieshouse.documentsigningapi.DocumentSigningApiApplication</start-class>
 
         <!-- Docker -->
