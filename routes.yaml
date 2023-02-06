@@ -1,0 +1,6 @@
+
+app_name: item-group-workflow-api
+group: api
+weight: 912
+routes:
+  1: ^/item-group-workflow-api/healthcheck
