@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoggingUtils {
+    public static final String APPLICATION_NAMESPACE = "item-group-workflow-api";
     private final Logger logger;
 
     public LoggingUtils(Logger logger) {

@@ -2,6 +2,7 @@ package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,30 +12,42 @@ import uk.gov.companieshouse.logging.util.DataMap;
 
 @RestController
 public class TestController {
-    private static final String LOG_PREFIX = "<=TestController=>>";
+    private static final String LOG_PREFIX = "<=TestController=>";
     private final LoggingUtils logger;
 
     public TestController(LoggingUtils logger) {
         this.logger = logger;
     }
 
-    @PostMapping("/dto_test")
-    public ResponseEntity<Object> signPdf(final @RequestBody TestDTO theTestDTO) {
-        boolean status = false;
+    @GetMapping("/")
+    public ResponseEntity<String> rootCheck () {
 
-        if (theTestDTO == null ||
-            theTestDTO.getCompanyNumber().length() == 0 ||
-            theTestDTO.getCompanyName().length() == 0) {
-            logger.getLogger().error(LOG_PREFIX + " We got an empty DTO /o\\");
-            return (ResponseEntity<Object>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
-        }
+        logger.getLogger().debug(LoggingUtils.APPLICATION_NAMESPACE + " => rootCheck + 200");
 
-        logDTO(LOG_PREFIX, theTestDTO);
-
-        return(ResponseEntity<Object>) ResponseEntity.status(HttpStatus.CREATED);
+        return(new ResponseEntity<>(LoggingUtils.APPLICATION_NAMESPACE, HttpStatus.OK));
     }
 
-    public void logDTO(String logMessage, TestDTO theDTO) {
+    @GetMapping("/created")
+    public ResponseEntity<Void> get201response () {
+        logger.getLogger().debug(LoggingUtils.APPLICATION_NAMESPACE + " => 201");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/unauthorized")
+    public ResponseEntity<Void> get401response () {
+        logger.getLogger().debug(LoggingUtils.APPLICATION_NAMESPACE + " => 401");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/dto_test")
+    public ResponseEntity<Object> dtoTestPost (final @RequestBody TestDTO theTestDTO) {
+
+        logMapWithMessage(LOG_PREFIX, theTestDTO);
+
+        return(ResponseEntity.status(HttpStatus.CREATED).body(theTestDTO));
+    }
+
+    public void logMapWithMessage(String logMessage, TestDTO theDTO) {
 
         var dataMap = new DataMap.Builder()
             .companyName(theDTO.getCompanyName())
