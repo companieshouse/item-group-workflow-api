@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.APPLICATION_NAMESPACE;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,20 +23,20 @@ public class TestController {
     @GetMapping("/")
     public ResponseEntity<String> rootCheck () {
 
-        logger.getLogger().debug(LoggingUtils.APPLICATION_NAMESPACE + " => rootCheck + 200");
+        logger.getLogger().debug(APPLICATION_NAMESPACE + " => rootCheck + 200");
 
-        return(new ResponseEntity<>(LoggingUtils.APPLICATION_NAMESPACE, HttpStatus.OK));
+        return(new ResponseEntity<>(APPLICATION_NAMESPACE, HttpStatus.OK));
     }
 
     @GetMapping("/created")
     public ResponseEntity<Void> get201response () {
-        logger.getLogger().debug(LoggingUtils.APPLICATION_NAMESPACE + " => 201");
+        logger.getLogger().debug(APPLICATION_NAMESPACE + " => 201");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/unauthorized")
     public ResponseEntity<Void> get401response () {
-        logger.getLogger().debug(LoggingUtils.APPLICATION_NAMESPACE + " => 401");
+        logger.getLogger().debug(APPLICATION_NAMESPACE + " => 401");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
