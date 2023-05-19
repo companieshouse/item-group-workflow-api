@@ -14,8 +14,7 @@ public class EnvironmentVariablesChecker {
     public enum RequiredEnvironmentVariables {
 //        PREVENT_APP_STARTUP("ELVIS_WORKS_AT_MY_LOCAL_CHIPPIE"),
         HOME("HOME"),
-        JAVA_HOME("JAVA_HOME"),
-        AWS_PROFILE("AWS_PROFILE");
+        JAVA_HOME("JAVA_HOME");
 
         private final String name;
 
