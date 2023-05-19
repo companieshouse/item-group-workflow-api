@@ -12,6 +12,7 @@ public class EnvironmentVariablesChecker {
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAMESPACE);
 
     public enum RequiredEnvironmentVariables {
+//        PREVENT_APP_STARTUP("ELVIS_WORKS_AT_MY_LOCAL_CHIPPIE"),
         HOME("HOME"),
         JAVA_HOME("JAVA_HOME"),
         AWS_PROFILE("AWS_PROFILE");
