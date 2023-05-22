@@ -26,7 +26,7 @@ class TestControllerTest {
     @Mock
     private Logger logger;
     @InjectMocks
-    private TestController controller;
+    private RootController rootController;
 
     @BeforeEach
     void beforeEach() {
@@ -39,20 +39,20 @@ class TestControllerTest {
 
     @Test
     void rootCheck() {
-        final ResponseEntity<String> response = controller.rootCheck();
+        final ResponseEntity<String> response = rootController.rootCheck(); // GET
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(APPLICATION_NAMESPACE));
     }
 
     @Test
     void get201response() {
-        final ResponseEntity<Void> response = controller.get201response();  // GET
+        final ResponseEntity<Void> response = rootController.get201response();  // GET
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
     }
 
     @Test
     void get401response() {
-        final ResponseEntity<Void> response = controller.get401response();  // GET
+        final ResponseEntity<Void> response = rootController.get401response();  // GET
         assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
     }
 
@@ -67,7 +67,7 @@ class TestControllerTest {
         //
         // Make the call and ensure we have HttpStatus.CREATED
         //
-        final ResponseEntity<Object> response = controller.dtoTestPost(testDTO);    // POST
+        final ResponseEntity<Object> response = rootController.dtoTestPost(testDTO);    // POST
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
         //
         // Check we got the correct DTO values back.

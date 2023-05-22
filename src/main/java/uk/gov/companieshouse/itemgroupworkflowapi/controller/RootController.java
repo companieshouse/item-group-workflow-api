@@ -12,18 +12,18 @@ import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.logging.util.DataMap;
 
 @RestController
-public class TestController {
+public class RootController {
     private static final String LOG_PREFIX = "<=TestController=>";
     private final LoggingUtils logger;
 
-    public TestController(LoggingUtils logger) {
+    public RootController(LoggingUtils logger) {
         this.logger = logger;
     }
 
     @GetMapping("/")
     public ResponseEntity<String> rootCheck () {
 
-        logger.getLogger().debug(APPLICATION_NAMESPACE + " => rootCheck + 200");
+        logger.getLogger().debug(APPLICATION_NAMESPACE + " => 200");
 
         return(new ResponseEntity<>(APPLICATION_NAMESPACE, HttpStatus.OK));
     }
