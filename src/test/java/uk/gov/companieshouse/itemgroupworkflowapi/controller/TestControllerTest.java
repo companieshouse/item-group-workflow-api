@@ -34,6 +34,7 @@ class TestControllerTest {
     }
     @AfterEach
     void afterEach() {
+        logger = null;
     }
 
     @Test
@@ -45,13 +46,13 @@ class TestControllerTest {
 
     @Test
     void get201response() {
-        final ResponseEntity<Void> response = controller.get201response();
+        final ResponseEntity<Void> response = controller.get201response();  // GET
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
     }
 
     @Test
     void get401response() {
-        final ResponseEntity<Void> response = controller.get401response();
+        final ResponseEntity<Void> response = controller.get401response();  // GET
         assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
     }
 
@@ -66,7 +67,7 @@ class TestControllerTest {
         //
         // Make the call and ensure we have HttpStatus.CREATED
         //
-        final ResponseEntity<Object> response = controller.dtoTestPost(testDTO);
+        final ResponseEntity<Object> response = controller.dtoTestPost(testDTO);    // POST
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
         //
         // Check we got the correct DTO values back.

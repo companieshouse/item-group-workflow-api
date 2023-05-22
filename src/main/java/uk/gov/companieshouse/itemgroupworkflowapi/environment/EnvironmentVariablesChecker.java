@@ -22,7 +22,6 @@ public class EnvironmentVariablesChecker {
 
         public String getName() { return this.name; }
     }
-
     /**
      * Method to check if all the required configuration variables
      * defined in the RequiredEnvironmentVariables enum have been set to a value
