@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "82aa5184-8c82-44a7-91a5-33387746b484",
+		"name": "item-group-workflow-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25264872"
+	},
+	"item": [
+		{
+			"name": "Health check endpoint.",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/item-group-workflow-api/healthcheck",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-group-workflow-api",
+						"healthcheck"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Root check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/item-group-workflow-api",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-group-workflow-api"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "201 on Root",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/item-group-workflow-api/created",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-group-workflow-api",
+						"created"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "401 on Root",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/item-group-workflow-api/unauthorized",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-group-workflow-api",
+						"unauthorized"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dto_test",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"company_name\": \"ACME Inc\",\n    \"company_number\": \"333-444-555\"\n    // \"company_number\": \"\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/item-group-workflow-api/dto_test",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-group-workflow-api",
+						"dto_test"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "key",
+				"value": "Authorization",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "{{api_key}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// pm.request.headers.add({key:\"TEST-Identity\", value:\"XxX\"});",
+					"",
+					"// pm.request.headers.add({key:\"ERIC-Identity\", value:\"any-non-empty-value-will-do\"});     // AUTHENTICATION",
+					"// pm.request.headers.add({key:\"ERIC-Identity-Type\", value:\"any-non-empty-value-will-do\"});    // AUTHENTICATION",
+					"// pm.request.headers.add({key:\"ERIC-Authorised-Key-Roles\", value:\"*\"});   // Authorisation - hasInternalUserRole()",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

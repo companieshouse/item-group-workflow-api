@@ -13,10 +13,10 @@ import uk.gov.companieshouse.logging.util.DataMap;
 
 @RestController
 public class RootController {
-    public static final String ROOT_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root}";
-    public static final String CREATED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_created}";
-    public static final String UNAUTHORIZED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.dto_test}";
-    public static final String DTO_TEST_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_unauthorized}";
+    public static final String ROOT_URI         = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller}";
+    public static final String CREATED_URI      = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.created}";
+    public static final String UNAUTHORIZED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.unauthorized}";
+    public static final String DTO_TEST_URI     = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.dto_test}";
     private static final String LOG_PREFIX = "<=TestController=>";
     private final LoggingUtils logger;
 
