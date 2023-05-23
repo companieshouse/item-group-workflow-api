@@ -13,6 +13,10 @@ import uk.gov.companieshouse.logging.util.DataMap;
 
 @RestController
 public class RootController {
+    public static final String ROOT_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root}";
+    public static final String CREATED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_created}";
+    public static final String UNAUTHORIZED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.dto_test}";
+    public static final String DTO_TEST_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_unauthorized}";
     private static final String LOG_PREFIX = "<=TestController=>";
     private final LoggingUtils logger;
 
@@ -20,27 +24,25 @@ public class RootController {
         this.logger = logger;
     }
 
-    @GetMapping("/")
+    @GetMapping(ROOT_URI)
     public ResponseEntity<String> rootCheck () {
-
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 200");
-
         return(new ResponseEntity<>(APPLICATION_NAMESPACE, HttpStatus.OK));
     }
 
-    @GetMapping("/created")
+    @GetMapping(CREATED_URI)
     public ResponseEntity<Void> get201response () {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 201");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/unauthorized")
+    @GetMapping(UNAUTHORIZED_URI)
     public ResponseEntity<Void> get401response () {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 401");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping("/dto_test")
+    @PostMapping(DTO_TEST_URI)
     public ResponseEntity<Object> dtoTestPost (final @RequestBody TestDTO theTestDTO) {
 
         logMapWithMessage(LOG_PREFIX, theTestDTO);

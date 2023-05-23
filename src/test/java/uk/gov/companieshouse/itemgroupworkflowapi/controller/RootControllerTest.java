@@ -18,9 +18,9 @@ import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
-class TestControllerTest {
-    private static final String TOKEN_COMPANY_NAME = "ACME Inc";
-    private static final String TOKEN_COMPANY_NUMBER = "1234567890";
+class RootControllerTest {
+    private static final String COMPANY_NAME = "ACME Inc";
+    private static final String COMPANY_NUMBER = "1234567890";
     @Mock
     private LoggingUtils loggingUtils;
     @Mock
@@ -62,19 +62,19 @@ class TestControllerTest {
         // Init the DTO
         //
         final TestDTO testDTO = new TestDTO();
-        testDTO.setCompanyNumber(TOKEN_COMPANY_NUMBER);
-        testDTO.setCompanyName(TOKEN_COMPANY_NAME);
+        testDTO.setCompanyNumber(COMPANY_NUMBER);
+        testDTO.setCompanyName(COMPANY_NAME);
         //
-        // Make the call and ensure we have HttpStatus.CREATED
+        // Make the POST request and ensure we have HttpStatus.CREATED
         //
         final ResponseEntity<Object> response = rootController.dtoTestPost(testDTO);    // POST
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
         //
         // Check we got the correct DTO values back.
         //
-        final TestDTO resultDTO = (TestDTO) response.getBody();
-        assert(resultDTO != null);
-        assertThat(resultDTO.getCompanyNumber(), is(TOKEN_COMPANY_NUMBER));
-        assertThat(resultDTO.getCompanyName(), is(TOKEN_COMPANY_NAME));
+        final TestDTO responseDTO = (TestDTO) response.getBody();
+        assert(responseDTO != null);
+        assertThat(responseDTO.getCompanyNumber(), is(COMPANY_NUMBER));
+        assertThat(responseDTO.getCompanyName(), is(COMPANY_NAME));
     }
 }

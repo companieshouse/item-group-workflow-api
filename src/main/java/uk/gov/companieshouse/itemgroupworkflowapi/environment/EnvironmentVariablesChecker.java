@@ -37,10 +37,9 @@ public class EnvironmentVariablesChecker {
                 environmentReader.getMandatoryString(param.getName());
             } catch (EnvironmentVariableException eve) {
                 allVariablesPresent = false;
-                LOGGER.error(String.format("Required config item %s missing", param.getName()));
+                LOGGER.error(String.format("ERROR : Required config item %s missing", param.getName()));
             }
         }
-
         return allVariablesPresent;
     }
 }
