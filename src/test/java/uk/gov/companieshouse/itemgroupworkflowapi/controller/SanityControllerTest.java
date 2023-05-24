@@ -18,15 +18,15 @@ import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
-class RootControllerTest {
-    private static final String COMPANY_NAME = "ACME Inc";
-    private static final String COMPANY_NUMBER = "1234567890";
+class SanityControllerTest {
+    private static final String COMPANY_NAME = "Outlandish Enterprises";
+    private static final String COMPANY_NUMBER = "1337";
     @Mock
     private LoggingUtils loggingUtils;
     @Mock
     private Logger logger;
     @InjectMocks
-    private RootController rootController;
+    private SanityController sanityCheckController;
 
     @BeforeEach
     void beforeEach() {
@@ -38,26 +38,26 @@ class RootControllerTest {
     }
 
     @Test
-    void rootCheck() {
-        final ResponseEntity<String> response = rootController.rootCheck(); // GET
+    void get200response_returnAppName() {
+        final ResponseEntity<String> response = sanityCheckController.get200response_returnAppName(); // GET
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(APPLICATION_NAMESPACE));
     }
 
     @Test
     void get201response() {
-        final ResponseEntity<Void> response = rootController.get201response();  // GET
+        final ResponseEntity<Void> response = sanityCheckController.get201response();  // GET
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
     }
 
     @Test
     void get401response() {
-        final ResponseEntity<Void> response = rootController.get401response();  // GET
+        final ResponseEntity<Void> response = sanityCheckController.get401response();  // GET
         assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
     }
 
     @Test
-    void dtoTestPost() {
+    void postDtoTest_returnDto() {
         //
         // Init the DTO
         //
@@ -67,7 +67,7 @@ class RootControllerTest {
         //
         // Make the POST request and ensure we have HttpStatus.CREATED
         //
-        final ResponseEntity<Object> response = rootController.dtoTestPost(testDTO);    // POST
+        final ResponseEntity<Object> response = sanityCheckController.postDtoTest_returnDto(testDTO);    // POST
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
         //
         // Check we got the correct DTO values back.

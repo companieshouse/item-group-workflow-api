@@ -12,20 +12,20 @@ import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.logging.util.DataMap;
 
 @RestController
-public class RootController {
-    public static final String ROOT_URI         = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller}";
+public class SanityController {
+    public static final String OK_URI           = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.ok}";
     public static final String CREATED_URI      = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.created}";
     public static final String UNAUTHORIZED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.unauthorized}";
     public static final String DTO_TEST_URI     = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.dto_test}";
-    private static final String LOG_PREFIX = "<=TestController=>";
+    private static final String LOG_PREFIX = "<=SanityController=>";
     private final LoggingUtils logger;
 
-    public RootController(LoggingUtils logger) {
+    public SanityController(LoggingUtils logger) {
         this.logger = logger;
     }
 
-    @GetMapping(ROOT_URI)
-    public ResponseEntity<String> rootCheck () {
+    @GetMapping(OK_URI)
+    public ResponseEntity<String> get200response_returnAppName() {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 200");
         return(new ResponseEntity<>(APPLICATION_NAMESPACE, HttpStatus.OK));
     }
@@ -43,7 +43,7 @@ public class RootController {
     }
 
     @PostMapping(DTO_TEST_URI)
-    public ResponseEntity<Object> dtoTestPost (final @RequestBody TestDTO theTestDTO) {
+    public ResponseEntity<Object> postDtoTest_returnDto(final @RequestBody TestDTO theTestDTO) {
 
         logMapWithMessage(LOG_PREFIX, theTestDTO);
 

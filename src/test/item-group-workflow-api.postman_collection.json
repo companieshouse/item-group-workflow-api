@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Health check endpoint.",
+			"name": "Health check",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -25,24 +25,25 @@
 			"response": []
 		},
 		{
-			"name": "Root check",
+			"name": "200 + app name",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/item-group-workflow-api",
+					"raw": "{{base_url}}/item-group-workflow-api/ok",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"item-group-workflow-api"
+						"item-group-workflow-api",
+						"ok"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "201 on Root",
+			"name": "201 check",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -60,7 +61,7 @@
 			"response": []
 		},
 		{
-			"name": "401 on Root",
+			"name": "401 check",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -78,7 +79,7 @@
 			"response": []
 		},
 		{
-			"name": "dto_test",
+			"name": "dto_test + return 201 and dto",
 			"request": {
 				"method": "POST",
 				"header": [],

@@ -24,9 +24,9 @@ import java.io.UnsupportedEncodingException;
 @DirtiesContext
 @AutoConfigureMockMvc
 @SpringBootTest
-public class RootControllerIntegrationTest {
-    private static final String COMPANY_NAME = "ACME Inc";
-    private static final String COMPANY_NUMBER = "1234567890";
+public class SanityControllerIntegrationTest {
+    private static final String COMPANY_NAME = "Outlandish Enterprises";
+    private static final String COMPANY_NUMBER = "1337";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,25 +36,28 @@ public class RootControllerIntegrationTest {
 
     @Test
     @DisplayName("Returns status OK (200)")
-    public void rootCheckTest() throws Exception {
-        mockMvc.perform(get("/"))
+    public void get200response_returnAppNameTest() throws Exception {
+        final var resultActions = mockMvc.perform(get("/item-group-workflow-api/ok"))
             .andExpect(status().isOk());
+
+        final var result = resultActions.andReturn();
+        final var response = result.getResponse();
+        final var contentAsString = response.getContentAsString();
+        logger.getLogger().info("XXX = " + contentAsString);
     }
 
     @Test
     @DisplayName("Returns status CREATED (201)")
     public void get201responseTest() throws Exception {
-        mockMvc.perform(get("/created"))
+        mockMvc.perform(get("/item-group-workflow-api/created"))
             .andExpect(status().isCreated());
-
     }
 
     @Test
     @DisplayName("Returns status UNAUTHORIZED (401)")
     public void get401responseTest() throws Exception {
-        mockMvc.perform(get("/unauthorized"))
+        mockMvc.perform(get("/item-group-workflow-api/unauthorized"))
             .andExpect(status().isUnauthorized());
-
     }
 
     @Test
@@ -67,20 +70,19 @@ public class RootControllerIntegrationTest {
         testDTO.setCompanyNumber(COMPANY_NUMBER);
         testDTO.setCompanyName(COMPANY_NAME);
         //
-        // Make the POST request and ensure we have HttpStatus.CREATED
+        // Make the POST request and ensure status is HttpStatus.CREATED
         //
-        final var resultActions = mockMvc.perform(post("/dto_test")
+        final var resultActions = mockMvc.perform(post("/item-group-workflow-api/dto_test")
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(testDTO)))
             .andExpect(status().isCreated());
         //
-        // Check we got the correct DTO values back.
+        // Check the correct DTO values are returned.
         //
         TestDTO responseDTO = getResponseDTO(resultActions);
         assert(responseDTO != null);
         assertThat(responseDTO.getCompanyNumber(), is(COMPANY_NUMBER));
         assertThat(responseDTO.getCompanyName(), is(COMPANY_NAME));
-
     }
 
     private TestDTO getResponseDTO(final ResultActions resultActions)
