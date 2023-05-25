@@ -19,59 +19,40 @@ import uk.gov.companieshouse.logging.util.DataMap;
 
 @RestController
 public class SanityController {
-    public static final String OK_URI           = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.ok}";
-    public static final String CREATED_URI      = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.created}";
-    public static final String UNAUTHORIZED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.unauthorized}";
-    public static final String DTO_TEST_URI     = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.dto_test}";
-    public static final String MONGO_CHECK_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.mongo_check}";
-    @Value("${spring.data.mongodb.uri}")
-    private String mongoDbConnectionStr;
-    @Value("${uk.gov.companieshouse.itemgroupworkflowapi.database_name}")
-    private String databaseName;
-    @Value("${uk.gov.companieshouse.itemgroupworkflowapi.collection_name}")
-    private String collectionName;
-    private static final String LOG_PREFIX = "<=SanityController=>";
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
-    private final ItemGroupsRepository itemGroupsRepository;
 
     @Autowired
     MongoTemplate mongoTemplate;
 
-    public SanityController(LoggingUtils logger, ItemGroupsService itemGroupsService, ItemGroupsRepository itemGroupsRepository) {
+    public SanityController(LoggingUtils logger, ItemGroupsService itemGroupsService) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
-        this.itemGroupsRepository = itemGroupsRepository;
     }
 
-    @GetMapping(OK_URI)
+    @GetMapping("${root_controller.ok}")
     public ResponseEntity<String> get200response_returnAppName() {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 200");
         return(new ResponseEntity<>(APPLICATION_NAMESPACE, HttpStatus.OK));
     }
 
-    @GetMapping(CREATED_URI)
+    @GetMapping("${root_controller.created}")
     public ResponseEntity<Void> get201response () {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 201");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping(UNAUTHORIZED_URI)
+    @GetMapping("${root_controller.unauthorized}")
     public ResponseEntity<Void> get401response () {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 401");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping(DTO_TEST_URI)
+    @PostMapping("${root_controller.dto_test}")
     public ResponseEntity<Object> postDtoTest_returnDto(final @RequestBody TestDTO postDTO) {
-//        final TestDTO savedTestDto = itemGroupsRepository.save((TestDtoItem)theTestDTO);
-//        final TestDTO savedTestDto = itemGroupsRepository.save(theTestDTO);
-//        final TestDTO savedTestDto = itemGroupsRepository.insert(theTestDTO);
 
         logger.getLogger().info("POST DTO = " + postDTO);
         final TestDTO savedDTO = itemGroupsService.saveTestDto(postDTO);
-
-        logger.getLogger().info("Repo has " + Long.toString(itemGroupsRepository.count()) + " records");
         logger.getLogger().info("SAVE DTO = " + savedDTO);
 
         return(ResponseEntity.status(HttpStatus.CREATED).body(savedDTO));
@@ -85,18 +66,5 @@ public class SanityController {
             .build();
 
         logger.getLogger().info(logMessage, dataMap.getLogMap());
-    }
-
-    @GetMapping(MONGO_CHECK_URI)
-    public ResponseEntity<String> getMongoResponse () {
-//        StringBuilder message = new StringBuilder()
-//            .append(APPLICATION_NAMESPACE)
-//            .append(" => Mongo collection item_groups ")
-//            .append((mongoFound ? "FOUND \\o/" : "NOT FOUND /o\\"));
-//
-//        logger.getLogger().info(message.toString());
-//
-//        return(new ResponseEntity<>(message.toString(), HttpStatus.OK));
-        return(new ResponseEntity<>("blah blah...", HttpStatus.OK));
     }
 }

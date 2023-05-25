@@ -85,7 +85,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"company_name\": \"ACME Inc\",\n    \"company_number\": \"333-444-555\"\n    // \"company_number\": \"\"\n}\n",
+					"raw": "{\n    \"company_name\": \"ACME Inc\",\n    \"company_number\": \"2\"\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
