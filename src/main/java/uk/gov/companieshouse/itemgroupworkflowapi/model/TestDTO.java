@@ -1,7 +1,9 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.dto;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "item_groups")
 public class TestDTO {
     @JsonProperty("company_name")
     private String companyName;

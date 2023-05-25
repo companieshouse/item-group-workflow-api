@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.companieshouse.itemgroupworkflowapi.dto.TestDTO;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.TestDTO;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 
 import java.io.UnsupportedEncodingException;

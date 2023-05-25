@@ -13,6 +13,9 @@ public class EnvironmentVariablesChecker {
 
     public enum RequiredEnvironmentVariables {
 //        PREVENT_APP_STARTUP("ELVIS_WORKS_AT_MY_LOCAL_CHIPPIE"),
+        MONGODB_URL("MONGODB_URL"),
+        ORDERS_ITEM_GROUPS_DATABASE("ORDERS_ITEM_GROUPS_DATABASE"),
+        ORDERS_ITEM_GROUPS_COLLECTION("ORDERS_ITEM_GROUPS_COLLECTION"),
         HOME("HOME"),
         JAVA_HOME("JAVA_HOME");
 
