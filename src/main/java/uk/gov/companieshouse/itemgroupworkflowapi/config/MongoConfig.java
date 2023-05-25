@@ -15,9 +15,9 @@ import java.util.ArrayList;
 public class MongoConfig {
     @Value("${spring.data.mongodb.uri}")
     private String mongoDbConnectionStr;
-    @Value("${uk.gov.companieshouse.itemgroupworkflowapi.database_name}")
+    @Value("${uk.gov.companieshouse.item.group.workflow.api.database_name}")
     private String databaseName;
-    @Value("${uk.gov.companieshouse.itemgroupworkflowapi.collection_name}")
+    @Value("${uk.gov.companieshouse.item.group.workflow.api.collection_name}")
     private String collectionName;
 
     public MongoClient mongoClient() {

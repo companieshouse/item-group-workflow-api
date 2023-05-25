@@ -27,25 +27,25 @@ public class SanityController {
         this.itemGroupsService = itemGroupsService;
     }
 
-    @GetMapping("${root_controller.ok}")
+    @GetMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.ok}")
     public ResponseEntity<String> get200response_returnAppName() {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 200");
         return(new ResponseEntity<>(APPLICATION_NAMESPACE, HttpStatus.OK));
     }
 
-    @GetMapping("${root_controller.created}")
+    @GetMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.created}")
     public ResponseEntity<Void> get201response () {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 201");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("${root_controller.unauthorized}")
+    @GetMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.unauthorized}")
     public ResponseEntity<Void> get401response () {
         logger.getLogger().debug(APPLICATION_NAMESPACE + " => 401");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping("${root_controller.dto_test}")
+    @PostMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.dto_test}")
     public ResponseEntity<Object> postDtoTest_returnDto(final @RequestBody TestDTO postDTO) {
 
         logger.getLogger().info("POST DTO = " + postDTO);
