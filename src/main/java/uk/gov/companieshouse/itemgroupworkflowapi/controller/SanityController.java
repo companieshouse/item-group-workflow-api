@@ -22,9 +22,6 @@ public class SanityController {
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
 
-    @Autowired
-    MongoTemplate mongoTemplate;
-
     public SanityController(LoggingUtils logger, ItemGroupsService itemGroupsService) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
