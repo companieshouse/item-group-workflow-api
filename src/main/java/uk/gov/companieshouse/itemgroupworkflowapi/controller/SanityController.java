@@ -24,7 +24,7 @@ public class SanityController {
     public static final String UNAUTHORIZED_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.unauthorized}";
     public static final String DTO_TEST_URI     = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.dto_test}";
     public static final String MONGO_CHECK_URI = "${uk.gov.companieshouse.itemgroupworkflowapi.root_controller.mongo_check}";
-    @Value("${uk.gov.companieshouse.itemgroupworkflowapi.mongo.url}")
+    @Value("${spring.data.mongodb.uri}")
     private String mongoDbConnectionStr;
     @Value("${uk.gov.companieshouse.itemgroupworkflowapi.database_name}")
     private String databaseName;
@@ -63,23 +63,21 @@ public class SanityController {
     }
 
     @PostMapping(DTO_TEST_URI)
-    public ResponseEntity<Object> postDtoTest_returnDto(final @RequestBody TestDTO theTestDTO) {
-
-        logMapWithMessage("POST got DTO => ", theTestDTO);
-
+    public ResponseEntity<Object> postDtoTest_returnDto(final @RequestBody TestDTO postDTO) {
 //        final TestDTO savedTestDto = itemGroupsRepository.save((TestDtoItem)theTestDTO);
 //        final TestDTO savedTestDto = itemGroupsRepository.save(theTestDTO);
-        final TestDTO savedTestDto = itemGroupsRepository.insert(theTestDTO);
+//        final TestDTO savedTestDto = itemGroupsRepository.insert(theTestDTO);
+
+        logger.getLogger().info("POST DTO = " + postDTO);
+        final TestDTO savedDTO = itemGroupsService.saveTestDto(postDTO);
 
         logger.getLogger().info("Repo has " + Long.toString(itemGroupsRepository.count()) + " records");
+        logger.getLogger().info("SAVE DTO = " + savedDTO);
 
-        savedTestDto.setCompanyName("Slimelight");
-        logMapWithMessage("After SAVE returned DTO => ", savedTestDto);
-
-        return(ResponseEntity.status(HttpStatus.CREATED).body(savedTestDto));
+        return(ResponseEntity.status(HttpStatus.CREATED).body(savedDTO));
     }
 
-    public void logMapWithMessage(String logMessage, TestDTO theDTO) {
+    private void logMapWithMessage(String logMessage, TestDTO theDTO) {
 
         var dataMap = new DataMap.Builder()
             .companyName(theDTO.getCompanyName())

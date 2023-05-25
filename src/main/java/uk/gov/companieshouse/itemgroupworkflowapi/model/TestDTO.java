@@ -5,15 +5,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "item_groups")
 public class TestDTO {
-    @JsonProperty("company_name")
-    private String companyName;
-    public String getCompanyName() {
-        return companyName;
-    }
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
     @JsonProperty("company_number")
     private String companyNumber;
     public String getCompanyNumber() {
@@ -21,6 +12,15 @@ public class TestDTO {
     }
     public void setCompanyNumber(String companyNumber) {
         this.companyNumber = companyNumber;
+    }
+
+    @JsonProperty("company_name")
+    private String companyName;
+    public String getCompanyName() {
+        return companyName;
+    }
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     @Override

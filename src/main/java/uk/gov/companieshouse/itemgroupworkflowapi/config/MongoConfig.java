@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 @Configuration
 public class MongoConfig {
-    @Value("${uk.gov.companieshouse.itemgroupworkflowapi.mongo.url}")
+    @Value("${spring.data.mongodb.uri}")
     private String mongoDbConnectionStr;
     @Value("${uk.gov.companieshouse.itemgroupworkflowapi.database_name}")
     private String databaseName;
