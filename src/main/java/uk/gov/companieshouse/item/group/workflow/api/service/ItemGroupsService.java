@@ -1,9 +1,8 @@
 package uk.gov.companieshouse.item.group.workflow.api.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroup;
-import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupData;
-import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupJSON;
+import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupCreate;
+import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupJsonPayload;
 import uk.gov.companieshouse.item.group.workflow.api.repository.ItemGroupsRepository;
 
 import java.time.LocalDateTime;
@@ -16,27 +15,18 @@ public class ItemGroupsService {
         this.itemGroupsRepository = itemGroupsRepository;
     }
 
-    public ItemGroup CreateItemGroup(ItemGroupJSON itemGroupJSON) {
-        final ItemGroup itemGroup = new ItemGroup();
-        setCreationTimeStamp(itemGroup);
-        setItemGroupData(itemGroup, itemGroupJSON);
+    public ItemGroupCreate CreateItemGroup(ItemGroupJsonPayload itemGroupJsonPayload) {
+        final ItemGroupCreate itemGroupCreate = new ItemGroupCreate();
+        setCreationTimeStamp(itemGroupCreate);
+        itemGroupCreate.setData(itemGroupJsonPayload);
 
-        final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
-        return savedItemGroup;
+        final ItemGroupCreate savedItemGroupCreate = itemGroupsRepository.save(itemGroupCreate);
+        return savedItemGroupCreate;
     }
 
-    private void setCreationTimeStamp(final ItemGroup itemGroup) {
+    private void setCreationTimeStamp(final ItemGroupCreate itemGroupCreate) {
         final LocalDateTime now = LocalDateTime.now();
-        itemGroup.setCreatedAt(now);
-        itemGroup.setUpdatedAt(now);
-    }
-
-    private void setItemGroupData(ItemGroup itemGroup, ItemGroupJSON itemGroupJSON){
-        ItemGroupData itemGroupData = new ItemGroupData();
-
-        itemGroupData.setCompanyNumber(itemGroupJSON.getCompanyNumber());
-        itemGroupData.setCompanyName(itemGroupJSON.getCompanyName());
-
-        itemGroup.setData(itemGroupData);
+        itemGroupCreate.setCreatedAt(now);
+        itemGroupCreate.setUpdatedAt(now);
     }
 }

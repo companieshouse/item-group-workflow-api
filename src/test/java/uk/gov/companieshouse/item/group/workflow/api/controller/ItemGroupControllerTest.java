@@ -20,7 +20,7 @@ import uk.gov.companieshouse.item.group.workflow.api.service.ItemGroupsService;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
-class SanityControllerTest {
+class ItemGroupControllerTest {
     private static final String COMPANY_NAME = "Outlandish Enterprises";
     private static final String COMPANY_NUMBER = "1337";
     @Mock
@@ -28,7 +28,7 @@ class SanityControllerTest {
     @Mock
     private Logger logger;
     @InjectMocks
-    private SanityController controller;
+    private ItemGroupController controller;
     @Mock
     private ItemGroupsService itemGroupsService;
     @Mock
