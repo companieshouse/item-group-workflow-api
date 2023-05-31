@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.logging;
+package uk.gov.companieshouse.item.group.workflow.api.logging;
 
 import uk.gov.companieshouse.logging.Logger;
 

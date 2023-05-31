@@ -21,7 +21,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <spring-boot-dependencies.version>2.7.8</spring-boot-dependencies.version>
-        <start-class>uk.gov.companieshouse.itemgroupworkflowapi.ItemGroupWorkflowApiApplication</start-class>
+        <start-class>uk.gov.companieshouse.item.group.workflow.api.ItemGroupWorkflowApiApplication</start-class>
 
         <!-- Docker -->
         <jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>

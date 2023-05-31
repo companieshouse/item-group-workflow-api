@@ -1,23 +1,19 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.environment;
+package uk.gov.companieshouse.item.group.workflow.api.environment;
 
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.APPLICATION_NAMESPACE;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.exception.EnvironmentVariableException;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
+import uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtilsConfiguration;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 public class EnvironmentVariablesChecker {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAMESPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
 
     public enum RequiredEnvironmentVariables {
 //        PREVENT_APP_STARTUP("ELVIS_WORKS_AT_MY_LOCAL_CHIPPIE"),
-        MONGODB_URL("MONGODB_URL"),
-        ORDERS_ITEM_GROUPS_DATABASE("ORDERS_ITEM_GROUPS_DATABASE"),
-        ORDERS_ITEM_GROUPS_COLLECTION("ORDERS_ITEM_GROUPS_COLLECTION"),
-        HOME("HOME"),
-        JAVA_HOME("JAVA_HOME");
+        MONGODB_URL("MONGODB_URL");
 
         private final String name;
 
