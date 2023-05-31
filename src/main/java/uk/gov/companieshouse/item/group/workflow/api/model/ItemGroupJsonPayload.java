@@ -8,7 +8,7 @@ public class ItemGroupJsonPayload {
     //
     @JsonProperty("company_number")
     private String companyNumber;
-    public String getCompanyNumber() {
+    public final String getCompanyNumber() {
         return companyNumber;
     }
     //

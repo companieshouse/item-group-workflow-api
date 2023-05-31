@@ -45,6 +45,11 @@ public class ItemGroupController {
     public ResponseEntity<Object> postDtoTest_returnDto(final @RequestBody ItemGroupJsonPayload itemGroupJsonPayload) {
 
         logger.getLogger().info("POST payload = " + itemGroupJsonPayload);
+
+        if (itemGroupsService.doesCompanyExist(itemGroupJsonPayload)){
+            return(ResponseEntity.status(HttpStatus.CONFLICT).body(itemGroupJsonPayload));
+        }
+
         final ItemGroupCreate savedItem = itemGroupsService.CreateItemGroup(itemGroupJsonPayload);
         logger.getLogger().info("SAVE ItemGroupCreate = " + savedItem);
 
@@ -52,12 +57,12 @@ public class ItemGroupController {
     }
 
     private void logMapWithMessage(String logMessage, ItemGroupJsonPayload itemGroupJsonPayload) {
-
-        var dataMap = new DataMap.Builder()
-            .companyName(itemGroupJsonPayload.getCompanyName())
-            .companyNumber(itemGroupJsonPayload.getCompanyNumber())
-            .build();
-
-        logger.getLogger().info(logMessage, dataMap.getLogMap());
+//
+//        var dataMap = new DataMap.Builder()
+//            .companyName(itemGroupJsonPayload.getCompanyName())
+//            .companyNumber(itemGroupJsonPayload.getCompanyNumber())
+//            .build();
+//
+//        logger.getLogger().info(logMessage, dataMap.getLogMap());
     }
 }

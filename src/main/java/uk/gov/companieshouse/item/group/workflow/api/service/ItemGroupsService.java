@@ -15,6 +15,10 @@ public class ItemGroupsService {
         this.itemGroupsRepository = itemGroupsRepository;
     }
 
+    public boolean doesCompanyExist(ItemGroupJsonPayload itemGroupJsonPayload){
+        return itemGroupsRepository.doesCompanyNumberExist(itemGroupJsonPayload.getCompanyNumber());
+    }
+
     public ItemGroupCreate CreateItemGroup(ItemGroupJsonPayload itemGroupJsonPayload) {
         final ItemGroupCreate itemGroupCreate = new ItemGroupCreate();
         setCreationTimeStamp(itemGroupCreate);
