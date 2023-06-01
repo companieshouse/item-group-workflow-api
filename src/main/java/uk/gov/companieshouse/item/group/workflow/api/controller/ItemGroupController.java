@@ -1,9 +1,13 @@
 package uk.gov.companieshouse.item.group.workflow.api.controller;
 
-import static uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtilsConfiguration.APPLICATION_NAMESPACE;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CREATED;
+import static uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtils.CREATE_ITEM_GROUP_ERROR_PREFIX;
+import static uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtils.CREATE_ITEM_GROUP_REQUEST;
+import static uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtils.CREATE_ITEM_GROUP_RESPONSE;
+import static uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtils.ITEM_GROUP_ALREADY_EXISTS;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,59 +15,84 @@ import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupCreate;
 import uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtils;
 import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupJsonPayload;
 import uk.gov.companieshouse.item.group.workflow.api.service.ItemGroupsService;
+import uk.gov.companieshouse.item.group.workflow.api.validation.CreateItemValidator;
 import uk.gov.companieshouse.logging.util.DataMap;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ItemGroupController {
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
+    private final CreateItemValidator createItemValidator;
 
-    public ItemGroupController(LoggingUtils logger, ItemGroupsService itemGroupsService) {
+    public ItemGroupController(LoggingUtils logger, ItemGroupsService itemGroupsService, CreateItemValidator createItemValidator) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
+        this.createItemValidator = createItemValidator;
     }
 
-    @GetMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.ok}")
-    public ResponseEntity<String> get200response_returnAppName() {
-        logger.getLogger().debug(APPLICATION_NAMESPACE + " => 200");
-        return(new ResponseEntity<>(APPLICATION_NAMESPACE, HttpStatus.OK));
-    }
+    @PostMapping("${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}")
+    public ResponseEntity<Object> createItemGroup(final @RequestBody ItemGroupJsonPayload itemGroupJsonPayload) {
+        List<String> errors = createItemValidator.validateCreateItemPayload(itemGroupJsonPayload);
 
-    @GetMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.created}")
-    public ResponseEntity<Void> get201response () {
-        logger.getLogger().debug(APPLICATION_NAMESPACE + " => 201");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @GetMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.unauthorized}")
-    public ResponseEntity<Void> get401response () {
-        logger.getLogger().debug(APPLICATION_NAMESPACE + " => 401");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    @PostMapping("${uk.gov.companieshouse.item.group.workflow.api.sanity.controller.dto_test}")
-    public ResponseEntity<Object> postDtoTest_returnDto(final @RequestBody ItemGroupJsonPayload itemGroupJsonPayload) {
-
-        logger.getLogger().info("POST payload = " + itemGroupJsonPayload);
-
-        if (itemGroupsService.doesCompanyExist(itemGroupJsonPayload)){
-            logger.getLogger().info("Company number " + itemGroupJsonPayload.getCompanyNumber() + " already exists!");
-            return(ResponseEntity.status(HttpStatus.CONFLICT).body(itemGroupJsonPayload));
+        if (!errors.isEmpty()) {
+            return buildValidationResponse(BAD_REQUEST.value(), errors, itemGroupJsonPayload);
         }
 
-        final ItemGroupCreate savedItem = itemGroupsService.CreateItemGroup(itemGroupJsonPayload);
-        logger.getLogger().info("SAVE ItemGroupCreate = " + savedItem);
+        try {
+            if (itemGroupsService.doesItemGroupExist(itemGroupJsonPayload)) {
+                return buildItemAlreadyExistsResponse(itemGroupJsonPayload);
+            }
 
-        return(ResponseEntity.status(HttpStatus.CREATED).body(savedItem));
+            final ItemGroupCreate savedItem = itemGroupsService.createItemGroup(itemGroupJsonPayload);
+            return buildCreateSuccessResponse(savedItem);
+
+        } catch (Exception ex) {
+            return buildErrorResponse(BAD_REQUEST.value(), ex, itemGroupJsonPayload);
+        }
     }
 
-    private void logMapWithMessage(String logMessage, ItemGroupJsonPayload itemGroupJsonPayload) {
-
-        var dataMap = new DataMap.Builder()
-            .companyName(itemGroupJsonPayload.getCompanyName())
-            .companyNumber(itemGroupJsonPayload.getCompanyNumber())
+    private ResponseEntity<Object> buildCreateSuccessResponse(final ItemGroupCreate savedItem) {
+        DataMap loggingMap = new DataMap.Builder()
+            .companyNumber(savedItem.getData().getCompanyNumber())
+            .companyName(savedItem.getData().getCompanyName())
             .build();
 
-        logger.getLogger().info(logMessage, dataMap.getLogMap());
+        logger.getLogger().info(CREATE_ITEM_GROUP_RESPONSE + " " + loggingMap.getLogMap());
+        return ResponseEntity.status(CREATED).body(savedItem);
+    }
+
+    private ResponseEntity<Object> buildValidationResponse(final int statusCode,
+                                                           final List<String> errors,
+                                                           final ItemGroupJsonPayload dto){
+        final var map = logger.createLogMap();
+        map.put(CREATE_ITEM_GROUP_REQUEST, dto);
+        final ResponseEntity<Object> response = ResponseEntity.status(statusCode).body(errors);
+        map.put(CREATE_ITEM_GROUP_RESPONSE, response);
+        logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + errors, map);
+        return response;
+    }
+
+    private ResponseEntity<Object> buildItemAlreadyExistsResponse(final ItemGroupJsonPayload dto) {
+        DataMap loggingMap = new DataMap.Builder()
+            .companyNumber(dto.getCompanyNumber())
+            .companyName(dto.getCompanyName())
+            .build();
+
+        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS + " " + loggingMap.getLogMap());
+        return ResponseEntity.status(CONFLICT).body(dto);
+    }
+
+    private ResponseEntity<Object> buildErrorResponse(final int statusCode,
+                                                      final Exception ex,
+                                                      final ItemGroupJsonPayload dto){
+        final var map = logger.createLogMap();
+        map.put(CREATE_ITEM_GROUP_REQUEST, dto);
+        final ResponseEntity<Object> response = ResponseEntity.status(statusCode).body(ex.getMessage());
+        map.put(CREATE_ITEM_GROUP_RESPONSE, response);
+        logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + ex.getMessage(), map);
+        return response;
     }
 }

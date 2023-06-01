@@ -15,11 +15,12 @@ public class ItemGroupsService {
         this.itemGroupsRepository = itemGroupsRepository;
     }
 
-    public boolean doesCompanyExist(ItemGroupJsonPayload itemGroupJsonPayload){
-        return itemGroupsRepository.existsItemGroupByDataCompanyNumber(itemGroupJsonPayload.getCompanyNumber());
+    public boolean doesItemGroupExist(ItemGroupJsonPayload itemGroupJsonPayload){
+        return false;
+//        return itemGroupsRepository.existsItemGroupByDataCompanyNumber(itemGroupJsonPayload.getCompanyNumber());
     }
 
-    public ItemGroupCreate CreateItemGroup(ItemGroupJsonPayload itemGroupJsonPayload) {
+    public ItemGroupCreate createItemGroup(ItemGroupJsonPayload itemGroupJsonPayload) {
         final ItemGroupCreate itemGroupCreate = new ItemGroupCreate();
         setCreationTimeStamp(itemGroupCreate);
         itemGroupCreate.setData(itemGroupJsonPayload);

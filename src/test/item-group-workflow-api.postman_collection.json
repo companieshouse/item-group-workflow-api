@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "fe11946f-d7c1-4a85-a1bd-83e7fbbc9513",
+		"_postman_id": "4b483a4c-0959-4e27-8c4d-3ebef6e0de12",
 		"name": "item-group-workflow-api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25264872"
 	},
 	"item": [
 		{
@@ -24,87 +25,6 @@
 			"response": []
 		},
 		{
-			"name": "200 + app name",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/item-group-workflow-api/ok",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"item-group-workflow-api",
-						"ok"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "201 check",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/item-group-workflow-api/created",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"item-group-workflow-api",
-						"created"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "401 check",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/item-group-workflow-api/unauthorized",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"item-group-workflow-api",
-						"unauthorized"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "dto_test + return 201 and dto",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"company_name\": \"ACME Inc\",\n    \"company_number\": \"2\"\n}\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/item-group-workflow-api/dto_test",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"item-group-workflow-api",
-						"dto_test"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Create Item Group",
 			"request": {
 				"method": "POST",
@@ -119,13 +39,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-group-workflow-api/dto_test",
+					"raw": "{{base_url}}/item-group-workflow-api/item-group-create",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-group-workflow-api",
-						"dto_test"
+						"item-group-create"
 					]
 				}
 			},
