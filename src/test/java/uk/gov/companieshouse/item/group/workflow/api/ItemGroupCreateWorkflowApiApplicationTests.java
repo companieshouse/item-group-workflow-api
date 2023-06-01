@@ -1,10 +1,10 @@
-package uk.gov.companieshouse.itemgroupworkflowapi;
+package uk.gov.companieshouse.item.group.workflow.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ItemGroupWorkflowApiApplicationTests {
+class ItemGroupCreateWorkflowApiApplicationTests {
 
     @Test
     void contextLoads() {
