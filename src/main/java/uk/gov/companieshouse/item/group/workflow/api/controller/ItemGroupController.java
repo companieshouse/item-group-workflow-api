@@ -55,12 +55,6 @@ public class ItemGroupController {
     }
 
     private ResponseEntity<Object> buildCreateSuccessResponse(final ItemGroupCreate savedItem) {
-        DataMap loggingMap = new DataMap.Builder()
-            .companyNumber(savedItem.getData().getCompanyNumber())
-            .companyName(savedItem.getData().getCompanyName())
-            .build();
-
-        logger.getLogger().info(CREATE_ITEM_GROUP_RESPONSE + " " + loggingMap.getLogMap());
         return ResponseEntity.status(CREATED).body(savedItem);
     }
 
@@ -76,12 +70,6 @@ public class ItemGroupController {
     }
 
     private ResponseEntity<Object> buildItemAlreadyExistsResponse(final ItemGroupJsonPayload dto) {
-        DataMap loggingMap = new DataMap.Builder()
-            .companyNumber(dto.getCompanyNumber())
-            .companyName(dto.getCompanyName())
-            .build();
-
-        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS + " " + loggingMap.getLogMap());
         return ResponseEntity.status(CONFLICT).body(dto);
     }
 

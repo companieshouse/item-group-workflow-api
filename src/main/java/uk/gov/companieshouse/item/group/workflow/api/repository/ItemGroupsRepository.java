@@ -6,5 +6,4 @@ import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupCreate;
 
 @Repository
 public interface ItemGroupsRepository extends MongoRepository<ItemGroupCreate, String> {
-    boolean existsItemGroupByDataCompanyNumber(String companyNumber);
 }
