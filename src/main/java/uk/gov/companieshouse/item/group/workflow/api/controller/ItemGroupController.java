@@ -47,6 +47,7 @@ public class ItemGroupController {
         logger.getLogger().info("POST payload = " + itemGroupJsonPayload);
 
         if (itemGroupsService.doesCompanyExist(itemGroupJsonPayload)){
+            logger.getLogger().info("Company number " + itemGroupJsonPayload.getCompanyNumber() + " already exists!");
             return(ResponseEntity.status(HttpStatus.CONFLICT).body(itemGroupJsonPayload));
         }
 
@@ -57,12 +58,12 @@ public class ItemGroupController {
     }
 
     private void logMapWithMessage(String logMessage, ItemGroupJsonPayload itemGroupJsonPayload) {
-//
-//        var dataMap = new DataMap.Builder()
-//            .companyName(itemGroupJsonPayload.getCompanyName())
-//            .companyNumber(itemGroupJsonPayload.getCompanyNumber())
-//            .build();
-//
-//        logger.getLogger().info(logMessage, dataMap.getLogMap());
+
+        var dataMap = new DataMap.Builder()
+            .companyName(itemGroupJsonPayload.getCompanyName())
+            .companyNumber(itemGroupJsonPayload.getCompanyNumber())
+            .build();
+
+        logger.getLogger().info(logMessage, dataMap.getLogMap());
     }
 }

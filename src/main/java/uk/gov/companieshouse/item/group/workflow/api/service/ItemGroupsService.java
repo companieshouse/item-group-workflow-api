@@ -16,7 +16,7 @@ public class ItemGroupsService {
     }
 
     public boolean doesCompanyExist(ItemGroupJsonPayload itemGroupJsonPayload){
-        return itemGroupsRepository.doesCompanyNumberExist(itemGroupJsonPayload.getCompanyNumber());
+        return itemGroupsRepository.existsItemGroupByDataCompanyNumber(itemGroupJsonPayload.getCompanyNumber());
     }
 
     public ItemGroupCreate CreateItemGroup(ItemGroupJsonPayload itemGroupJsonPayload) {
