@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 
 /**
@@ -17,7 +17,7 @@ public class ItemPatchValidationDto {
     private URI digitalDocumentLocation;
 
     @JsonProperty("status")
-    @NotEmpty
+    @NotNull
     @ValueOfEnum(enumClass = Status.class)
     private String status;
 
