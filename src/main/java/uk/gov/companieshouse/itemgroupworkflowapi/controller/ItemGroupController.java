@@ -7,8 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.api.error.ApiError;
+import uk.gov.companieshouse.itemgroupworkflowapi.validator.PatchItemRequestValidator;
 import uk.gov.companieshouse.logging.Logger;
 
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
 
@@ -20,8 +25,11 @@ public class ItemGroupController {
 
     private final Logger logger;
 
-    public ItemGroupController(Logger logger) {
+    private final PatchItemRequestValidator patchItemRequestValidator;
+
+    public ItemGroupController(Logger logger, PatchItemRequestValidator patchItemRequestValidator) {
         this.logger = logger;
+        this.patchItemRequestValidator = patchItemRequestValidator;
     }
 
     @PatchMapping(path = PATCH_ITEM_URI, consumes = APPLICATION_MERGE_PATCH_VALUE)
@@ -35,7 +43,13 @@ public class ItemGroupController {
         logger.info("patchItem(" + mergePatchDocument +
                 ", " + itemGroupId + ", " + itemId + ", " + requestId + ") called.");
 
-        // TODO DCAC-78 Validate request
+        final List<ApiError> errors = patchItemRequestValidator.getValidationErrors(mergePatchDocument);
+        if (!errors.isEmpty()) {
+            // TODO DCAC-78 Use structured logging
+            //  logErrorsWithStatus(logMap, errors, BAD_REQUEST);
+            logger.error("update item request had validation errors " + errors);
+            return ApiErrors.errorResponse(BAD_REQUEST, errors);
+        }
 
         // TODO DCAC-78 Retrieve item group, item
 

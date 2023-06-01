@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,8 +22,14 @@ class ItemGroupControllerIntegrationTest {
     private static final String PATCH_ITEM_URI = "/item-groups/1/items/1";
 
     private static final String PATCH_ITEM_BODY = "{\n" +
-            "    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n" +
+            "    \"digital_document_location\": " +
+            "\"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n" +
             "    \"status\": \"satisfied\"\n" +
+            "}";
+
+    private static final String PATCH_ITEM_BODY_WITHOUT_STATUS = "{\n" +
+            "    \"digital_document_location\": " +
+            "\"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\"\n" +
             "}";
 
     private static final String REQUEST_ID = "WmuRTepX70C635NKm5rbYTciSsOR";
@@ -31,12 +38,24 @@ class ItemGroupControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
+    @DisplayName("patch item handles valid request successfully")
     void patchItemSuccessfully() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(PATCH_ITEM_BODY))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("patch item rejects request missing the status field")
+    void patchItemRejectsRequestWithoutStatus() throws Exception {
+        mockMvc.perform(patch(PATCH_ITEM_URI)
+                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .contentType(APPLICATION_MERGE_PATCH)
+                        .content(PATCH_ITEM_BODY_WITHOUT_STATUS))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
