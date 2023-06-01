@@ -32,6 +32,12 @@ class ItemGroupControllerIntegrationTest {
             "\"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\"\n" +
             "}";
 
+    private static final String PATCH_ITEM_BODY_WITH_BAD_STATUS = "{\n" +
+            "    \"digital_document_location\": " +
+            "\"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n" +
+            "    \"status\": \"bad\"\n" +
+            "}";
+
     private static final String REQUEST_ID = "WmuRTepX70C635NKm5rbYTciSsOR";
 
     @Autowired
@@ -55,6 +61,17 @@ class ItemGroupControllerIntegrationTest {
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(PATCH_ITEM_BODY_WITHOUT_STATUS))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("patch item rejects request with an invalid status field value")
+    void patchItemRejectsRequestWithInvalidStatus() throws Exception {
+        mockMvc.perform(patch(PATCH_ITEM_URI)
+                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .contentType(APPLICATION_MERGE_PATCH)
+                        .content(PATCH_ITEM_BODY_WITH_BAD_STATUS))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }

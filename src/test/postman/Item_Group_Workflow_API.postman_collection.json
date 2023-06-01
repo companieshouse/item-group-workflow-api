@@ -103,6 +103,46 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "patch item with invalid status",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/merge-patch+json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"unknown\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/item-groups/1/items/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-groups",
+						"1",
+						"items",
+						"1"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {

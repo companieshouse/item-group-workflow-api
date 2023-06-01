@@ -2,6 +2,8 @@ package uk.gov.companieshouse.itemgroupworkflowapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
+import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
+import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
 
 import javax.validation.constraints.NotEmpty;
 import java.net.URI;
@@ -16,6 +18,7 @@ public class ItemPatchValidationDto {
 
     @JsonProperty("status")
     @NotEmpty
+    @ValueOfEnum(enumClass = Status.class)
     private String status;
 
     public void setDigitalDocumentLocation(URI digitalDocumentLocation) {
