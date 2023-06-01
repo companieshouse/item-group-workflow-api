@@ -9,10 +9,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.logging.Logger;
 
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
+
 @RestController
 public class ItemGroupController {
 
     private static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
+
+    private static final String PATCH_ITEM_URI =
+            "${uk.gov.companieshouse.itemgroupworkflowapi.patchitem}";
 
     private final Logger logger;
 
@@ -20,9 +25,7 @@ public class ItemGroupController {
         this.logger = logger;
     }
 
-    // TODO DCAC-78 Use configured path
-    @PatchMapping(path = "/item-groups/{itemGroupId}/items/{itemId}",
-            consumes = "application/merge-patch+json")
+    @PatchMapping(path = PATCH_ITEM_URI, consumes = APPLICATION_MERGE_PATCH_VALUE)
     public ResponseEntity<Object> patchItem(
             final @RequestBody JsonMergePatch mergePatchDocument,
             final @PathVariable("itemGroupId") String itemGroupId,
