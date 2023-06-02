@@ -18,8 +18,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,17 +60,11 @@ class PatchItemRequestValidatorTest {
 
     }
 
-    private static final URI DIGITAL_DOCUMENT_LOCATION_URI;
+    private static final String DIGITAL_DOCUMENT_LOCATION_URI =
+            "s3://document-api-images-cidev/docs/-fsWaC-ED30jRNACt2dqNYc-lH2uODjjLhliYjryjV0/application-pdf";
 
-    static {
-        try {
-            DIGITAL_DOCUMENT_LOCATION_URI = new URI(
-            "s3://document-api-images-cidev/docs/-fsWaC-ED30jRNACt2dqNYc-lH2uODjjLhliYjryjV0/application-pdf");
-        } catch (URISyntaxException e) {
-            // This will not happen.
-            throw new RuntimeException(e);
-        }
-    }
+    private static final String INVALID_DIGITAL_DOCUMENT_LOCATION_URI =
+            "s3:// document-api-images-cidev/docs/-fsWaC-ED30jRNACt2dqNYc-lH2uODjjLhliYjryjV0/application-pdf";
 
     @Autowired
     private PatchItemRequestValidator validatorUnderTest;
@@ -103,6 +95,20 @@ class PatchItemRequestValidatorTest {
     }
 
     @Test
+    @DisplayName("Missing digital document location is not a problem")
+    void getValidationErrorsReturnsNoErrorsForMissingDigitalDocumentLocation() throws IOException {
+        // Given
+        itemUpdate.setStatus("satisfied");
+        final JsonMergePatch patch = patchFactory.patchFromPojo(itemUpdate);
+
+        // When
+        final List<ApiError> errors = validatorUnderTest.getValidationErrors(patch);
+
+        // Then
+        assertThat(errors, is(empty()));
+    }
+
+    @Test
     @DisplayName("Error raised for missing status")
     void getValidationErrorsReturnsMissingStatusError() throws IOException {
         // Given
@@ -113,7 +119,7 @@ class PatchItemRequestValidatorTest {
         final List<ApiError> errors = validatorUnderTest.getValidationErrors(patch);
 
         // Then
-        expectError(errors, "status: must not be null");
+        expectError(errors, "status-error", "status: must not be null");
     }
 
     @Test
@@ -128,7 +134,7 @@ class PatchItemRequestValidatorTest {
         final List<ApiError> errors = validatorUnderTest.getValidationErrors(patch);
 
         // Then
-        expectError(errors, "status: must be one of [pending, processing, satisfied, cancelled, failed]");
+        expectError(errors, "status-error", "status: must be one of [pending, processing, satisfied, cancelled, failed]");
     }
 
     @Test
@@ -143,12 +149,30 @@ class PatchItemRequestValidatorTest {
         final List<ApiError> errors = validatorUnderTest.getValidationErrors(patch);
 
         // Then
-        expectError(errors, "status: must be one of [pending, processing, satisfied, cancelled, failed]");
+        expectError(errors, "status-error", "status: must be one of [pending, processing, satisfied, cancelled, failed]");
     }
 
-    private void expectError(final List<ApiError> errors, final String errorMessage) {
+    @Test
+    @DisplayName("Error raised for invalid digital document location")
+    void getValidationErrorsReturnsInvalidDigitalDocumentLocationError() throws IOException {
+        // Given
+        itemUpdate.setStatus("satisfied");
+        itemUpdate.setDigitalDocumentLocation(INVALID_DIGITAL_DOCUMENT_LOCATION_URI);
+        final JsonMergePatch patch = patchFactory.patchFromPojo(itemUpdate);
+
+        // When
+        final List<ApiError> errors = validatorUnderTest.getValidationErrors(patch);
+
+        // Then
+        expectError(errors,
+                "digital-document-location-error",
+                "digital_document_location: s3:// document-api-images-cidev/docs/" +
+                        "-fsWaC-ED30jRNACt2dqNYc-lH2uODjjLhliYjryjV0/application-pdf is not a valid URI.");
+    }
+
+    private void expectError(final List<ApiError> errors, final String error, final String errorMessage) {
         assertThat(errors.size(), is(1));
-        assertThat(errors.get(0).getError(), is("status-error"));
+        assertThat(errors.get(0).getError(), is(error));
         assertThat(errors.get(0).getErrorValues().get("error_message"), is(errorMessage));
     }
 
