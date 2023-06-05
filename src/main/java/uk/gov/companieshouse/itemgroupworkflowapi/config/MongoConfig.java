@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.item.group.workflow.api.config;
+package uk.gov.companieshouse.itemgroupworkflowapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

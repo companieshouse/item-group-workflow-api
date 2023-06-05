@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.item.group.workflow.api.model;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

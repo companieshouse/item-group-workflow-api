@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.item.group.workflow.api.model;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

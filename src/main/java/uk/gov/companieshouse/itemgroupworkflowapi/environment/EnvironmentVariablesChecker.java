@@ -1,9 +1,9 @@
-package uk.gov.companieshouse.item.group.workflow.api.environment;
+package uk.gov.companieshouse.itemgroupworkflowapi.environment;
 
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.exception.EnvironmentVariableException;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
-import uk.gov.companieshouse.item.group.workflow.api.logging.LoggingUtilsConfiguration;
+import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 

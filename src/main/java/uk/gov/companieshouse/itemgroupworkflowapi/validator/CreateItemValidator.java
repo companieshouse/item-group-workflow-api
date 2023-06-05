@@ -1,9 +1,7 @@
-package uk.gov.companieshouse.item.group.workflow.api.validation;
+package uk.gov.companieshouse.itemgroupworkflowapi.validator;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupJsonPayload;
-import uk.gov.companieshouse.logging.util.DataMap;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupJsonPayload;
 
 import java.util.ArrayList;
 import java.util.List;

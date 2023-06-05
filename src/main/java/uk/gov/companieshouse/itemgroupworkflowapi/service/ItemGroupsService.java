@@ -1,9 +1,9 @@
-package uk.gov.companieshouse.item.group.workflow.api.service;
+package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupCreate;
-import uk.gov.companieshouse.item.group.workflow.api.model.ItemGroupJsonPayload;
-import uk.gov.companieshouse.item.group.workflow.api.repository.ItemGroupsRepository;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupCreate;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupJsonPayload;
+import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 
 import java.time.LocalDateTime;
 
