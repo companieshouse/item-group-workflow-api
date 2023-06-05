@@ -89,7 +89,9 @@ public class ItemGroupController {
             return ApiErrors.errorResponse(BAD_REQUEST, errors);
         }
 
-        // TODO DCAC-78 Retrieve item group, item
+        // TODO DCAC-78 Typed item, structured logging
+        final var retrievedItem = itemGroupsService.getItem(itemGroupId, itemId);
+        logger.getLogger().info("Retrieved item to be patched = " + retrievedItem);
 
         // TODO DCAC-78 Merge patch into retrieved item
 

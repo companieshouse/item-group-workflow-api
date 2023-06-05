@@ -6,6 +6,8 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupJsonPayload;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ItemGroupsService {
@@ -27,6 +29,18 @@ public class ItemGroupsService {
 
         final ItemGroupCreate savedItemGroupCreate = itemGroupsRepository.save(itemGroupCreate);
         return savedItemGroupCreate;
+    }
+
+    // TODO DCAC-78 Typed item, error handling
+    public Map<String, Object> getItem(final String itemGroupId, final String itemId) {
+        final Optional<ItemGroupCreate> itemGroup = itemGroupsRepository.findById(itemGroupId);
+        return (Map<String, Object>)
+                itemGroup.flatMap(group -> group.getData()
+                                                .getItems()
+                                                .stream()
+                                                .filter(item -> ((Map) item).get("id").equals(itemId))
+                                                .findFirst())
+                                                .get();
     }
 
     private void setCreationTimeStamp(final ItemGroupCreate itemGroupCreate) {
