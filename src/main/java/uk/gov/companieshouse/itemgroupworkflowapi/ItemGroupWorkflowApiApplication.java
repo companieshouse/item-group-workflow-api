@@ -1,6 +1,6 @@
-package uk.gov.companieshouse.item.group.workflow.api;
+package uk.gov.companieshouse.itemgroupworkflowapi;
 
-import static uk.gov.companieshouse.item.group.workflow.api.environment.EnvironmentVariablesChecker.allRequiredEnvironmentVariablesPresent;
+import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.allRequiredEnvironmentVariablesPresent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

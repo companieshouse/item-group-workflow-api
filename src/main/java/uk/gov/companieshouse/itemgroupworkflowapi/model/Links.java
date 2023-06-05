@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.item.group.workflow.api.model;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,7 +18,7 @@ public class Links {
     @Override
     public String toString() {
         return "links {" +
-                "address_line_1='" + order + '\'' +
+                "order='" + order + '\'' +
                 '}';
     }
 }

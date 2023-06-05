@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.item.group.workflow.api.model;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class ItemGroupJsonPayload {
+public class ItemGroupData {
 
     @JsonProperty("delivery_details")
     private DeliveryDetails deliveryDetails;
@@ -58,7 +58,7 @@ public class ItemGroupJsonPayload {
 
     @Override
     public String toString() {
-        return "ItemGroupJsonPayload {" +
+        return "ItemGroupData {" +
                 "delivery_details='" + deliveryDetails +
                 ", items='" + items +
                 ", links='" + links +

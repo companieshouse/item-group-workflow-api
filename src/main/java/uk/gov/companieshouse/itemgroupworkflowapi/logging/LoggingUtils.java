@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.item.group.workflow.api.logging;
+package uk.gov.companieshouse.itemgroupworkflowapi.logging;
 
 import uk.gov.companieshouse.logging.Logger;
 
@@ -8,8 +8,8 @@ import java.util.Map;
 public class LoggingUtils {
     public static final String CREATE_ITEM_GROUP_REQUEST = "create_item_group_request";
     public static final String CREATE_ITEM_GROUP_RESPONSE = "create_item_group_response";
-    public static final String CREATE_ITEM_GROUP_ERROR_PREFIX = "createItemGroup: ";
-    public static final String ITEM_GROUP_ALREADY_EXISTS = "createItemGroup: ";
+    public static final String CREATE_ITEM_GROUP_ERROR_PREFIX = "create_item_group: Item Group created";
+    public static final String ITEM_GROUP_ALREADY_EXISTS = "create_item_group: Item Group already exists";
     private final Logger logger;
 
     public LoggingUtils(Logger logger) {
