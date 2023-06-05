@@ -16,6 +16,10 @@ public class ItemGroupJsonPayload {
     private ArrayList items;
     public ArrayList getItems() {return items;}
 
+    public void setItems(ArrayList items) {
+        this.items = items;
+    }
+
     @JsonProperty("links")
     private Links links;
     public Links getLinks() {return links;}

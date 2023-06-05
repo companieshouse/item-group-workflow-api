@@ -13,6 +13,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupCreate;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupJsonPayload;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
+import uk.gov.companieshouse.itemgroupworkflowapi.util.TemporaryMapPatchMerger;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.CreateItemValidator;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.PatchItemRequestValidator;
 
@@ -36,17 +37,19 @@ public class ItemGroupController {
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
     private final CreateItemValidator createItemValidator;
-
     private final PatchItemRequestValidator patchItemRequestValidator;
+    private final TemporaryMapPatchMerger patcher;
 
     public ItemGroupController(LoggingUtils logger,
                                ItemGroupsService itemGroupsService,
                                CreateItemValidator createItemValidator,
-                               PatchItemRequestValidator patchItemRequestValidator) {
+                               PatchItemRequestValidator patchItemRequestValidator,
+                               TemporaryMapPatchMerger patcher) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
         this.createItemValidator = createItemValidator;
         this.patchItemRequestValidator = patchItemRequestValidator;
+        this.patcher = patcher;
     }
 
     @PostMapping("${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}")
@@ -90,18 +93,23 @@ public class ItemGroupController {
         }
 
         // TODO DCAC-78 Typed item, structured logging
-        final var retrievedItem = itemGroupsService.getItem(itemGroupId, itemId);
-        logger.getLogger().info("Retrieved item to be patched = " + retrievedItem);
+        final var itemRetrieved = itemGroupsService.getItem(itemGroupId, itemId);
+        logger.getLogger().info("Retrieved item to be patched = " + itemRetrieved);
 
-        // TODO DCAC-78 Merge patch into retrieved item
+        // TODO DCAC-78 Merge patch into retrieved item using real patcher
+        // final var patchedItem = patcher.mergePatch(mergePatchDocument, itemRetrieved, Map.class);
+        final var patchedItem = patcher.mergePatch(mergePatchDocument, itemRetrieved);
+        logger.getLogger().info("Patched item = " + patchedItem);
 
         // TODO DCAC-78 Post-merge validation - is any required?
 
         // TODO DCAC-78 Save patched item
 
+        itemGroupsService.updateItem(itemGroupId, itemId, patchedItem);
+
         // TODO DCAC-78 Build response DTO and return it as body
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(patchedItem);
     }
 
 

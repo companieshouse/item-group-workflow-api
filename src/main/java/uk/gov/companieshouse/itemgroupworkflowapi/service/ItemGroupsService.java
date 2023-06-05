@@ -6,8 +6,13 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupJsonPayload;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.time.LocalDateTime.now;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class ItemGroupsService {
@@ -43,8 +48,26 @@ public class ItemGroupsService {
                                                 .get();
     }
 
+    // TODO DCAC-78 Typed item, error handling
+    public Map<String, Object> updateItem(final String itemGroupId,
+                                          final String itemId,
+                                          final Map<String, Object> updatedItem) {
+        final ItemGroupCreate itemGroup = itemGroupsRepository.findById(itemGroupId).get();
+
+        final List<Map<String, Object>> items = itemGroup.getData().getItems();
+        final List<Map<String, Object>> updatedItems = items.stream()
+                .map(item -> item.get("id").equals(itemId) ? updatedItem : item)
+                .collect(toList());
+        itemGroup.setUpdatedAt(now());
+        itemGroup.getData().setItems((ArrayList) updatedItems);
+
+        itemGroupsRepository.save(itemGroup);
+
+        return updatedItem;
+    }
+
     private void setCreationTimeStamp(final ItemGroupCreate itemGroupCreate) {
-        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime now = now();
         itemGroupCreate.setCreatedAt(now);
         itemGroupCreate.setUpdatedAt(now);
     }
