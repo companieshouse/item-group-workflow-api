@@ -7,9 +7,12 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CR
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_REQUEST;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_RESPONSE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.ITEM_GROUP_ALREADY_EXISTS;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.REQUEST_ID_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.REQUEST_ID_LOG_KEY;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
@@ -20,6 +23,7 @@ import uk.gov.companieshouse.logging.util.DataMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ItemGroupController {
@@ -34,9 +38,9 @@ public class ItemGroupController {
     }
 
     @PostMapping("${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}")
-    public ResponseEntity<Object> createItemGroup(final HttpServletRequest request,
+    public ResponseEntity<Object> createItemGroup(final @RequestHeader(REQUEST_ID_HEADER_NAME) String requestId,
                                                   final @RequestBody ItemGroupData itemGroupData) {
-        logRequestId(request);
+        logRequestId(requestId);
 
         List<String> errors = itemGroupsValidator.validateCreateItemPayload(itemGroupData);
 
@@ -57,9 +61,10 @@ public class ItemGroupController {
         }
     }
 
-    private void logRequestId(HttpServletRequest request) {
-        // TODO get request ID.
-        logger.getLogger().info(CREATE_ITEM_GROUP_REQUEST + " Request = " + request);
+    private void logRequestId(String requestId) {
+        Map<String, Object> logMap = logger.createLogMap();
+        logMap.put(REQUEST_ID_LOG_KEY, requestId);
+        logger.getLogger().info("create item group request id", logMap);
     }
 
     private ResponseEntity<Object> buildCreateSuccessResponse(final ItemGroup savedItem) {

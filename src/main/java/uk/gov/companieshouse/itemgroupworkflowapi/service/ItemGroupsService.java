@@ -28,12 +28,8 @@ public class ItemGroupsService {
     public ItemGroup createItemGroup(ItemGroupData itemGroupData) {
         final ItemGroup itemGroup = new ItemGroup();
 
-        try {
-            String itemGroupId = autoGenerateId();
-            itemGroup.setId(itemGroupId);
-        } catch (Exception ex) {
-            logger.getLogger().error("ID set error : ", ex);
-        }
+        String itemGroupId = autoGenerateId();
+        itemGroup.setId(itemGroupId);
 
         setCreationTimeStamp(itemGroup);
         itemGroup.setData(itemGroupData);
