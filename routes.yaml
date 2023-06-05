@@ -3,5 +3,4 @@ app_name: item-group-workflow-api
 group: internalapi
 weight: 912
 routes:
-  1: ^/item-group-workflow-api/healthcheck
-  2: ^/item-group-workflow-api/*
+  1: ^/item-groups/*
