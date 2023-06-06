@@ -1,16 +1,5 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CREATED;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_CREATED;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_ERROR_PREFIX;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_REQUEST;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_RESPONSE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_VALIDATION_PREFIX;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.ITEM_GROUP_ALREADY_EXISTS;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.REQUEST_ID_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.REQUEST_ID_LOG_KEY;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +15,18 @@ import uk.gov.companieshouse.logging.util.DataMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestController
 public class ItemGroupController {
+    public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
+    public static final String REQUEST_ID_LOG_KEY = "request_id";
+    public static final String CREATE_ITEM_GROUP_REQUEST = "create_item_group: request";
+    public static final String CREATE_ITEM_GROUP_RESPONSE = "create_item_group: response";
+    public static final String CREATE_ITEM_GROUP_CREATED = "create_item_group: created";
+    public static final String CREATE_ITEM_GROUP_ERROR_PREFIX = "create_item_group: error";
+    public static final String CREATE_ITEM_GROUP_VALIDATION_PREFIX = "create_item_group: validation failed";
+    public static final String ITEM_GROUP_ALREADY_EXISTS = "create_item_group: already exists";
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
     private final ItemGroupsValidator itemGroupsValidator;
