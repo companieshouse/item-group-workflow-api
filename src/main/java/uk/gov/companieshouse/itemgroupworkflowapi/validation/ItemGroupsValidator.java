@@ -22,7 +22,7 @@ public class ItemGroupsValidator {
     }
 
     public List<String> validateCreateItemPayload(ItemGroupData dto) {
-        // TODO add in validation for:
+        // TODO - DCAC-47 - add in validation for:
         // items[].description_identifier
         // items[].item_costs[].product_type
         // items[].kind
@@ -84,14 +84,14 @@ public class ItemGroupsValidator {
     }
 
     private void validateDescriptionIdentifier(ItemGroupData dto, List<String> errors) {
-        // TODO for future validation.
+        // TODO - DCAC-47 - for future validation.
     }
 
     private void validateItemCostsProductType(ItemGroupData dto, List<String> errors) {
-        // TODO for future validation.
+        // TODO - DCAC-47 - for future validation.
     }
 
     private void validateItemKind(ItemGroupData dto, List<String> errors) {
-        // TODO for future validation.
+        // TODO - DCAC-47 - for future validation.
     }
 }
