@@ -50,15 +50,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups/1/items/1",
+					"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-groups",
-						"1",
+						"IG-954916-860369",
 						"items",
-						"1"
+						"111-222-333"
 					]
 				}
 			},
@@ -90,15 +90,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups/1/items/1",
+					"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-groups",
-						"1",
+						"IG-954916-860369",
 						"items",
-						"1"
+						"111-222-333"
 					]
 				}
 			},
@@ -130,15 +130,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups/1/items/1",
+					"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-groups",
-						"1",
+						"IG-954916-860369",
 						"items",
-						"1"
+						"111-222-333"
 					]
 				}
 			},
@@ -170,15 +170,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups/1/items/1",
+					"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-groups",
-						"1",
+						"IG-954916-860369",
 						"items",
-						"1"
+						"111-222-333"
 					]
 				}
 			},
@@ -210,15 +210,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups/1/items/1",
+					"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-groups",
-						"1",
+						"IG-954916-860369",
 						"items",
-						"1"
+						"111-222-333"
 					]
 				}
 			},
@@ -250,15 +250,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups/1/items/1",
+					"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-groups",
-						"1",
+						"IG-954916-860369",
 						"items",
-						"1"
+						"111-222-333"
 					]
 				}
 			},
@@ -279,13 +279,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-group-workflow-api/item-group-create",
+					"raw": "{{base_url}}/item-groups",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"item-group-workflow-api",
-						"item-group-create"
+						"item-groups"
 					]
 				}
 			},

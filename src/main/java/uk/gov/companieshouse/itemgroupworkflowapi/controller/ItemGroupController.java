@@ -10,13 +10,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupCreate;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupJsonPayload;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.TemporaryMapPatchMerger;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.CreateItemValidator;
+import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.PatchItemRequestValidator;
+import uk.gov.companieshouse.logging.util.DataMap;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -25,6 +27,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_ERROR_PREFIX;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_REQUEST;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_RESPONSE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.ITEM_GROUP_ALREADY_EXISTS;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
 
@@ -36,40 +39,39 @@ public class ItemGroupController {
 
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
-    private final CreateItemValidator createItemValidator;
+    private final ItemGroupsValidator itemGroupsValidator;
     private final PatchItemRequestValidator patchItemRequestValidator;
     private final TemporaryMapPatchMerger patcher;
 
-    public ItemGroupController(LoggingUtils logger,
-                               ItemGroupsService itemGroupsService,
-                               CreateItemValidator createItemValidator,
-                               PatchItemRequestValidator patchItemRequestValidator,
-                               TemporaryMapPatchMerger patcher) {
+    public ItemGroupController(LoggingUtils logger, ItemGroupsService itemGroupsService, ItemGroupsValidator itemGroupsValidator, PatchItemRequestValidator patchItemRequestValidator, TemporaryMapPatchMerger patcher) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
-        this.createItemValidator = createItemValidator;
+        this.itemGroupsValidator = itemGroupsValidator;
         this.patchItemRequestValidator = patchItemRequestValidator;
         this.patcher = patcher;
     }
 
     @PostMapping("${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}")
-    public ResponseEntity<Object> createItemGroup(final @RequestBody ItemGroupJsonPayload itemGroupJsonPayload) {
-        List<String> errors = createItemValidator.validateCreateItemPayload(itemGroupJsonPayload);
+    public ResponseEntity<Object> createItemGroup(final HttpServletRequest request,
+                                                  final @RequestBody ItemGroupData itemGroupData) {
+        logRequestId(request);
+
+        List<String> errors = itemGroupsValidator.validateCreateItemPayload(itemGroupData);
 
         if (!errors.isEmpty()) {
-            return buildValidationResponse(BAD_REQUEST.value(), errors, itemGroupJsonPayload);
+            return buildValidationResponse(errors, itemGroupData);
         }
 
         try {
-            if (itemGroupsService.doesItemGroupExist(itemGroupJsonPayload)) {
-                return buildItemAlreadyExistsResponse(itemGroupJsonPayload);
+            if (itemGroupsService.doesItemGroupExist(itemGroupData)) {
+                return buildItemAlreadyExistsResponse(itemGroupData);
             }
 
-            final ItemGroupCreate savedItem = itemGroupsService.createItemGroup(itemGroupJsonPayload);
+            final ItemGroup savedItem = itemGroupsService.createItemGroup(itemGroupData);
             return buildCreateSuccessResponse(savedItem);
 
         } catch (Exception ex) {
-            return buildErrorResponse(BAD_REQUEST.value(), ex, itemGroupJsonPayload);
+            return buildErrorResponse(ex, itemGroupData);
         }
     }
 
@@ -112,35 +114,50 @@ public class ItemGroupController {
         return ResponseEntity.ok().body(patchedItem);
     }
 
+    private void logRequestId(HttpServletRequest request) {
+        // TODO get request ID.
+        logger.getLogger().info(CREATE_ITEM_GROUP_REQUEST + " Request = " + request);
+    }
 
-    private ResponseEntity<Object> buildCreateSuccessResponse(final ItemGroupCreate savedItem) {
+    private ResponseEntity<Object> buildCreateSuccessResponse(final ItemGroup savedItem) {
+        DataMap dataMap = new DataMap.Builder()
+            .orderId(savedItem.getData().getOrderNumber())
+            .build();
+
+        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS + " " + dataMap.getLogMap());
         return ResponseEntity.status(CREATED).body(savedItem);
     }
 
-    private ResponseEntity<Object> buildValidationResponse(final int statusCode,
-                                                           final List<String> errors,
-                                                           final ItemGroupJsonPayload dto){
+    private ResponseEntity<Object> buildValidationResponse(final List<String> errors,
+                                                           final ItemGroupData itemGroupData) {
         final var map = logger.createLogMap();
-        map.put(CREATE_ITEM_GROUP_REQUEST, dto);
-        final ResponseEntity<Object> response = ResponseEntity.status(statusCode).body(errors);
+        map.put(CREATE_ITEM_GROUP_REQUEST, itemGroupData);
+
+        final ResponseEntity<Object> response = ResponseEntity.status(BAD_REQUEST).body(errors);
+
         map.put(CREATE_ITEM_GROUP_RESPONSE, response);
         logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + errors, map);
         return response;
     }
 
-    private ResponseEntity<Object> buildItemAlreadyExistsResponse(final ItemGroupJsonPayload dto) {
-        return ResponseEntity.status(CONFLICT).body(dto);
+    private ResponseEntity<Object> buildItemAlreadyExistsResponse(final ItemGroupData itemGroupData) {
+        DataMap dataMap = new DataMap.Builder()
+            .orderId(itemGroupData.getOrderNumber())
+            .build();
+
+        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS + " " + dataMap.getLogMap());
+        return ResponseEntity.status(CONFLICT).body(itemGroupData);
     }
 
-    private ResponseEntity<Object> buildErrorResponse(final int statusCode,
-                                                      final Exception ex,
-                                                      final ItemGroupJsonPayload dto){
+    private ResponseEntity<Object> buildErrorResponse(final Exception ex,
+                                                      final ItemGroupData itemGroupData){
         final var map = logger.createLogMap();
-        map.put(CREATE_ITEM_GROUP_REQUEST, dto);
-        final ResponseEntity<Object> response = ResponseEntity.status(statusCode).body(ex.getMessage());
+        map.put(CREATE_ITEM_GROUP_REQUEST, itemGroupData);
+
+        final ResponseEntity<Object> response = ResponseEntity.status(BAD_REQUEST).body(ex.getMessage());
+
         map.put(CREATE_ITEM_GROUP_RESPONSE, response);
         logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + ex.getMessage(), map);
         return response;
     }
-
 }

@@ -5,15 +5,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 /**
- * This entity gets persisted to the item_group collection with @Id and create/update timestamps.<p>
- * It contains the JSON payload (an instance of ItemGroupJsonPayload) as a data member<p>
- * AFAIK Spring currently has no way of parameterizing the collection name, so it gets hard-coded for now.
+ * This entity gets persisted to the item_groups collection with @Id and create/update timestamps.<p>
+ * It contains the JSON payload (an instance of ItemGroupData) as a data member<p>
  */
-@Document(collection = "item_group")
-public class ItemGroupCreate {
-    //
-    // Entity ID.
-    //
+@Document(collection = "item_groups")
+public class ItemGroup {
     @Id
     private String id;
     public final String getId() {
@@ -22,9 +18,7 @@ public class ItemGroupCreate {
     public void setId(final String id){
         this.id = id;
     }
-    //
-    // Create and Update timestamps.
-    //
+
     private LocalDateTime createdAt;
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -40,20 +34,18 @@ public class ItemGroupCreate {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    //
-    // Contained JSON payload.
-    //
-    private ItemGroupJsonPayload data  = new ItemGroupJsonPayload();
-    public final ItemGroupJsonPayload getData() {
+
+    private ItemGroupData data  = new ItemGroupData();
+    public final ItemGroupData getData() {
         return data;
     }
-    public void setData(ItemGroupJsonPayload data) {
+    public void setData(ItemGroupData data) {
         this.data = data;
     }
 
     @Override
     public String toString() {
-        return "ItemGroupCreate {" +
+        return "ItemGroup {" +
             data +
             '}';
     }

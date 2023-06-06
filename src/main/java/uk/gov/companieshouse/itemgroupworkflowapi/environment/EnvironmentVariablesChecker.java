@@ -12,7 +12,6 @@ public class EnvironmentVariablesChecker {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
 
     public enum RequiredEnvironmentVariables {
-//        PREVENT_APP_STARTUP("ELVIS_WORKS_AT_MY_LOCAL_CHIPPIE"),
         MONGODB_URL("MONGODB_URL");
 
         private final String name;

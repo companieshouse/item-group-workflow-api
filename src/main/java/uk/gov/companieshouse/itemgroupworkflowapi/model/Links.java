@@ -18,7 +18,7 @@ public class Links {
     @Override
     public String toString() {
         return "links {" +
-                "address_line_1='" + order + '\'' +
+                "order='" + order + '\'' +
                 '}';
     }
 }
