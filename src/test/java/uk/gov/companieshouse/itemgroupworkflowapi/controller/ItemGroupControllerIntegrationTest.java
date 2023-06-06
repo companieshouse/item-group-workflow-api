@@ -29,23 +29,6 @@ class ItemGroupControllerIntegrationTest {
     private static final String ITEM_GROUP_ID = "IG-922016-860413";
     private static final String PATCH_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/111-222-333";
 
-    private static final String PATCH_ITEM_BODY = "{\n" +
-            "    \"digital_document_location\": " +
-            "\"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n" +
-            "    \"status\": \"satisfied\"\n" +
-            "}";
-
-    private static final String PATCH_ITEM_BODY_WITHOUT_STATUS = "{\n" +
-            "    \"digital_document_location\": " +
-            "\"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\"\n" +
-            "}";
-
-    private static final String PATCH_ITEM_BODY_WITH_BAD_STATUS = "{\n" +
-            "    \"digital_document_location\": " +
-            "\"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n" +
-            "    \"status\": \"bad\"\n" +
-            "}";
-
     private static final String REQUEST_ID = "WmuRTepX70C635NKm5rbYTciSsOR";
 
     @Autowired
@@ -71,7 +54,7 @@ class ItemGroupControllerIntegrationTest {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .contentType(APPLICATION_MERGE_PATCH)
-                        .content(PATCH_ITEM_BODY))
+                        .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -82,7 +65,7 @@ class ItemGroupControllerIntegrationTest {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .contentType(APPLICATION_MERGE_PATCH)
-                        .content(PATCH_ITEM_BODY_WITHOUT_STATUS))
+                        .content(getJsonFromFile("patch_item_body_without_status")))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -93,15 +76,18 @@ class ItemGroupControllerIntegrationTest {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .contentType(APPLICATION_MERGE_PATCH)
-                        .content(PATCH_ITEM_BODY_WITH_BAD_STATUS))
+                        .content(getJsonFromFile("patch_item_body_with_bad_status")))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
     private void setUpItemGroup() throws IOException {
-        final String itemGroup =
-                new String(Files.readAllBytes(Paths.get("src/test/resources/testdata/item_group.json")));
+        final String itemGroup = getJsonFromFile("item_group");
         mongoTemplate.insert(Document.parse(itemGroup), "item_groups");
+    }
+
+    private String getJsonFromFile(final String fileBasename) throws IOException {
+        return new String(Files.readAllBytes(Paths.get("src/test/resources/testdata/" + fileBasename + ".json")));
     }
 
 }
