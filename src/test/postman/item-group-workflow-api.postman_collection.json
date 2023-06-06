@@ -1,11 +1,150 @@
 {
 	"info": {
-		"_postman_id": "4b483a4c-0959-4e27-8c4d-3ebef6e0de12",
+		"_postman_id": "bc84bc92-bdd8-4cb6-8242-7192a45a6798",
 		"name": "item-group-workflow-api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "25264872"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Validation Errors",
+			"item": [
+				{
+					"name": "Create Item Group missing Items",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delivery_details\": {\n        \"address_line_1\": \"15 Yemen Road\",\n        \"address_line_2\": \"Yemen\",\n        \"company_name\": \"Bing Enterprises\",\n        \"country\": \"Yemen\",\n        \"forename\": \"C\",\n        \"locality\": \"None\",\n        \"po_box\": \"None\",\n        \"postal_code\": \"CF14 3UZ\",\n        \"region\": \"Yemen\",\n        \"surname\": \"Bing\"\n    },\n    \"links\": {\n        \"order\": \"/orderable/certificates/mycert-123\"\n    },\n    \"order_number\": \"234\",\n    \"ordered_at\": \"2023-05-31T14:03:57Z\",\n    \"ordered_by\": {\n        \"email\": \"demo@ch.gov.uk\",\n        \"id\": \"111-222-333\"\n    },\n    \"payment_reference\": \"CERTORDER-BING\",\n    \"reference\": \"mycert-234-bing\",\n    \"total_order_cost\": \"25\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item Group missing Links",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delivery_details\": {\n        \"address_line_1\": \"1 Red Bull Road\",\n        \"address_line_2\": \"Monaco\",\n        \"company_name\": \"Red Bull Racing\",\n        \"country\": \"USA\",\n        \"forename\": \"M\",\n        \"locality\": \"None\",\n        \"po_box\": \"None\",\n        \"postal_code\": \"CF14 3UZ\",\n        \"region\": \"Sydney\",\n        \"surname\": \"Verstappen\"\n    },\n    \"items\": [\n        {\n            \"company_name\": \"Red Bull Racing\",\n            \"company_number\": \"11111111\",\n            \"customer_reference\": \"customer reference\",\n            \"description\": \"certificate for company 00000000\",\n            \"description_identifier\": \"certificate\",\n            \"description_values\": {\n                \"certificate\": \"certificate for company 00000000\",\n                \"company_number\": \"00000000\"\n            },\n            \"etag\": \"etag\",\n            \"id\": \"111-222-333\",\n            \"item_costs\": [\n                {\n                    \"calculated_cost\": \"25\",\n                    \"discount_applied\": \"0\",\n                    \"item_cost\": \"25\",\n                    \"product_type\": \"certificate\"\n                }\n            ],\n            \"item_options\": {\n                \"delivery_method\": \"collection\",\n                \"delivery_timescale\": \"standard\"\n            },\n            \"kind\": \"order\",\n            \"links\": {\n                \"order\": \"/orderable/certificates/mycert-123\"\n            },\n            \"postage_cost\": \"0\",\n            \"postal_delivery\": true,\n            \"quantity\": 1,\n            \"total_item_cost\": \"25\"\n        }\n    ],\n    \"order_number\": \"131\",\n    \"ordered_at\": \"2023-05-31T14:03:57Z\",\n    \"ordered_by\": {\n        \"email\": \"demo@ch.gov.uk\",\n        \"id\": \"111-222-333\"\n    },\n    \"payment_reference\": \"CERTORDER-mverstappen\",\n    \"reference\": \"mycert-131\",\n    \"total_order_cost\": \"25\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item Group with Empty Item",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delivery_details\": {\n        \"address_line_1\": \"2 Mercedes Way\",\n        \"address_line_2\": \"London\",\n        \"company_name\": \"Mercedes\",\n        \"country\": \"England\",\n        \"forename\": \"Lewis\",\n        \"locality\": \"None\",\n        \"po_box\": \"None\",\n        \"postal_code\": \"CF14 3UZ\",\n        \"region\": \"London\",\n        \"surname\": \"Hamilton\"\n    },\n    \"items\": [],\n    \"links\": {\n        \"order\": \"/orderable/certificates/mycert-123\"\n    },\n    \"order_number\": \"411\",\n    \"ordered_at\": \"2023-05-31T14:03:57Z\",\n    \"ordered_by\": {\n        \"email\": \"demo@ch.gov.uk\",\n        \"id\": \"111-222-333\"\n    },\n    \"payment_reference\": \"CERTORDER-lhamilton\",\n    \"reference\": \"mycert-411\",\n    \"total_order_cost\": \"25\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item Group missing Company Number",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delivery_details\": {\n        \"address_line_1\": \"7 Ferarri\",\n        \"address_line_2\": \"Monaco\",\n        \"company_name\": \"P. Sherman\",\n        \"country\": \"Monaco\",\n        \"forename\": \"C\",\n        \"locality\": \"None\",\n        \"po_box\": \"None\",\n        \"postal_code\": \"CF14 3UZ\",\n        \"region\": \"Monaco\",\n        \"surname\": \"Sainz\"\n    },\n    \"items\": [\n        {\n            \"company_name\": \"Ferarri\",\n            \"customer_reference\": \"customer reference\",\n            \"description\": \"certificate for company 00000000\",\n            \"description_identifier\": \"certificate\",\n            \"description_values\": {\n                \"certificate\": \"certificate for company 00000000\",\n                \"company_number\": \"00000000\"\n            },\n            \"etag\": \"etag\",\n            \"id\": \"111-222-333\",\n            \"item_costs\": [\n                {\n                    \"calculated_cost\": \"25\",\n                    \"discount_applied\": \"0\",\n                    \"item_cost\": \"25\",\n                    \"product_type\": \"certificate\"\n                }\n            ],\n            \"item_options\": {\n                \"delivery_method\": \"collection\",\n                \"delivery_timescale\": \"standard\"\n            },\n            \"kind\": \"order\",\n            \"links\": {\n                \"order\": \"/orderable/certificates/mycert-123\"\n            },\n            \"postage_cost\": \"0\",\n            \"postal_delivery\": true,\n            \"quantity\": 1,\n            \"total_item_cost\": \"25\"\n        }\n    ],\n    \"links\": {\n        \"order\": \"/orderable/certificates/mycert-123\"\n    },\n    \"order_number\": \"555\",\n    \"ordered_at\": \"2023-05-31T14:03:57Z\",\n    \"ordered_by\": {\n        \"email\": \"demo@ch.gov.uk\",\n        \"id\": \"111-222-333\"\n    },\n    \"payment_reference\": \"CERTORDER\",\n    \"reference\": \"mycert-555-Sainz\",\n    \"total_order_cost\": \"25\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item Group missing Order Number",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delivery_details\": {\n        \"address_line_1\": \"12 Alpine Alley\",\n        \"address_line_2\": \"France\",\n        \"company_name\": \"Alpine\",\n        \"country\": \"France\",\n        \"forename\": \"P\",\n        \"locality\": \"None\",\n        \"po_box\": \"None\",\n        \"postal_code\": \"CF14 3UZ\",\n        \"region\": \"France\",\n        \"surname\": \"Gasly\"\n    },\n    \"items\": [\n        {\n            \"company_name\": \"Alpine\",\n            \"company_number\": \"12300000\",\n            \"customer_reference\": \"customer reference\",\n            \"description\": \"certificate for company 00000000\",\n            \"description_identifier\": \"certificate\",\n            \"description_values\": {\n                \"certificate\": \"certificate for company 00000000\",\n                \"company_number\": \"00000000\"\n            },\n            \"etag\": \"etag\",\n            \"id\": \"111-222-333\",\n            \"item_costs\": [\n                {\n                    \"calculated_cost\": \"25\",\n                    \"discount_applied\": \"0\",\n                    \"item_cost\": \"25\",\n                    \"product_type\": \"certificate\"\n                }\n            ],\n            \"item_options\": {\n                \"delivery_method\": \"collection\",\n                \"delivery_timescale\": \"standard\"\n            },\n            \"kind\": \"order\",\n            \"links\": {\n                \"order\": \"/orderable/certificates/mycert-123\"\n            },\n            \"postage_cost\": \"0\",\n            \"postal_delivery\": true,\n            \"quantity\": 1,\n            \"total_item_cost\": \"25\"\n        }\n    ],\n    \"links\": {\n        \"order\": \"/orderable/certificates/mycert-123\"\n    },\n    \"ordered_at\": \"2023-05-31T14:03:57Z\",\n    \"ordered_by\": {\n        \"email\": \"demo@ch.gov.uk\",\n        \"id\": \"111-222-333\"\n    },\n    \"payment_reference\": \"CERTORDER\",\n    \"reference\": \"mycert-123\",\n    \"total_order_cost\": \"25\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Health check",
 			"request": {
@@ -39,12 +178,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups",
+					"raw": "{{base_url}}/item-groups/",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"item-groups"
+						"item-groups",
+						""
 					]
 				}
 			},

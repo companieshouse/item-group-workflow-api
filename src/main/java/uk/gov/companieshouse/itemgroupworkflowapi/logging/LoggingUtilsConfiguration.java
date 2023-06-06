@@ -10,6 +10,12 @@ public class LoggingUtilsConfiguration {
     public static final String APPLICATION_NAMESPACE = "item-group-workflow-api";
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
     public static final String REQUEST_ID_LOG_KEY = "request_id";
+    public static final String CREATE_ITEM_GROUP_REQUEST = "create_item_group: request";
+    public static final String CREATE_ITEM_GROUP_RESPONSE = "create_item_group: response";
+    public static final String CREATE_ITEM_GROUP_CREATED = "create_item_group: created";
+    public static final String CREATE_ITEM_GROUP_ERROR_PREFIX = "create_item_group: error";
+    public static final String CREATE_ITEM_GROUP_VALIDATION_PREFIX = "create_item_group: validation failed";
+    public static final String ITEM_GROUP_ALREADY_EXISTS = "create_item_group: already exists";
 
     @Bean
     Logger getLogger(){
