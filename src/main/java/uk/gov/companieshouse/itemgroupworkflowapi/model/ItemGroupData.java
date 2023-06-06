@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ItemGroupData {
 
@@ -15,8 +16,8 @@ public class ItemGroupData {
     public DeliveryDetails getDeliveryDetails() {return deliveryDetails;}
 
     @JsonProperty("items")
-    private ArrayList items;
-    public ArrayList getItems() {return items;}
+    private List<Item> items;
+    public List<Item> getItems() {return items;}
 
     public void setItems(ArrayList items) {
         this.items = items;

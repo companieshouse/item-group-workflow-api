@@ -24,13 +24,16 @@ import java.util.Map;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_ERROR_PREFIX;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_REQUEST;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.CREATE_ITEM_GROUP_RESPONSE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils.ITEM_GROUP_ALREADY_EXISTS;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_CREATED;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_ERROR_PREFIX;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_REQUEST;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_RESPONSE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_VALIDATION_PREFIX;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.ITEM_GROUP_ALREADY_EXISTS;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.REQUEST_ID_LOG_KEY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
+
 
 @RestController
 public class ItemGroupController {
@@ -56,7 +59,6 @@ public class ItemGroupController {
     public ResponseEntity<Object> createItemGroup(final @RequestHeader(REQUEST_ID_HEADER_NAME) String requestId,
                                                   final @RequestBody ItemGroupData itemGroupData) {
         logRequestId(requestId);
-
         List<String> errors = itemGroupsValidator.validateCreateItemPayload(itemGroupData);
 
         if (!errors.isEmpty()) {
@@ -118,7 +120,7 @@ public class ItemGroupController {
     private void logRequestId(String requestId) {
         Map<String, Object> logMap = logger.createLogMap();
         logMap.put(REQUEST_ID_LOG_KEY, requestId);
-        logger.getLogger().info("create item group request id", logMap);
+        logger.getLogger().info("create item group: request id", logMap);
     }
 
     private ResponseEntity<Object> buildCreateSuccessResponse(final ItemGroup savedItem) {
@@ -126,7 +128,7 @@ public class ItemGroupController {
             .orderId(savedItem.getData().getOrderNumber())
             .build();
 
-        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS + " " + dataMap.getLogMap());
+        logger.getLogger().info(CREATE_ITEM_GROUP_CREATED, dataMap.getLogMap());
         return ResponseEntity.status(CREATED).body(savedItem);
     }
 
@@ -138,7 +140,7 @@ public class ItemGroupController {
         final ResponseEntity<Object> response = ResponseEntity.status(BAD_REQUEST).body(errors);
 
         map.put(CREATE_ITEM_GROUP_RESPONSE, response);
-        logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + errors, map);
+        logger.getLogger().error(CREATE_ITEM_GROUP_VALIDATION_PREFIX + " " + errors, map);
         return response;
     }
 
@@ -153,12 +155,10 @@ public class ItemGroupController {
 
     private ResponseEntity<Object> buildErrorResponse(final Exception ex,
                                                       final ItemGroupData itemGroupData){
-        final var map = logger.createLogMap();
-        map.put(CREATE_ITEM_GROUP_REQUEST, itemGroupData);
-
         final ResponseEntity<Object> response = ResponseEntity.status(BAD_REQUEST).body(ex.getMessage());
 
-        map.put(CREATE_ITEM_GROUP_RESPONSE, response);
+        final var map = logger.createLogMap();
+        map.put(CREATE_ITEM_GROUP_REQUEST, itemGroupData);
         logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + ex.getMessage(), map);
         return response;
     }
