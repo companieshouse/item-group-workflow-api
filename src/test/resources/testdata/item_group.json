@@ -1,0 +1,66 @@
+{
+  "_id" : "IG-922016-860413",
+  "created_at" : ISODate("2023-06-06T08:48:48.950Z"),
+  "updated_at" : ISODate("2023-06-06T08:48:48.950Z"),
+  "data" : {
+    "delivery_details" : {
+      "address_line_1" : "42 Wallaby Way",
+      "address_line_2" : "Sydney",
+      "company_name" : "P. Sherman",
+      "country" : "Australia",
+      "forename" : "P",
+      "locality" : "None",
+      "po_box" : "None",
+      "postal_code" : "CF14 3UZ",
+      "region" : "Sydney",
+      "surname" : "Sherman"
+    },
+    "items" : [
+      {
+        "company_name" : "P. Sherman",
+        "company_number" : "00000000",
+        "customer_reference" : "customer reference",
+        "description" : "certificate for company 00000000",
+        "description_identifier" : "certificate",
+        "description_values" : {
+          "certificate" : "certificate for company 00000000",
+          "company_number" : "00000000"
+        },
+        "etag" : "etag",
+        "id" : "111-222-333",
+        "item_costs" : [
+          {
+            "calculated_cost" : "25",
+            "discount_applied" : "0",
+            "item_cost" : "25",
+            "product_type" : "certificate"
+          }
+        ],
+        "item_options" : {
+          "delivery_method" : "collection",
+          "delivery_timescale" : "standard"
+        },
+        "kind" : "order",
+        "links" : {
+          "order" : "/orderable/certificates/mycert-123"
+        },
+        "postage_cost" : "0",
+        "postal_delivery" : true,
+        "quantity" : 1,
+        "total_item_cost" : "25"
+      }
+    ],
+    "links" : {
+      "order" : "/orderable/certificates/mycert-123"
+    },
+    "order_number" : "123",
+    "ordered_at" : ISODate("2023-05-31T14:03:57.000Z"),
+    "ordered_by" : {
+      "_id" : "111-222-333",
+      "email" : "demo@ch.gov.uk"
+    },
+    "payment_reference" : "CERTORDER",
+    "reference" : "mycert-123",
+    "total_order_cost" : "25"
+  }
+}
