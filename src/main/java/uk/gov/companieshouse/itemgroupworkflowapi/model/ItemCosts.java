@@ -13,6 +13,14 @@ public class ItemCosts {
     @Field("discount_applied")
     private String discountApplied;
 
+    @JsonProperty("item_cost")
+    @Field("item_cost")
+    private String itemCost;
+
+    @JsonProperty("product_type")
+    @Field("product_type")
+    private String productType;
+
     public String getCalculatedCost() {
         return calculatedCost;
     }
@@ -44,14 +52,6 @@ public class ItemCosts {
     public void setProductType(String productType) {
         this.productType = productType;
     }
-
-    @JsonProperty("item_cost")
-    @Field("item_cost")
-    private String itemCost;
-
-    @JsonProperty("product_type")
-    @Field("product_type")
-    private String productType;
 
     @Override
     public String toString() {

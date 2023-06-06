@@ -42,6 +42,26 @@ public class Item {
     @Field("item_options")
     private Map itemOptions;
 
+    @JsonProperty("kind")
+    private String kind;
+
+    @JsonProperty("links")
+    private Links links;
+
+    @JsonProperty("postage_cost")
+    @Field("postage_cost")
+    private String postageCost;
+
+    @JsonProperty("postal_delivery")
+    private Boolean postalDelivery;
+
+    @JsonProperty("quantity")
+    private Integer quantity;
+
+    @JsonProperty("total_item_cost")
+    @Field("total_item_cost")
+    private String totalItemCost;
+
     public String getCompanyName() {
         return companyName;
     }
@@ -169,26 +189,6 @@ public class Item {
     public void setTotalItemCost(String totalItemCost) {
         this.totalItemCost = totalItemCost;
     }
-
-    @JsonProperty("kind")
-    private String kind;
-
-    @JsonProperty("links")
-    private Links links;
-
-    @JsonProperty("postage_cost")
-    @Field("postage_cost")
-    private String postageCost;
-
-    @JsonProperty("postal_delivery")
-    private Boolean postalDelivery;
-
-    @JsonProperty("quantity")
-    private Integer quantity;
-
-    @JsonProperty("total_item_cost")
-    @Field("total_item_cost")
-    private String totalItemCost;
 
     @Override
     public String toString() {
