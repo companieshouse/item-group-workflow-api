@@ -25,13 +25,6 @@ import java.util.Map;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_CREATED;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_ERROR_PREFIX;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_REQUEST;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_RESPONSE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.CREATE_ITEM_GROUP_VALIDATION_PREFIX;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.ITEM_GROUP_ALREADY_EXISTS;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.REQUEST_ID_LOG_KEY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
 
@@ -42,7 +35,6 @@ public class ItemGroupController {
     private static final String PATCH_ITEM_URI =
             "${uk.gov.companieshouse.itemgroupworkflowapi.patchitem}";
 
-    public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
     public static final String REQUEST_ID_LOG_KEY = "request_id";
     public static final String CREATE_ITEM_GROUP_REQUEST = "create_item_group: request";
     public static final String CREATE_ITEM_GROUP_RESPONSE = "create_item_group: response";
