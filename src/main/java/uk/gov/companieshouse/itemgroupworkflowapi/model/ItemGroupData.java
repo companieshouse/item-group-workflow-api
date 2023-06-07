@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemGroupData {
@@ -19,7 +18,7 @@ public class ItemGroupData {
     private List<Item> items;
     public List<Item> getItems() {return items;}
 
-    public void setItems(ArrayList items) {
+    public void setItems(List<Item> items) {
         this.items = items;
     }
 

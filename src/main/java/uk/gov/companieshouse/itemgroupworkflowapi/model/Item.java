@@ -55,6 +55,14 @@ public class Item {
     @JsonProperty("total_item_cost")
     private String totalItemCost;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "item {" +

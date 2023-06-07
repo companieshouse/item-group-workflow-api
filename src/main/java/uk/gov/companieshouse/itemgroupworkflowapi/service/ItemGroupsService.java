@@ -2,16 +2,14 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
@@ -45,30 +43,29 @@ public class ItemGroupsService {
         return savedItemGroup;
     }
 
-    // TODO DCAC-78 Typed item, error handling
-    public Map<String, Object> getItem(final String itemGroupId, final String itemId) {
+    // TODO DCAC-78 Error handling
+    public Item getItem(final String itemGroupId, final String itemId) {
         final Optional<ItemGroup> itemGroup = itemGroupsRepository.findById(itemGroupId);
-        return (Map<String, Object>)
-                itemGroup.flatMap(group -> group.getData()
+        return itemGroup.flatMap(group -> group.getData()
                                 .getItems()
                                 .stream()
-                                .filter(item -> ((Map) item).get("id").equals(itemId))
+                                .filter(item -> item.getId().equals(itemId))
                                 .findFirst())
                         .get();
     }
 
-    // TODO DCAC-78 Typed item, error handling
-    public Map<String, Object> updateItem(final String itemGroupId,
+    // TODO DCAC-78 Error handling
+    public Item updateItem(final String itemGroupId,
                                           final String itemId,
-                                          final Map<String, Object> updatedItem) {
-        final ItemGroup itemGroup = itemGroupsRepository.findById(itemGroupId).get();
+                                          final Item updatedItem) {
+        final var itemGroup = itemGroupsRepository.findById(itemGroupId).get();
 
-        final List<Map<String, Object>> items = itemGroup.getData().getItems();
-        final List<Map<String, Object>> updatedItems = items.stream()
-                .map(item -> item.get("id").equals(itemId) ? updatedItem : item)
+        final var items = itemGroup.getData().getItems();
+        final var updatedItems = items.stream()
+                .map(item -> item.getId().equals(itemId) ? updatedItem : item)
                 .collect(toList());
         itemGroup.setUpdatedAt(now());
-        itemGroup.getData().setItems((ArrayList) updatedItems);
+        itemGroup.getData().setItems(updatedItems);
 
         itemGroupsRepository.save(itemGroup);
 
