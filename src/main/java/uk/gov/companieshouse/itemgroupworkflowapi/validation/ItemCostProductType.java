@@ -36,8 +36,8 @@ public enum ItemCostProductType {
     }
     private final String productTypeName;
 
-    public static ItemCostProductType getEnumValue(String itemKindName) {
-        return itemKindName != null ? enumValues.get(itemKindName) : null;
+    public static ItemCostProductType getEnumValue(String productTypeName) {
+        return productTypeName != null ? enumValues.get(productTypeName) : null;
     }
 
     public String getProductTypeName() {
