@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 
 public class OrderedBy {
 
@@ -28,9 +29,6 @@ public class OrderedBy {
 
     @Override
     public String toString() {
-        return "ordered_by {" +
-                "email='" + email + '\'' +
-                ", id='" + id +
-                '}';
+        return new Gson().toJson(this);
     }
 }

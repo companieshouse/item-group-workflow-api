@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
@@ -192,24 +193,6 @@ public class Item {
 
     @Override
     public String toString() {
-        return "item {" +
-                "company_name='" + companyName + '\'' +
-                ", company_number='" + companyNumber +
-                ", company_reference='" + companyReference +
-                ", description='" + description +
-                ", description_identifier='" + descriptionIdentifier +
-                ", description_values='" + descriptionValues +
-                ", etag='" + etag +
-                ", id='" + id +
-                ", item_costs='" + itemCosts +
-                ", item_options='" + itemOptions +
-                ", kind='" + kind +
-                ", links='" + links +
-                ", postage_cost='" + postageCost +
-                ", postal_delivery='" + postalDelivery +
-                ", quantity='" + quantity +
-                ", total_item_cost='" + totalItemCost +
-                '}';
+        return new Gson().toJson(this);
     }
-
 }

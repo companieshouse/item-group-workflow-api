@@ -1,11 +1,11 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemGroupData {
@@ -102,16 +102,6 @@ public class ItemGroupData {
 
     @Override
     public String toString() {
-        return "ItemGroupData {" +
-                "delivery_details='" + deliveryDetails +
-                ", items='" + items +
-                ", links='" + links +
-                " order_number='" + orderNumber +
-                " ordered_at='" + orderedAt +
-                " ordered_by='" + orderedBy +
-                " payment_reference='" + paymentReference +
-                " reference='" + reference +
-                " total_order_cost='" + totalOrderCost +
-                '}';
+        return new Gson().toJson(this);
     }
 }

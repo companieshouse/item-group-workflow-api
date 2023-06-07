@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
+import com.google.gson.Gson;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -48,8 +49,6 @@ public class ItemGroup {
 
     @Override
     public String toString() {
-        return "ItemGroup {" +
-            data +
-            '}';
+        return new Gson().toJson(this);
     }
 }

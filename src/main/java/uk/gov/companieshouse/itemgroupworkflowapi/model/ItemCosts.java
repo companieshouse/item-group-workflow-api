@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class ItemCosts {
@@ -55,12 +56,7 @@ public class ItemCosts {
 
     @Override
     public String toString() {
-        return "item_costs {" +
-                "calculated_cost='" + calculatedCost + '\'' +
-                ", discount_applied='" + discountApplied +
-                ", item_cost='" + itemCost +
-                ", product_type='" + productType +
-                '}';
+        return new Gson().toJson(this);
     }
 
 }
