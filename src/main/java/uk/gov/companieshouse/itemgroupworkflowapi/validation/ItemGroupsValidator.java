@@ -1,11 +1,11 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
+import static java.util.Objects.isNull;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
-import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ItemGroupsValidator {
         boolean result = true;
         String orderNumber = dto.getOrderNumber();
 
-        if (orderNumber == null || orderNumber.isEmpty() || orderNumber.isBlank()) {
+        if (isNull(orderNumber) || orderNumber.isEmpty() || orderNumber.isBlank()) {
             errors.add("order number invalid");
             result = false;
         }
@@ -54,7 +54,7 @@ public class ItemGroupsValidator {
     private void validateItems(ItemGroupData dto, List<String> errors) {
         var items = dto.getItems();
 
-        if (items == null || items.isEmpty()) {
+        if (isNull(items) || items.isEmpty()) {
             errors.add("items missing");
         }
     }
@@ -62,14 +62,14 @@ public class ItemGroupsValidator {
     private void validateLinks(ItemGroupData dto, List<String> errors) {
         Links links = dto.getLinks();
 
-        if (links == null) {
+        if (isNull(links)) {
             errors.add("links missing");
             return;
         }
 
         String order = links.getOrder();
 
-        if (order == null || order.isBlank() || order.isEmpty()) {
+        if (isNull(order) || order.isBlank() || order.isEmpty()) {
             errors.add("links missing order number");
         }
     }
@@ -80,7 +80,7 @@ public class ItemGroupsValidator {
         for (Item item : dto.getItems()) {
             String descriptionIdentifier = item.getDescriptionIdentifier();
 
-            if (ItemDescriptionIdentifier.getEnumValue(descriptionIdentifier) == null) {
+            if (isNull(ItemDescriptionIdentifier.getEnumValue(descriptionIdentifier))) {
                 errors.add("invalid item description identifier " + descriptionIdentifier);
             }
         }
@@ -93,7 +93,7 @@ public class ItemGroupsValidator {
             for (ItemCosts itemCost : item.getItemCosts()) {
                 String productType = itemCost.getItemCost();
 
-                if (ItemCostProductType.getEnumValue(productType) == null) {
+                if (isNull(ItemCostProductType.getEnumValue(productType))) {
                     errors.add("invalid item cost product type " + productType);
                 }
             }
@@ -106,7 +106,7 @@ public class ItemGroupsValidator {
         for (Item item : dto.getItems()) {
             String itemKind = item.getKind();
 
-            if (ItemKind.getEnumValue(itemKind) == null) {
+            if (isNull(ItemKind.getEnumValue(itemKind))) {
                 errors.add("invalid item kind " + itemKind);
             }
         }

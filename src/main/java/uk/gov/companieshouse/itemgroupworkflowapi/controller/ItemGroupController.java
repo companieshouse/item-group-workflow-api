@@ -13,20 +13,17 @@ import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator
 import uk.gov.companieshouse.logging.util.DataMap;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
 public class ItemGroupController {
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
-    public static final String REQUEST_ID_LOG_KEY = "request_id";
-    public static final String CREATE_ITEM_GROUP_REQUEST = "create_item_group: request";
-    public static final String CREATE_ITEM_GROUP_RESPONSE = "create_item_group: response";
-    public static final String CREATE_ITEM_GROUP_CREATED = "create_item_group: created";
+    public static final String REQUEST_ID_PREFIX = "create_item_group: request_id";
+    public static final String CREATE_ITEM_GROUP_CREATED_PREFIX = "create_item_group: created";
     public static final String CREATE_ITEM_GROUP_ERROR_PREFIX = "create_item_group: error";
     public static final String CREATE_ITEM_GROUP_VALIDATION_PREFIX = "create_item_group: validation failed";
-    public static final String ITEM_GROUP_ALREADY_EXISTS = "create_item_group: already exists";
+    public static final String ITEM_GROUP_ALREADY_EXISTS_PREFIX = "create_item_group: already exists";
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
     private final ItemGroupsValidator itemGroupsValidator;
@@ -36,7 +33,13 @@ public class ItemGroupController {
         this.itemGroupsService = itemGroupsService;
         this.itemGroupsValidator = itemGroupsValidator;
     }
-
+    /**
+     * Create item group from ItemGroupData<p>
+     * POST RequestID logged<p>
+     * Validation performed on item group, on failure return BAD_REQUEST<p>
+     * Item group already exists check performed, if already exists return CONFLICT<p>
+     * Item group created, on success return CREATED, on error return BAD_REQUEST<p>
+     */
     @PostMapping("${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}")
     public ResponseEntity<Object> createItemGroup(final @RequestHeader(REQUEST_ID_HEADER_NAME) String requestId,
                                                   final @RequestBody ItemGroupData itemGroupData) {
@@ -44,65 +47,78 @@ public class ItemGroupController {
         List<String> errors = itemGroupsValidator.validateCreateItemPayload(itemGroupData);
 
         if (!errors.isEmpty()) {
-            return buildValidationResponse(errors, itemGroupData);
+            return buildValidationResponse(requestId, errors);
         }
 
         try {
-            if (itemGroupsService.doesItemGroupExist(itemGroupData)) {
+            if (itemGroupsService.doesItemGroupExist(itemGroupData))
                 return buildItemAlreadyExistsResponse(itemGroupData);
-            }
 
             final ItemGroup savedItem = itemGroupsService.createItemGroup(itemGroupData);
-            return buildCreateSuccessResponse(savedItem);
-
-        } catch (Exception ex) {
-            return buildErrorResponse(ex, itemGroupData);
+            return buildCreateSuccessResponse(requestId, savedItem);
+        }
+        catch (Exception ex) {
+            return buildErrorResponse(requestId, ex, itemGroupData);
         }
     }
 
     private void logRequestId(String requestId) {
-        Map<String, Object> logMap = logger.createLogMap();
-        logMap.put(REQUEST_ID_LOG_KEY, requestId);
-        logger.getLogger().info("create item group: request id", logMap);
-    }
-
-    private ResponseEntity<Object> buildCreateSuccessResponse(final ItemGroup savedItem) {
         DataMap dataMap = new DataMap.Builder()
+            .requestId(requestId)
+            .build();
+
+        logger.getLogger().info(REQUEST_ID_PREFIX, dataMap.getLogMap());
+    }
+    /**
+     * @return ResponseEntity.status(CREATED)
+     */
+    private ResponseEntity<Object> buildCreateSuccessResponse(String requestId,
+                                                              final ItemGroup savedItem) {
+        DataMap dataMap = new DataMap.Builder()
+            .xRequestId(requestId)
             .orderId(savedItem.getData().getOrderNumber())
             .build();
 
-        logger.getLogger().info(CREATE_ITEM_GROUP_CREATED, dataMap.getLogMap());
+        logger.getLogger().info(CREATE_ITEM_GROUP_CREATED_PREFIX, dataMap.getLogMap());
         return ResponseEntity.status(CREATED).body(savedItem);
     }
+    /**
+     * @return ResponseEntity.status(BAD_REQUEST)
+     */
+    private ResponseEntity<Object> buildValidationResponse(String requestId,
+                                                           final List<String> errors) {
+        DataMap dataMap = new DataMap.Builder()
+            .xRequestId(requestId)
+            .errors(errors)
+            .build();
 
-    private ResponseEntity<Object> buildValidationResponse(final List<String> errors,
-                                                           final ItemGroupData itemGroupData) {
-        final var map = logger.createLogMap();
-        map.put(CREATE_ITEM_GROUP_REQUEST, itemGroupData);
-
-        final ResponseEntity<Object> response = ResponseEntity.status(BAD_REQUEST).body(errors);
-
-        map.put(CREATE_ITEM_GROUP_RESPONSE, response);
-        logger.getLogger().error(CREATE_ITEM_GROUP_VALIDATION_PREFIX + " " + errors, map);
-        return response;
+        logger.getLogger().error(CREATE_ITEM_GROUP_VALIDATION_PREFIX, dataMap.getLogMap());
+        return ResponseEntity.status(BAD_REQUEST).body(errors);
     }
-
+    /**
+     * @return ResponseEntity.status(CONFLICT)
+     */
     private ResponseEntity<Object> buildItemAlreadyExistsResponse(final ItemGroupData itemGroupData) {
         DataMap dataMap = new DataMap.Builder()
             .orderId(itemGroupData.getOrderNumber())
             .build();
 
-        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS + " " + dataMap.getLogMap());
+        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS_PREFIX, dataMap.getLogMap());
         return ResponseEntity.status(CONFLICT).body(itemGroupData);
     }
+    /**
+     * @return ResponseEntity.status(BAD_REQUEST)
+     */
+    private ResponseEntity<Object> buildErrorResponse(String requestId,
+                                                      final Exception ex,
+                                                      final ItemGroupData itemGroupData) {
+        DataMap dataMap = new DataMap.Builder()
+            .xRequestId(requestId)
+            .orderId(itemGroupData.getOrderNumber())
+            .message(ex.getMessage())
+            .build();
 
-    private ResponseEntity<Object> buildErrorResponse(final Exception ex,
-                                                      final ItemGroupData itemGroupData){
-        final ResponseEntity<Object> response = ResponseEntity.status(BAD_REQUEST).body(ex.getMessage());
-
-        final var map = logger.createLogMap();
-        map.put(CREATE_ITEM_GROUP_REQUEST, itemGroupData);
-        logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + ex.getMessage(), map);
-        return response;
+        logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX, dataMap.getLogMap());
+        return ResponseEntity.status(BAD_REQUEST).body(ex.getMessage());
     }
 }
