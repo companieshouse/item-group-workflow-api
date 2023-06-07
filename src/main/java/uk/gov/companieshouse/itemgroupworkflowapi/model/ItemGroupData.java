@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemGroupData {
@@ -18,8 +19,40 @@ public class ItemGroupData {
     private List<Item> items;
     public List<Item> getItems() {return items;}
 
+    public void setDeliveryDetails(DeliveryDetails deliveryDetails) {
+        this.deliveryDetails = deliveryDetails;
+    }
+
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public void setLinks(Links links) {
+        this.links = links;
+    }
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public void setOrderedAt(LocalDateTime orderedAt) {
+        this.orderedAt = orderedAt;
+    }
+
+    public void setOrderedBy(OrderedBy orderedBy) {
+        this.orderedBy = orderedBy;
+    }
+
+    public void setPaymentReference(String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public void setTotalOrderCost(String totalOrderCost) {
+        this.totalOrderCost = totalOrderCost;
     }
 
     @JsonProperty("links")
