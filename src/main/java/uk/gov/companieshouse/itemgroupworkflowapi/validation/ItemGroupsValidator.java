@@ -1,6 +1,8 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
@@ -10,17 +12,6 @@ import java.util.List;
 
 @Component
 public class ItemGroupsValidator {
-    private static final String COMPANY_NAME_KEY = "company_name_includes";
-    private static final String COMPANY_NUMBER_KEY = "company_number";
-    private static final String COMPANY_NAME_MISSING_MESSAGE = "missing company_name";
-    private static final String COMPANY_NUMBER_INVALID = "order number invalid";
-
-    private final ItemGroupsService itemGroupsService;
-
-    public ItemGroupsValidator(ItemGroupsService itemGroupsService) {
-        this.itemGroupsService = itemGroupsService;
-    }
-
     public List<String> validateCreateItemPayload(ItemGroupData dto) {
         // TODO - DCAC-47 - add in validation for:
         // items[].description_identifier
@@ -38,7 +29,7 @@ public class ItemGroupsValidator {
         validateCompanyNumber(dto, errors);
         validateItems(dto, errors);
         validateLinks(dto, errors);
-        validateDescriptionIdentifier(dto, errors);
+        validateItemDescriptionIdentifier(dto, errors);
         validateItemCostsProductType(dto, errors);
         validateItemKind(dto, errors);
 
@@ -83,15 +74,41 @@ public class ItemGroupsValidator {
         }
     }
 
-    private void validateDescriptionIdentifier(ItemGroupData dto, List<String> errors) {
+    private void validateItemDescriptionIdentifier(ItemGroupData dto, List<String> errors) {
         // TODO - DCAC-47 - for future validation.
+
+        for (Item item : dto.getItems()) {
+            String descriptionIdentifier = item.getDescriptionIdentifier();
+
+            if (ItemDescriptionIdentifier.getEnumValue(descriptionIdentifier) == null) {
+                errors.add("invalid item description identifier " + descriptionIdentifier);
+            }
+        }
     }
 
     private void validateItemCostsProductType(ItemGroupData dto, List<String> errors) {
         // TODO - DCAC-47 - for future validation.
+
+        for (Item item : dto.getItems()) {
+            for (ItemCosts itemCost : item.getItemCosts()) {
+                String productType = itemCost.getItemCost();
+
+                if (ItemCostProductType.getEnumValue(productType) == null) {
+                    errors.add("invalid item cost product type " + productType);
+                }
+            }
+        }
     }
 
     private void validateItemKind(ItemGroupData dto, List<String> errors) {
         // TODO - DCAC-47 - for future validation.
+
+        for (Item item : dto.getItems()) {
+            String itemKind = item.getKind();
+
+            if (ItemKind.getEnumValue(itemKind) == null) {
+                errors.add("invalid item kind " + itemKind);
+            }
+        }
     }
 }
