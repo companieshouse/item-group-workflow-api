@@ -12,102 +12,96 @@ import java.util.List;
 
 @Component
 public class ItemGroupsValidator {
-    public List<String> validateCreateItemPayload(ItemGroupData dto) {
-        // TODO - DCAC-47 - add in validation for:
-        // items[].description_identifier
-        // items[].item_costs[].product_type
-        // items[].kind
-        //
-        // The possible values are detailed in:
-        // https://developer-specs.cidev.aws.chdev.org/item-group-workflow-api/reference/itemgroups/create-item-group
-        //
+    public static final String ORDER_NUMBER_INVALID = "Items Group : order number invalid";
+    public static final String ITEM_GROUP_ITEMS_MISSING = "Items Group : items not provided";
+    public static final String LINKS_MISSING = "Items Group : links not provided";
+    public static final String LINKS_ORDER_NUMBER_MISSING = "Items Group : link order number not provided";
+    public static final String INVALID_DESCRIPTION_ID = "Items Group : invalid item description identifier : ";
+    public static final String INVALID_ITEM_COST_PRODUCT_TYPE = "Items Group : invalid item cost product type : ";
+    public static final String INVALID_ITEM_KIND = "Items Group : invalid item kind : ";
+
+    public List<String> validateCreateItemPayload(ItemGroupData itemGroupData) {
         final List<String> errors = new ArrayList<>();
 
-        if(!isOrderNumberValid(dto, errors))
+        if(!isOrderNumberValid(itemGroupData, errors))
             return errors;
 
-        validateCompanyNumber(dto, errors);
-        validateItems(dto, errors);
-        validateLinks(dto, errors);
-        validateItemDescriptionIdentifier(dto, errors);
-        validateItemCostsProductType(dto, errors);
-        validateItemKind(dto, errors);
+        validateCompanyNumber(itemGroupData, errors);
+        validateItems(itemGroupData, errors);
+        validateLinks(itemGroupData, errors);
+        validateItemDescriptionIdentifier(itemGroupData, errors);
+        validateItemCostsProductType(itemGroupData, errors);
+        validateItemKind(itemGroupData, errors);
 
         return errors;
     }
 
-    private boolean isOrderNumberValid(ItemGroupData dto, List<String> errors) {
+    private boolean isOrderNumberValid(ItemGroupData itemGroupData, List<String> errors) {
         boolean result = true;
-        String orderNumber = dto.getOrderNumber();
+        String orderNumber = itemGroupData.getOrderNumber();
 
         if (isNull(orderNumber) || orderNumber.isEmpty() || orderNumber.isBlank()) {
-            errors.add("order number invalid");
+            errors.add(ORDER_NUMBER_INVALID);
             result = false;
         }
 
         return result;
     }
 
-    private void validateCompanyNumber(ItemGroupData dto, List<String> errors) {
+    private void validateCompanyNumber(ItemGroupData itemGroupData, List<String> errors) {
     }
 
-    private void validateItems(ItemGroupData dto, List<String> errors) {
-        var items = dto.getItems();
+    private void validateItems(ItemGroupData itemGroupData, List<String> errors) {
+        List<Item> items = itemGroupData.getItems();
 
         if (isNull(items) || items.isEmpty()) {
-            errors.add("items missing");
+            errors.add(ITEM_GROUP_ITEMS_MISSING);
         }
     }
 
-    private void validateLinks(ItemGroupData dto, List<String> errors) {
-        Links links = dto.getLinks();
+    private void validateLinks(ItemGroupData itemGroupData, List<String> errors) {
+        Links links = itemGroupData.getLinks();
 
         if (isNull(links)) {
-            errors.add("links missing");
+            errors.add(LINKS_MISSING);
             return;
         }
 
         String order = links.getOrder();
 
         if (isNull(order) || order.isBlank() || order.isEmpty()) {
-            errors.add("links missing order number");
+            errors.add(LINKS_ORDER_NUMBER_MISSING);
         }
     }
 
-    private void validateItemDescriptionIdentifier(ItemGroupData dto, List<String> errors) {
-        // TODO - DCAC-47 - for future validation.
-
-        for (Item item : dto.getItems()) {
+    private void validateItemDescriptionIdentifier(ItemGroupData itemGroupData, List<String> errors) {
+        for (Item item : itemGroupData.getItems()) {
             String descriptionIdentifier = item.getDescriptionIdentifier();
 
             if (isNull(ItemDescriptionIdentifier.getEnumValue(descriptionIdentifier))) {
-                errors.add("invalid item description identifier " + descriptionIdentifier);
+                errors.add(INVALID_DESCRIPTION_ID + descriptionIdentifier);
             }
         }
     }
 
-    private void validateItemCostsProductType(ItemGroupData dto, List<String> errors) {
-        // TODO - DCAC-47 - for future validation.
-
-        for (Item item : dto.getItems()) {
+    private void validateItemCostsProductType(ItemGroupData itemGroupData, List<String> errors) {
+        for (Item item : itemGroupData.getItems()) {
             for (ItemCosts itemCost : item.getItemCosts()) {
                 String productType = itemCost.getItemCost();
 
                 if (isNull(ItemCostProductType.getEnumValue(productType))) {
-                    errors.add("invalid item cost product type " + productType);
+                    errors.add(INVALID_ITEM_COST_PRODUCT_TYPE + productType);
                 }
             }
         }
     }
 
-    private void validateItemKind(ItemGroupData dto, List<String> errors) {
-        // TODO - DCAC-47 - for future validation.
-
-        for (Item item : dto.getItems()) {
+    private void validateItemKind(ItemGroupData itemGroupData, List<String> errors) {
+        for (Item item : itemGroupData.getItems()) {
             String itemKind = item.getKind();
 
             if (isNull(ItemKind.getEnumValue(itemKind))) {
-                errors.add("invalid item kind " + itemKind);
+                errors.add(INVALID_ITEM_KIND + itemKind);
             }
         }
     }
