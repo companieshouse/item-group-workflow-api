@@ -1,7 +1,9 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
@@ -19,6 +21,8 @@ public class ItemGroupsValidator {
     public static final String INVALID_DESCRIPTION_ID = "Items Group : invalid item description identifier : ";
     public static final String INVALID_ITEM_COST_PRODUCT_TYPE = "Items Group : invalid item cost product type : ";
     public static final String INVALID_ITEM_KIND = "Items Group : invalid item kind : ";
+    public static final String COMPANY_NUMBER_MISSING = "Items Group Delivery Details : missing item company number for : ";
+    public static final String COMPANY_NAME_MISSING = "Items Group Delivery Details : missing item company name for : ";
 
     public List<String> validateCreateItemPayload(ItemGroupData itemGroupData) {
         final List<String> errors = new ArrayList<>();
@@ -26,7 +30,7 @@ public class ItemGroupsValidator {
         if(!isOrderNumberValid(itemGroupData, errors))
             return errors;
 
-        validateCompanyNumber(itemGroupData, errors);
+        validateCompanyNumberAndName(itemGroupData, errors);
         validateItems(itemGroupData, errors);
         validateLinks(itemGroupData, errors);
         validateItemDescriptionIdentifier(itemGroupData, errors);
@@ -47,8 +51,36 @@ public class ItemGroupsValidator {
 
         return result;
     }
+    //
+    // Taken from: https://developer-specs.cidev.aws.chdev.org/item-group-workflow-api/reference/itemgroups/create-item-group
+    //
+    // Optional : The company name associated with this item (mandatory field if the item relates to a specific company)
+    // Optional : The company number associated with this item (mandatory field if the item relates to a specific company)
+    //
+    // Both flagged as optional and 'mandatory field if the item relates to a specific company'
+    // Working assumption :  if delivery_details.company_name is present then both these fields are mandatory.
+    //
+    private void validateCompanyNumberAndName(ItemGroupData itemGroupData, List<String> errors) {
+        DeliveryDetails deliveryDetails = itemGroupData.getDeliveryDetails();
 
-    private void validateCompanyNumber(ItemGroupData itemGroupData, List<String> errors) {
+        if (nonNull(deliveryDetails)) {
+            String deliveryCompanyName = deliveryDetails.getCompanyName();
+
+            if (nonNull(deliveryCompanyName) && !deliveryCompanyName.isBlank() && !deliveryCompanyName.isEmpty()) {
+                for (Item item : itemGroupData.getItems()) {
+                    String companyNumber = item.getCompanyNumber();
+                    String companyName = item.getCompanyName();
+
+                    if (isNull(companyNumber) || companyNumber.isBlank() || companyNumber.isEmpty()) {
+                        errors.add(COMPANY_NUMBER_MISSING + deliveryCompanyName);
+                    }
+
+                    if (isNull(companyName) || companyName.isBlank() || companyName.isEmpty()) {
+                        errors.add(COMPANY_NAME_MISSING + deliveryCompanyName);
+                    }
+                }
+            }
+        }
     }
 
     private void validateItems(ItemGroupData itemGroupData, List<String> errors) {
