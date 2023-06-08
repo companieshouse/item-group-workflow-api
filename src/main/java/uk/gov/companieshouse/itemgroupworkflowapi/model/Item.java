@@ -19,8 +19,8 @@ public class Item {
     @JsonProperty("company_number")
     private String companyNumber;
 
-    @JsonProperty("company_reference")
-    private String companyReference;
+    @JsonProperty("customer_reference")
+    private String customerReference;
 
     @JsonProperty("description")
     private String description;
@@ -92,12 +92,12 @@ public class Item {
         this.companyNumber = companyNumber;
     }
 
-    public String getCompanyReference() {
-        return companyReference;
+    public String getCustomerReference() {
+        return customerReference;
     }
 
-    public void setCompanyReference(String companyReference) {
-        this.companyReference = companyReference;
+    public void setCustomerReference(String customerReference) {
+        this.customerReference = customerReference;
     }
 
     public String getDescription() {
