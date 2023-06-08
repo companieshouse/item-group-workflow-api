@@ -2,8 +2,6 @@ package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.List;
 public class ItemGroupData {
 
     @JsonProperty("delivery_details")
-    @Field("delivery_details")
     private DeliveryDetails deliveryDetails;
     public DeliveryDetails getDeliveryDetails() {return deliveryDetails;}
 
@@ -60,28 +57,24 @@ public class ItemGroupData {
     public Links getLinks() {return links;}
 
     @JsonProperty("order_number")
-    @Field("order_number")
     private String orderNumber;
     public String getOrderNumber() {
         return orderNumber;
     }
 
     @JsonProperty("ordered_at")
-    @Field("ordered_at")
     private LocalDateTime orderedAt;
     public LocalDateTime getOrderedAt() {
         return orderedAt;
     }
 
     @JsonProperty("ordered_by")
-    @Field("ordered_by")
     private OrderedBy orderedBy;
     public OrderedBy getOrderedBy() {
         return orderedBy;
     }
 
     @JsonProperty("payment_reference")
-    @Field("payment_reference")
     private String paymentReference;
     public String getPaymentReference() {
         return paymentReference;
@@ -94,7 +87,6 @@ public class ItemGroupData {
     }
 
     @JsonProperty("total_order_cost")
-    @Field("total_order_cost")
     private String totalOrderCost;
     public String getTotalOrderCost() {
         return totalOrderCost;

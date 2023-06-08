@@ -2,7 +2,6 @@ package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.Uri;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
@@ -26,11 +25,9 @@ public class Item {
     private String description;
 
     @JsonProperty("description_identifier")
-    @Field("description_identifier")
     private String descriptionIdentifier;
 
     @JsonProperty("description_values")
-    @Field("description_values")
     private Map descriptionValues;
 
     @JsonProperty("etag")
@@ -40,11 +37,9 @@ public class Item {
     private String id;
 
     @JsonProperty("item_costs")
-    @Field("item_costs")
     private List<ItemCosts> itemCosts;
 
     @JsonProperty("item_options")
-    @Field("item_options")
     private Map itemOptions;
 
     @JsonProperty("kind")
@@ -54,7 +49,6 @@ public class Item {
     private Links links;
 
     @JsonProperty("postage_cost")
-    @Field("postage_cost")
     private String postageCost;
 
     @JsonProperty("postal_delivery")
@@ -64,7 +58,6 @@ public class Item {
     private Integer quantity;
 
     @JsonProperty("total_item_cost")
-    @Field("total_item_cost")
     private String totalItemCost;
 
     @JsonProperty("digital_document_location")

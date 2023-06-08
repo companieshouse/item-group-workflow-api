@@ -3,7 +3,6 @@ package uk.gov.companieshouse.itemgroupworkflowapi.model;
 import com.google.gson.Gson;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 /**
@@ -21,7 +20,6 @@ public class ItemGroup {
         this.id = id;
     }
 
-    @Field("created_at")
     private LocalDateTime createdAt;
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -30,7 +28,6 @@ public class ItemGroup {
         this.createdAt = createdAt;
     }
 
-    @Field("updated_at")
     private LocalDateTime updatedAt;
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
