@@ -1,10 +1,11 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Component;
-
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsonp.JSONPModule;
 import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonValue;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 
 @Component
@@ -32,13 +33,18 @@ public class PatchMerger {
      */
     public <T> T mergePatch(final JsonMergePatch mergePatch, final T targetBean, final Class<T> beanClass) {
 
+        // TODO DCAC-78 Can we configure a single instance instead?
+        final ObjectMapper jsonpObjectMapper = JsonMapper.builder()
+                .addModule(new JSONPModule())
+                .build();
+
         // Convert the Java bean to a JSON document
-        JsonValue target = objectMapper.convertValue(targetBean, JsonValue.class);
+        JsonValue target = jsonpObjectMapper.convertValue(targetBean, JsonValue.class);
 
         // Apply the JSON Merge Patch to the JSON document
         JsonValue patched = mergePatch.apply(target);
 
         // Convert the JSON document to a Java bean and return it
-        return objectMapper.convertValue(patched, beanClass);
+        return jsonpObjectMapper.convertValue(patched, beanClass);
     }
 }

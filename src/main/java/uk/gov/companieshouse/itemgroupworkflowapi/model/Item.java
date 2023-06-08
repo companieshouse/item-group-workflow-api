@@ -3,7 +3,11 @@ package uk.gov.companieshouse.itemgroupworkflowapi.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
+import uk.gov.companieshouse.itemgroupworkflowapi.validator.Uri;
+import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +66,15 @@ public class Item {
     @JsonProperty("total_item_cost")
     @Field("total_item_cost")
     private String totalItemCost;
+
+    @JsonProperty("digital_document_location")
+    @Uri // TODO DCAC-78 Rationalise validation
+    private String digitalDocumentLocation;
+
+    @JsonProperty("status")
+    @NotNull // TODO DCAC-78 Rationalise validation
+    @ValueOfEnum(enumClass = Status.class)
+    private String status;
 
     public String getCompanyName() {
         return companyName;
@@ -189,6 +202,22 @@ public class Item {
 
     public void setTotalItemCost(String totalItemCost) {
         this.totalItemCost = totalItemCost;
+    }
+
+    public String getDigitalDocumentLocation() {
+        return digitalDocumentLocation;
+    }
+
+    public void setDigitalDocumentLocation(String digitalDocumentLocation) {
+        this.digitalDocumentLocation = digitalDocumentLocation;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

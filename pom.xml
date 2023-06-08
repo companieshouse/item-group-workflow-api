@@ -41,6 +41,7 @@
 
         <jakarta.json-api.version>2.1.2</jakarta.json-api.version>
         <jakarta.json.version>1.1.2</jakarta.json.version>
+        <jackson.version>2.15.2</jackson.version>
         <guava.version>32.0.0-jre</guava.version>
         <api-sdk-java.version>4.3.30</api-sdk-java.version>
     </properties>
@@ -88,6 +89,11 @@
             <groupId>org.eclipse.parsson</groupId>
             <artifactId>jakarta.json</artifactId>
             <version>${jakarta.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jakarta-jsonp</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
