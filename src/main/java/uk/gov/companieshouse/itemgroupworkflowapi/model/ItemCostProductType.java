@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.validation;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -38,10 +38,6 @@ public enum ItemCostProductType {
 
     public static ItemCostProductType getEnumValue(String productTypeName) {
         return productTypeName != null ? enumValues.get(productTypeName) : null;
-    }
-
-    public String getProductTypeName() {
-        return productTypeName;
     }
 
     @Override

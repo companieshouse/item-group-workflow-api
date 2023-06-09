@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.validation;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -24,10 +24,6 @@ public enum ItemKind {
 
     public static ItemKind getEnumValue(String itemKindName) {
         return itemKindName != null ? enumValues.get(itemKindName) : null;
-    }
-
-    public String getItemKindName() {
-        return itemKindName;
     }
 
     @Override

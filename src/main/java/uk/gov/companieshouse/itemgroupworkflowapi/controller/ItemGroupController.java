@@ -44,7 +44,7 @@ public class ItemGroupController {
     public ResponseEntity<Object> createItemGroup(final @RequestHeader(REQUEST_ID_HEADER_NAME) String requestId,
                                                   final @RequestBody ItemGroupData itemGroupData) {
         logRequestId(requestId);
-        List<String> errors = itemGroupsValidator.validateCreateItemPayload(itemGroupData);
+        List<String> errors = itemGroupsValidator.validateCreateItemData(itemGroupData);
 
         if (!errors.isEmpty()) {
             return buildValidationResponse(requestId, errors);
@@ -52,7 +52,7 @@ public class ItemGroupController {
 
         try {
             if (itemGroupsService.doesItemGroupExist(itemGroupData))
-                return buildItemAlreadyExistsResponse(itemGroupData);
+                return buildItemAlreadyExistsResponse(requestId, itemGroupData);
 
             final ItemGroup savedItem = itemGroupsService.createItemGroup(itemGroupData);
             return buildCreateSuccessResponse(requestId, savedItem);
@@ -98,8 +98,10 @@ public class ItemGroupController {
     /**
      * @return ResponseEntity.status(CONFLICT)
      */
-    private ResponseEntity<Object> buildItemAlreadyExistsResponse(final ItemGroupData itemGroupData) {
+    private ResponseEntity<Object> buildItemAlreadyExistsResponse(String requestId,
+                                                                  final ItemGroupData itemGroupData) {
         DataMap dataMap = new DataMap.Builder()
+            .xRequestId(requestId)
             .orderId(itemGroupData.getOrderNumber())
             .build();
 

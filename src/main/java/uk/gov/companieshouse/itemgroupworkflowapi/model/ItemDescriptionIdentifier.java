@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.validation;
+package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -24,10 +24,6 @@ public enum ItemDescriptionIdentifier {
 
     public static ItemDescriptionIdentifier getEnumValue(String identifierName) {
         return identifierName != null ? enumValues.get(identifierName) : null;
-    }
-
-    public String getIdentifierName() {
-        return identifierName;
     }
 
     @Override
