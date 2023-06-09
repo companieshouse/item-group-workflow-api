@@ -96,7 +96,7 @@ class ItemGroupControllerIntegrationTest {
     void tearDown() {
         repository.findById(ITEM_GROUP_ID).ifPresent(repository::delete);
     }
-    
+
     @Test
     @DisplayName("patch item handles valid request successfully")
     void patchItemSuccessfully() throws Exception {
@@ -145,6 +145,33 @@ class ItemGroupControllerIntegrationTest {
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_bad_status")))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("patch item patches without the digital_document_location field")
+    void patchItemPatchesWithoutDocumentLocation() throws Exception {
+
+        setUpItemGroup();
+
+        mockMvc.perform(patch(PATCH_ITEM_URI)
+                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .contentType(APPLICATION_MERGE_PATCH)
+                        .content(getJsonFromFile("patch_item_body_without_document_location")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.digital_document_location").doesNotHaveJsonPath())
+                .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("patch item rejects request with an invalid digital_document_location field value")
+    void patchItemRejectsRequestWithInvalidDocumentLocation() throws Exception {
+        mockMvc.perform(patch(PATCH_ITEM_URI)
+                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .contentType(APPLICATION_MERGE_PATCH)
+                        .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
