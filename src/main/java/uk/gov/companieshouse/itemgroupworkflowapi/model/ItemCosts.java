@@ -1,20 +1,15 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
 public class ItemCosts {
 
-    @JsonProperty("calculated_cost")
     private String calculatedCost;
 
-    @JsonProperty("discount_applied")
     private String discountApplied;
 
-    @JsonProperty("item_cost")
     private String itemCost;
 
-    @JsonProperty("product_type")
     private String productType;
 
     public String getCalculatedCost() {

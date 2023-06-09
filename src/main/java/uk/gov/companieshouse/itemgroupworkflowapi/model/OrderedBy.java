@@ -1,14 +1,11 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
 public class OrderedBy {
 
-    @JsonProperty("email")
     private String email;
 
-    @JsonProperty("id")
     private String id;
 
     public String getEmail() {

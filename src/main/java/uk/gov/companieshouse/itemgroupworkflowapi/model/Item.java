@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.Uri;
@@ -12,59 +11,41 @@ import java.util.Map;
 
 public class Item {
 
-    @JsonProperty("company_name")
     private String companyName;
 
-    @JsonProperty("company_number")
     private String companyNumber;
 
-    @JsonProperty("customer_reference")
     private String customerReference;
 
-    @JsonProperty("description")
     private String description;
 
-    @JsonProperty("description_identifier")
     private String descriptionIdentifier;
 
-    @JsonProperty("description_values")
     private Map descriptionValues;
 
-    @JsonProperty("etag")
     private String etag;
 
-    @JsonProperty("id")
     private String id;
 
-    @JsonProperty("item_costs")
     private List<ItemCosts> itemCosts;
 
-    @JsonProperty("item_options")
     private Map itemOptions;
 
-    @JsonProperty("kind")
     private String kind;
 
-    @JsonProperty("links")
     private Links links;
 
-    @JsonProperty("postage_cost")
     private String postageCost;
 
-    @JsonProperty("postal_delivery")
     private Boolean postalDelivery;
 
-    @JsonProperty("quantity")
     private Integer quantity;
 
-    @JsonProperty("total_item_cost")
     private String totalItemCost;
 
-    @JsonProperty("digital_document_location")
     @Uri // TODO DCAC-78 Rationalise validation
     private String digitalDocumentLocation;
 
-    @JsonProperty("status")
     @NotNull // TODO DCAC-78 Rationalise validation
     @ValueOfEnum(enumClass = Status.class)
     private String status;
