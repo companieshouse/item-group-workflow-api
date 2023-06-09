@@ -15,7 +15,6 @@ import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepositor
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -69,12 +68,12 @@ class ItemGroupControllerIntegrationTest {
                 .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
                 .andDo(print());
 
-        final var optional = repository.findById(ITEM_GROUP_ID);
-        assertThat(optional.isPresent(), is(true));
-        final var retrievedGroup = optional.get();
-        final var retrievedItem = (Map<String, Object>) retrievedGroup.getData().getItems().get(0);
-        assertThat(retrievedItem.get("digital_document_location"), is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
-        assertThat(retrievedItem.get("status"), is(EXPECTED_STATUS));
+        final var optionalGroup = repository.findById(ITEM_GROUP_ID);
+        assertThat(optionalGroup.isPresent(), is(true));
+        final var retrievedGroup = optionalGroup.get();
+        final var retrievedItem = retrievedGroup.getData().getItems().get(0);
+        assertThat(retrievedItem.getDigitalDocumentLocation(), is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
+        assertThat(retrievedItem.getStatus(), is(EXPECTED_STATUS));
     }
 
     @Test
