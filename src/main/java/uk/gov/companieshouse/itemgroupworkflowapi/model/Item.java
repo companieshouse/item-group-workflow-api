@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.google.gson.Gson;
+import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.Uri;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
@@ -25,6 +26,7 @@ public class Item {
 
     private String etag;
 
+    @Field("id")
     private String id;
 
     private List<ItemCosts> itemCosts;
