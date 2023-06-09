@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,11 @@ class ItemGroupsValidatorTest {
         ITEMS_LIST_SINGLE_EMPTY_ITEM.add(new Item());
     }
 
+    @AfterEach
+    void afterEach() {
+        ITEMS_LIST_SINGLE_EMPTY_ITEM.clear();
+    }
+
     @Test
     @DisplayName("fair weather with all validation triggered")
     void fairWeatherAllValidationTriggeredTest() {
@@ -45,7 +51,7 @@ class ItemGroupsValidatorTest {
         Assertions.assertEquals(0, errors.size());
     }
     /**
-     * Fair weather DTO
+     * Fair weather with all validation triggered DTO
      */
     private ItemGroupData fairWeatherAllValidationTriggeredDto() {
         final ItemGroupData dto = new ItemGroupData();
@@ -120,21 +126,6 @@ class ItemGroupsValidatorTest {
     }
 
     @Test
-    @DisplayName("links present")
-    void linksPresentTest() {
-        final ItemGroupData dto = new ItemGroupData();
-        dto.setOrderNumber(VALID_ORDER_NUMBER);
-        dto.setItems(ITEMS_LIST_SINGLE_EMPTY_ITEM);
-
-        ItemGroupsValidator validator = new ItemGroupsValidator();
-        List<String> errors = validator.validateCreateItemData(dto);
-
-        Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(errors.get(0), ItemGroupsValidator.ITEM_GROUP_LINKS_MISSING);
-    }
-
-
-    @Test
     @DisplayName("links missing")
     void missingLinksTest() {
         final ItemGroupData dto = new ItemGroupData();
@@ -171,8 +162,9 @@ class ItemGroupsValidatorTest {
         ItemGroupsValidator validator = new ItemGroupsValidator();
         List<String> errors = validator.validateCreateItemData(dto);
 
-        Assertions.assertNotEquals(0, errors.size());
+        Assertions.assertEquals(1, errors.size());
         Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.INVALID_DESCRIPTION_IDENTIFIER));
+        Assertions.assertTrue(errors.get(0).contains(INVALID_DESC_ID));
     }
     /**
      * DTO for invalid ItemDescriptionIdentifier
@@ -204,8 +196,9 @@ class ItemGroupsValidatorTest {
         ItemGroupsValidator validator = new ItemGroupsValidator();
         List<String> errors = validator.validateCreateItemData(dto);
 
-        Assertions.assertNotEquals(0, errors.size());
+        Assertions.assertEquals(1, errors.size());
         Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.INVALID_ITEM_COST_PRODUCT_TYPE));
+        Assertions.assertTrue(errors.get(0).contains(INVALID_ITEM_COST_PRODUCT_TYPE));
     }
     /**
      * DTO for invalid ItemCostProductType
@@ -244,8 +237,9 @@ class ItemGroupsValidatorTest {
         ItemGroupsValidator validator = new ItemGroupsValidator();
         List<String> errors = validator.validateCreateItemData(dto);
 
-        Assertions.assertNotEquals(0, errors.size());
+        Assertions.assertEquals(1, errors.size());
         Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.INVALID_ITEM_KIND_NAME));
+        Assertions.assertTrue(errors.get(0).contains(INVALID_ITEM_KIND));
     }
     /**
      * DTO for invalid ItemKind
@@ -281,7 +275,7 @@ class ItemGroupsValidatorTest {
         Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.COMPANY_NAME_MISSING));
     }
     /**
-     * DTO for delivery details company name present - missing item company name
+     * DTO for delivery details company name present - missing item company NAME
      */
     private ItemGroupData deliveryDetailsCompanyNamePresentAndCompanyNameMissingDto() {
         final ItemGroupData dto = new ItemGroupData();
@@ -319,7 +313,7 @@ class ItemGroupsValidatorTest {
         Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.COMPANY_NUMBER_MISSING));
     }
     /**
-     * DTO for delivery details company name present - missing item company name
+     * DTO for delivery details company name present - missing item company NUMBER
      */
     private ItemGroupData deliveryDetailsCompanyNamePresentAndCompanyNumberMissingDto() {
         final ItemGroupData dto = new ItemGroupData();

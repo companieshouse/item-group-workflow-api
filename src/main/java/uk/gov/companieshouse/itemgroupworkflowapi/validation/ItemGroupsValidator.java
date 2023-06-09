@@ -38,9 +38,7 @@ public class ItemGroupsValidator {
             validateItemDescriptionIdentifier(dto, errors);
             validateItemKind(dto, errors);
             validateItemCostsProductType(dto, errors);
-
-            // TODO finish the test for this last one!!!
-            validateCompanyNumberAndName(dto, errors);
+            validateDeliveryDetailsCompanyNumberAndName(dto, errors);
         }
 
         return errors;
@@ -88,7 +86,7 @@ public class ItemGroupsValidator {
      * Both flagged as optional and 'mandatory field if the item relates to a specific company'
      * Working assumption : if delivery_details.company_name is present then both these fields are mandatory.
      */
-    private void validateCompanyNumberAndName(ItemGroupData dto, List<String> errors) {
+    private void validateDeliveryDetailsCompanyNumberAndName(ItemGroupData dto, List<String> errors) {
         DeliveryDetails deliveryDetails = dto.getDeliveryDetails();
         if (isNull(deliveryDetails))
             return;
@@ -98,14 +96,11 @@ public class ItemGroupsValidator {
             return;
 
         for (Item item : dto.getItems()) {
-            String companyNumber = item.getCompanyNumber();
-            String companyName = item.getCompanyName();
-
-            if (StringUtils.isBlank(companyNumber)) {
+            if (StringUtils.isBlank(item.getCompanyNumber())) {
                 errors.add(COMPANY_NUMBER_MISSING + deliveryCompanyName);
             }
 
-            if (StringUtils.isBlank(companyName)) {
+            if (StringUtils.isBlank(item.getCompanyName())) {
                 errors.add(COMPANY_NAME_MISSING + deliveryCompanyName);
             }
         }
