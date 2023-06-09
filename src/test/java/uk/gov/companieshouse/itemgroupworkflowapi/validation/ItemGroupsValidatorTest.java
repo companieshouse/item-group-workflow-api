@@ -35,9 +35,9 @@ class ItemGroupsValidatorTest {
     }
 
     @Test
-    @DisplayName("fair weather")
-    void fairWeatherTest() {
-        final ItemGroupData dto = fairWeatherDto();
+    @DisplayName("fair weather with all validation triggered")
+    void fairWeatherAllValidationTriggeredTest() {
+        final ItemGroupData dto = fairWeatherAllValidationTriggeredDto();
 
         ItemGroupsValidator validator = new ItemGroupsValidator();
         List<String> errors = validator.validateCreateItemData(dto);
@@ -45,9 +45,9 @@ class ItemGroupsValidatorTest {
         Assertions.assertEquals(0, errors.size());
     }
     /**
-     * DTO for delivery details company name present - missing item company name
+     * Fair weather DTO
      */
-    private ItemGroupData fairWeatherDto() {
+    private ItemGroupData fairWeatherAllValidationTriggeredDto() {
         final ItemGroupData dto = new ItemGroupData();
         dto.setOrderNumber(VALID_ORDER_NUMBER);
 
