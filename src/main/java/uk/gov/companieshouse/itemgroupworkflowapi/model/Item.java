@@ -9,6 +9,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Item {
 
@@ -199,5 +200,51 @@ public class Item {
     @Override
     public String toString() {
         return new Gson().toJson(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(companyName, item.companyName) &&
+                Objects.equals(companyNumber, item.companyNumber) &&
+                Objects.equals(customerReference, item.customerReference) &&
+                Objects.equals(description, item.description) &&
+                Objects.equals(descriptionIdentifier, item.descriptionIdentifier) &&
+                Objects.equals(descriptionValues, item.descriptionValues) &&
+                Objects.equals(etag, item.etag) && Objects.equals(id, item.id) &&
+                Objects.equals(itemCosts, item.itemCosts) &&
+                Objects.equals(itemOptions, item.itemOptions) &&
+                Objects.equals(kind, item.kind) &&
+                Objects.equals(links, item.links) &&
+                Objects.equals(postageCost, item.postageCost) &&
+                Objects.equals(postalDelivery, item.postalDelivery) &&
+                Objects.equals(quantity, item.quantity) &&
+                Objects.equals(totalItemCost, item.totalItemCost) &&
+                Objects.equals(digitalDocumentLocation, item.digitalDocumentLocation) &&
+                Objects.equals(status, item.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(companyName,
+                companyNumber,
+                customerReference,
+                description,
+                descriptionIdentifier,
+                descriptionValues,
+                etag,
+                id,
+                itemCosts,
+                itemOptions,
+                kind,
+                links,
+                postageCost,
+                postalDelivery,
+                quantity,
+                totalItemCost,
+                digitalDocumentLocation,
+                status);
     }
 }
