@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.api.error.ApiError;
+import uk.gov.companieshouse.itemgroupworkflowapi.controller.ApiErrors;
 import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemPatchValidationDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.FieldNameConverter;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.TestMergePatchFactory;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
@@ -168,6 +170,20 @@ class PatchItemRequestValidatorTest {
                 "digital-document-location-error",
                 "digital_document_location: s3:// document-api-images-cidev/docs/" +
                         "-fsWaC-ED30jRNACt2dqNYc-lH2uODjjLhliYjryjV0/application-pdf is not a valid URI.");
+    }
+
+    @Test
+    @DisplayName("Validation error raised if unknown field specified")
+    void getValidationErrorsRaisesErrorIfUnknownFieldSpecified() throws IOException {
+        // Given
+        final String jsonWithUnknownField = "{ \"unknown\": \"unknown\" }";
+        final JsonMergePatch patch = patchFactory.patchFromJson(jsonWithUnknownField);
+
+        // When
+        final List<ApiError> errors = validatorUnderTest.getValidationErrors(patch);
+
+        // Then
+        assertThat(errors, contains(ApiErrors.ERR_JSON_PROCESSING));
     }
 
     private void expectError(final List<ApiError> errors, final String error, final String errorMessage) {
