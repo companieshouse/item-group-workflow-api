@@ -2,11 +2,7 @@ package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.Uri;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +43,8 @@ public class Item {
 
     private String totalItemCost;
 
-    @Uri // TODO DCAC-78 Rationalise validation
     private String digitalDocumentLocation;
 
-    @NotNull // TODO DCAC-78 Rationalise validation
-    @ValueOfEnum(enumClass = Status.class)
     private String status;
 
     private LocalDateTime updatedAt;

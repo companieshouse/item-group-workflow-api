@@ -109,8 +109,6 @@ public class ItemGroupController {
         final var patchedItem = patcher.mergePatch(mergePatchDocument, itemRetrieved, Item.class);
         logger.getLogger().info("Patched item = " + patchedItem);
 
-        // TODO DCAC-78 Post-merge validation - is any required?
-
         itemGroupsService.updateItem(itemGroupId, itemId, patchedItem);
 
         // TODO DCAC-78 Build response DTO and return it as body?
