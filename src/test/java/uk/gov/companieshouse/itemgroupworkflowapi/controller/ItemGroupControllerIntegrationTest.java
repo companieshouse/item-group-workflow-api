@@ -10,11 +10,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.TimestampedEntity;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
+import uk.gov.companieshouse.itemgroupworkflowapi.util.TimestampedEntityVerifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -37,6 +42,47 @@ class ItemGroupControllerIntegrationTest {
             "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
     private static final String EXPECTED_STATUS = "satisfied";
 
+    private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
+
+        private final ItemGroup group;
+
+        private ItemGroupTimeStampedEntity(ItemGroup group) {
+            this.group = group;
+        }
+
+        @Override
+        public LocalDateTime getCreatedAt() {
+            return group.getCreatedAt();
+        }
+
+        @Override
+        public LocalDateTime getUpdatedAt() {
+            return group.getUpdatedAt();
+        }
+    }
+    
+    private static final class ItemTimestampedEntity implements TimestampedEntity {
+
+        private final Item item;
+        private final ItemGroup group;
+
+        private ItemTimestampedEntity(Item item, ItemGroup group) {
+            this.item = item;
+            this.group = group;
+        }
+
+        @Override
+        public LocalDateTime getCreatedAt() {
+            // use item group's creation time as there is none on the item
+            return group.getCreatedAt();
+        }
+
+        @Override
+        public LocalDateTime getUpdatedAt() {
+            return item.getUpdatedAt();
+        }
+    }
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -50,14 +96,15 @@ class ItemGroupControllerIntegrationTest {
     void tearDown() {
         repository.findById(ITEM_GROUP_ID).ifPresent(repository::delete);
     }
-
-
-    // TODO DCAC-78 Assert updated at timestamp has been updated?
+    
     @Test
     @DisplayName("patch item handles valid request successfully")
     void patchItemSuccessfully() throws Exception {
 
         setUpItemGroup();
+
+        final var timestamps = new TimestampedEntityVerifier();
+        timestamps.start();
 
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
@@ -68,12 +115,16 @@ class ItemGroupControllerIntegrationTest {
                 .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
                 .andDo(print());
 
+        timestamps.end();
+
         final var optionalGroup = repository.findById(ITEM_GROUP_ID);
         assertThat(optionalGroup.isPresent(), is(true));
         final var retrievedGroup = optionalGroup.get();
         final var retrievedItem = retrievedGroup.getData().getItems().get(0);
         assertThat(retrievedItem.getDigitalDocumentLocation(), is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
         assertThat(retrievedItem.getStatus(), is(EXPECTED_STATUS));
+        timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(new ItemGroupTimeStampedEntity(retrievedGroup));
+        timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(new ItemTimestampedEntity(retrievedItem, retrievedGroup));
     }
 
     @Test

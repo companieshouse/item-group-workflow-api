@@ -10,7 +10,6 @@ import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepositor
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.toList;
@@ -45,7 +44,7 @@ public class ItemGroupsService {
 
     // TODO DCAC-78 Error handling
     public Item getItem(final String itemGroupId, final String itemId) {
-        final Optional<ItemGroup> itemGroup = itemGroupsRepository.findById(itemGroupId);
+        final var itemGroup = itemGroupsRepository.findById(itemGroupId);
         return itemGroup.flatMap(group -> group.getData()
                                 .getItems()
                                 .stream()
@@ -60,11 +59,13 @@ public class ItemGroupsService {
                                           final Item updatedItem) {
         final var itemGroup = itemGroupsRepository.findById(itemGroupId).get();
 
+        final var now = now();
+        updatedItem.setUpdatedAt(now);
         final var items = itemGroup.getData().getItems();
         final var updatedItems = items.stream()
                 .map(item -> item.getId().equals(itemId) ? updatedItem : item)
                 .collect(toList());
-        itemGroup.setUpdatedAt(now());
+        itemGroup.setUpdatedAt(now);
         itemGroup.getData().setItems(updatedItems);
 
         itemGroupsRepository.save(itemGroup);

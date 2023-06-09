@@ -7,6 +7,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.validator.Uri;
 import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,6 +53,8 @@ public class Item {
     @NotNull // TODO DCAC-78 Rationalise validation
     @ValueOfEnum(enumClass = Status.class)
     private String status;
+
+    private LocalDateTime updatedAt;
 
     public String getCompanyName() {
         return companyName;
@@ -195,6 +198,14 @@ public class Item {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
