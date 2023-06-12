@@ -44,8 +44,7 @@ public class ItemGroupsService {
     }
 
     public Item getItem(final String itemGroupId, final String itemId) {
-        final var itemGroup = itemGroupsRepository.findById(itemGroupId)
-                                                  .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
+        final var itemGroup = findGroup(itemGroupId, itemId);
         return itemGroup.getData()
                         .getItems()
                         .stream()
@@ -54,20 +53,20 @@ public class ItemGroupsService {
                         .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
     }
 
-    // TODO DCAC-78 Error handling
     public Item updateItem(final String itemGroupId,
-                                          final String itemId,
-                                          final Item updatedItem) {
-        final var itemGroup = itemGroupsRepository.findById(itemGroupId).get();
+                           final String itemId,
+                           final Item updatedItem) {
+        final var itemGroup = findGroup(itemGroupId, itemId);
 
         final var now = now();
         updatedItem.setUpdatedAt(now);
-        final var items = itemGroup.getData().getItems();
+        final var data = itemGroup.getData();
+        final var items = data.getItems();
         final var updatedItems = items.stream()
-                .map(item -> item.getId().equals(itemId) ? updatedItem : item)
-                .collect(toList());
+                                      .map(item -> item.getId().equals(itemId) ? updatedItem : item)
+                                      .collect(toList());
         itemGroup.setUpdatedAt(now);
-        itemGroup.getData().setItems(updatedItems);
+        data.setItems(updatedItems);
 
         itemGroupsRepository.save(itemGroup);
 
@@ -97,5 +96,10 @@ public class ItemGroupsService {
         final String error = "Not able to find item " + itemId + " in group " + itemGroupId + ".";
         logger.getLogger().error(error);
         return new ItemNotFoundException(error);
+    }
+
+    private ItemGroup findGroup(final String itemGroupId, final String itemId) {
+        return itemGroupsRepository.findById(itemGroupId)
+                .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
     }
 }
