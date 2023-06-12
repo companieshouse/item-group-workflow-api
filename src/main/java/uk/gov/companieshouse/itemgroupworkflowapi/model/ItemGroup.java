@@ -37,7 +37,7 @@ public class ItemGroup {
     }
 
     private ItemGroupData data  = new ItemGroupData();
-    public final ItemGroupData getData() {
+    public ItemGroupData getData() {
         return data;
     }
     public void setData(ItemGroupData data) {

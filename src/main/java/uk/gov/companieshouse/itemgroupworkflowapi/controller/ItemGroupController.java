@@ -98,7 +98,7 @@ public class ItemGroupController {
         if (!errors.isEmpty()) {
             // TODO DCAC-78 Use structured logging
             //  logErrorsWithStatus(logMap, errors, BAD_REQUEST);
-            logger.getLogger().error("update item request had validation errors " + errors);
+            logger.getLogger().error("Patch item request had validation errors " + errors);
             return ApiErrors.errorResponse(BAD_REQUEST, errors);
         }
 

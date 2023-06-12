@@ -35,7 +35,10 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APP
 class ItemGroupControllerIntegrationTest {
 
     private static final String ITEM_GROUP_ID = "IG-922016-860413";
-    private static final String PATCH_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/111-222-333";
+    private static final String ITEM_ID = "111-222-333";
+    private static final String UNKNOWN_ITEM_ID = "111-222-4444";
+    private static final String PATCH_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/" + ITEM_ID;
+    private static final String PATCH_UNKNOWN_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/" + UNKNOWN_ITEM_ID;
     private static final String REQUEST_ID = "WmuRTepX70C635NKm5rbYTciSsOR";
 
     private static final String EXPECTED_DIGITAL_DOCUMENT_LOCATION =
@@ -173,6 +176,17 @@ class ItemGroupControllerIntegrationTest {
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
                 .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("patch item reports item not found when it cannot find it")
+    void patchItemReportsNotFoundWhenCannotFindItem() throws Exception {
+        mockMvc.perform(patch(PATCH_UNKNOWN_ITEM_URI)
+                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .contentType(APPLICATION_MERGE_PATCH)
+                        .content(getJsonFromFile("patch_item_body")))
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 

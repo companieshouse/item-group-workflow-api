@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemNotFoundException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
@@ -42,15 +43,15 @@ public class ItemGroupsService {
         return savedItemGroup;
     }
 
-    // TODO DCAC-78 Error handling
     public Item getItem(final String itemGroupId, final String itemId) {
-        final var itemGroup = itemGroupsRepository.findById(itemGroupId);
-        return itemGroup.flatMap(group -> group.getData()
-                                .getItems()
-                                .stream()
-                                .filter(item -> item.getId().equals(itemId))
-                                .findFirst())
-                        .get();
+        final var itemGroup = itemGroupsRepository.findById(itemGroupId)
+                                                  .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
+        return itemGroup.getData()
+                        .getItems()
+                        .stream()
+                        .filter(item -> item.getId().equals(itemId))
+                        .findFirst()
+                        .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
     }
 
     // TODO DCAC-78 Error handling
@@ -89,5 +90,12 @@ public class ItemGroupsService {
         String rawId = rand + time;
         String[] tranId = rawId.split("(?<=\\G.{6})");
         return ITEM_GROUP_CREATE_ID_PREFIX + String.join("-", tranId);
+    }
+
+    private ItemNotFoundException itemNotFound(final String itemGroupId, final String itemId) {
+        // TODO DCAC-78 Structured logging
+        final String error = "Not able to find item " + itemId + " in group " + itemGroupId + ".";
+        logger.getLogger().error(error);
+        return new ItemNotFoundException(error);
     }
 }

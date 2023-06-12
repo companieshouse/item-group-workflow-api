@@ -50,13 +50,93 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
+					"raw": "{{base_url}}/item-groups/IG-268916-863247/items/111-222-333",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"item-groups",
-						"IG-954916-860369",
+						"IG-268916-863247",
+						"items",
+						"111-222-333"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch item unknown item",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/merge-patch+json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"satisfied\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/item-groups/IG-268916-863247/items/unknown",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-groups",
+						"IG-268916-863247",
+						"items",
+						"unknown"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch item unknown item group",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/merge-patch+json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"satisfied\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/item-groups/unknown/items/111-222-333",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"item-groups",
+						"unknown",
 						"items",
 						"111-222-333"
 					]
