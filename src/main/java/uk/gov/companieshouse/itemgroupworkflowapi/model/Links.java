@@ -6,12 +6,22 @@ public class Links {
 
     private String order;
 
+    private String self;
+
     public String getOrder() {
         return order;
     }
 
     public void setOrder(String order) {
         this.order = order;
+    }
+
+    public String getSelf() {
+        return self;
+    }
+
+    public void setSelf(String self) {
+        this.self = self;
     }
 
     @Override

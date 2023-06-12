@@ -20,10 +20,14 @@ public class ItemGroupsService {
     private static String ITEM_GROUP_CREATE_ID_PREFIX = "IG-";
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
+    private final LinksGeneratorService linksGenerator;
 
-    public ItemGroupsService(LoggingUtils logger, ItemGroupsRepository itemGroupsRepository) {
+    public ItemGroupsService(LoggingUtils logger,
+                             ItemGroupsRepository itemGroupsRepository,
+                             LinksGeneratorService linksGenerator) {
         this.logger = logger;
         this.itemGroupsRepository = itemGroupsRepository;
+        this.linksGenerator = linksGenerator;
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
@@ -37,6 +41,7 @@ public class ItemGroupsService {
         itemGroup.setId(itemGroupId);
 
         setCreationTimeStamp(itemGroup);
+        itemGroupData.setLinks(linksGenerator.generateItemGroupLinks(itemGroupData.getLinks().getOrder(), itemGroupId));
         itemGroup.setData(itemGroupData);
 
         final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
