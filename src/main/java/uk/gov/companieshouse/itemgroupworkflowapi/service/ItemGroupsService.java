@@ -41,7 +41,7 @@ public class ItemGroupsService {
         itemGroup.setId(itemGroupId);
 
         setCreationTimeStamp(itemGroup);
-        generateLinks(itemGroupData, itemGroupId);
+        linksGenerator.regenerateLinks(itemGroupData, itemGroupId);
         itemGroup.setData(itemGroupData);
 
         final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
@@ -108,11 +108,4 @@ public class ItemGroupsService {
                 .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
     }
 
-    private void generateLinks(final ItemGroupData itemGroupData, final String itemGroupId) {
-        itemGroupData.setLinks(linksGenerator.generateItemGroupLinks(itemGroupData.getLinks().getOrder(), itemGroupId));
-        itemGroupData.getItems().stream().forEach(item ->
-            item.setLinks(
-                    linksGenerator.generateItemLinks(item.getLinks().getOriginalItem(), itemGroupId, item.getId()))
-        );
-    }
 }
