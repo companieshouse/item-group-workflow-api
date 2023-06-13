@@ -111,8 +111,6 @@ public class ItemGroupController {
 
         itemGroupsService.updateItem(itemGroupId, itemId, patchedItem);
 
-        // TODO DCAC-78 Build response DTO and return it as body?
-
         return ResponseEntity.ok().body(patchedItem);
     }
 
