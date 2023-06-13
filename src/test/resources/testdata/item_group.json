@@ -40,7 +40,7 @@
           "delivery_method" : "collection",
           "delivery_timescale" : "standard"
         },
-        "kind" : "order",
+        "kind" : "item#certified-copy",
         "links" : {
           "original_item" : "/orderable/certified-copies/CCD-768116-517930",
           "self" : "/item-groups/IG-256616-866507/items/CCD-768116-517930"
