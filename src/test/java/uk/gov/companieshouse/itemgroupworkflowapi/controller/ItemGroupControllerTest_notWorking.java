@@ -31,9 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-//@ActiveProfiles("test")
 class ItemGroupControllerTest_notWorking {
     private static final String VALID_ORDER_NUMBER = "12345";
     private static final String VALID_DELIVERY_COMPANY_NAME = "Delivery Test Company";

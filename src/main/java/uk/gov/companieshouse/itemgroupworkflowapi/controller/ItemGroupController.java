@@ -28,7 +28,9 @@ public class ItemGroupController {
     private final ItemGroupsService itemGroupsService;
     private final ItemGroupsValidator itemGroupsValidator;
 
-    public ItemGroupController(LoggingUtils logger, ItemGroupsService itemGroupsService, ItemGroupsValidator itemGroupsValidator) {
+    public ItemGroupController(LoggingUtils logger,
+                               ItemGroupsService itemGroupsService,
+                               ItemGroupsValidator itemGroupsValidator) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
         this.itemGroupsValidator = itemGroupsValidator;
