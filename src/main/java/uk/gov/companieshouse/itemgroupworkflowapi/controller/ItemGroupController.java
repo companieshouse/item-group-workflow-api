@@ -21,6 +21,7 @@ import uk.gov.companieshouse.logging.util.DataMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -90,24 +91,23 @@ public class ItemGroupController {
             final @PathVariable("itemId") String itemId,
             final @RequestHeader(REQUEST_ID_HEADER_NAME) String requestId) {
 
-        // TODO DCAC-78 Use structured logging
         logger.getLogger().info("patchItem(" + mergePatchDocument +
-                ", " + itemGroupId + ", " + itemId + ", " + requestId + ") called.");
+                ", " + itemGroupId + ", " + itemId + ", " + requestId + ") called.",
+                getLogMap(itemGroupId, itemId, requestId));
 
         final List<ApiError> errors = patchItemRequestValidator.getValidationErrors(mergePatchDocument);
         if (!errors.isEmpty()) {
-            // TODO DCAC-78 Use structured logging
-            //  logErrorsWithStatus(logMap, errors, BAD_REQUEST);
-            logger.getLogger().error("Patch item request had validation errors " + errors);
+            logger.getLogger().error("Patch item request had validation errors " + errors,
+                    getLogMap(itemGroupId, itemId, requestId, errors));
             return ApiErrors.errorResponse(BAD_REQUEST, errors);
         }
 
-        // TODO DCAC-78 Use structured logging
         final var itemRetrieved = itemGroupsService.getItem(itemGroupId, itemId);
-        logger.getLogger().info("Retrieved item to be patched = " + itemRetrieved);
+        logger.getLogger().info("Retrieved item to be patched = " + itemRetrieved,
+                getLogMap(itemGroupId, itemId, requestId));
 
         final var patchedItem = patcher.mergePatch(mergePatchDocument, itemRetrieved, Item.class);
-        logger.getLogger().info("Patched item = " + patchedItem);
+        logger.getLogger().info("Patched item = " + patchedItem, getLogMap(itemGroupId, itemId, requestId));
 
         itemGroupsService.updateItem(itemGroupId, itemId, patchedItem);
 
@@ -159,4 +159,27 @@ public class ItemGroupController {
         logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX + ex.getMessage(), map);
         return response;
     }
+
+    private Map<String, Object> getLogMap(final String itemGroupId, final String itemId, final String requestId) {
+        return new DataMap.Builder()
+                .itemGroupId(itemGroupId)
+                .itemId(itemId)
+                .requestId(requestId)
+                .build()
+                .getLogMap();
+    }
+
+    private Map<String, Object> getLogMap(final String itemGroupId,
+                                          final String itemId,
+                                          final String requestId,
+                                          final List<ApiError> errors) {
+        return new DataMap.Builder()
+                .itemGroupId(itemGroupId)
+                .itemId(itemId)
+                .requestId(requestId)
+                .errors(errors.stream().map(ApiError::toString).collect(Collectors.toList()))
+                .build()
+                .getLogMap();
+    }
+
 }

@@ -7,12 +7,15 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
+import uk.gov.companieshouse.logging.util.DataMap;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Map;
 
 import static java.time.LocalDateTime.now;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -97,15 +100,23 @@ public class ItemGroupsService {
     }
 
     private ItemNotFoundException itemNotFound(final String itemGroupId, final String itemId) {
-        // TODO DCAC-78 Structured logging
         final String error = "Not able to find item " + itemId + " in group " + itemGroupId + ".";
-        logger.getLogger().error(error);
+        logger.getLogger().error(error, getLogMap(itemGroupId, itemId, error));
         return new ItemNotFoundException(error);
     }
 
     private ItemGroup findGroup(final String itemGroupId, final String itemId) {
         return itemGroupsRepository.findById(itemGroupId)
                 .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
+    }
+
+    private Map<String, Object> getLogMap(final String itemGroupId, final String itemId, final String error) {
+        return new DataMap.Builder()
+                .itemGroupId(itemGroupId)
+                .itemId(itemId)
+                .errors(singletonList(error))
+                .build()
+                .getLogMap();
     }
 
 }
