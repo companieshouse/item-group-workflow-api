@@ -2,6 +2,7 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -39,6 +40,27 @@ public class LinksGeneratorService {
         final Links links = new Links();
         links.setOrder(orderPath);
         links.setSelf(pathToSelf + "/" + itemGroupId);
+        return links;
+    }
+
+    /**
+     * Generates the links for the item identified.
+     * @param originalItem the original partial URI for the item
+     * @param itemId the ID for the item
+     * @return the appropriate {@link ItemLinks}
+     */
+    public ItemLinks generateItemLinks(final String originalItem,
+                                       final String itemGroupId,
+                                       final String itemId) {
+        if (isBlank(itemGroupId)) {
+            throw new IllegalArgumentException("Item Group ID not populated!");
+        }
+        if (isBlank(itemId)) {
+            throw new IllegalArgumentException("Item ID not populated!");
+        }
+        final ItemLinks links = new ItemLinks();
+        links.setOriginalItem(originalItem);
+        links.setSelf(pathToSelf + "/" + itemGroupId + "/items/" +itemId);
         return links;
     }
 

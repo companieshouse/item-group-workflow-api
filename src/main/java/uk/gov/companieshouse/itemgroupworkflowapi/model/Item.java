@@ -33,7 +33,7 @@ public class Item {
 
     private String kind;
 
-    private Links links;
+    private ItemLinks links;
 
     private String postageCost;
 
@@ -137,11 +137,11 @@ public class Item {
         this.kind = kind;
     }
 
-    public Links getLinks() {
+    public ItemLinks getLinks() {
         return links;
     }
 
-    public void setLinks(Links links) {
+    public void setLinks(ItemLinks links) {
         this.links = links;
     }
 

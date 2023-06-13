@@ -42,7 +42,8 @@
         },
         "kind" : "order",
         "links" : {
-          "order" : "/orderable/certificates/mycert-123"
+          "original_item" : "/orderable/certified-copies/CCD-768116-517930",
+          "self" : "/item-groups/IG-256616-866507/items/CCD-768116-517930"
         },
         "postage_cost" : "0",
         "postal_delivery" : true,
@@ -51,9 +52,10 @@
       }
     ],
     "links" : {
-      "order" : "/orderable/certificates/mycert-123"
+      "order" : "/orders/ORD-065216-517934",
+      "self" : "/item-groups/IG-256616-866507"
     },
-    "order_number" : "123",
+    "order_number" : "ORD-065216-517934",
     "ordered_at" : ISODate("2023-05-31T14:03:57.000Z"),
     "ordered_by" : {
       "_id" : "111-222-333",
