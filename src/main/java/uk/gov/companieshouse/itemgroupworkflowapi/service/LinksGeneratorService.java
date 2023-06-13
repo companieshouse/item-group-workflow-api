@@ -35,7 +35,7 @@ public class LinksGeneratorService {
      */
     public void regenerateLinks(final ItemGroupData itemGroupData, final String itemGroupId) {
         itemGroupData.setLinks(generateItemGroupLinks(itemGroupData.getLinks().getOrder(), itemGroupId));
-        itemGroupData.getItems().stream().forEach(item ->
+        itemGroupData.getItems().forEach(item ->
                 item.setLinks(generateItemLinks(item.getLinks().getOriginalItem(), itemGroupId, item.getId()))
         );
     }
