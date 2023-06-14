@@ -203,6 +203,16 @@ class ItemGroupControllerIntegrationTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("patch item patches without a Content-Type=application/merge-patch+json header value ")
+    void patchItemRejectsRequestWithoutApplicationMergePatchContentType() throws Exception {
+        mockMvc.perform(patch(PATCH_ITEM_URI)
+                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .content(getJsonFromFile("patch_item_body")))
+                .andExpect(status().isUnsupportedMediaType())
+                .andDo(print());
+    }
+
     private void setUpItemGroup() throws IOException {
         final String itemGroup = getJsonFromFile("item_group");
         mongoTemplate.insert(Document.parse(itemGroup), "item_groups");
