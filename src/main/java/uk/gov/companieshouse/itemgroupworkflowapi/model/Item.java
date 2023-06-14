@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -7,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.JSON_DATE_TIME_FORMAT;
 
 public class Item {
 
@@ -47,6 +50,7 @@ public class Item {
 
     private String status;
 
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=JSON_DATE_TIME_FORMAT)
     private LocalDateTime updatedAt;
 
     public String getCompanyName() {
