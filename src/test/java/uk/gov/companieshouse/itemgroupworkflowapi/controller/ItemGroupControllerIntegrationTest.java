@@ -23,8 +23,10 @@ import java.time.LocalDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
@@ -138,6 +140,7 @@ class ItemGroupControllerIntegrationTest {
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_without_status")))
                 .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("status: must not be null")))
                 .andDo(print());
     }
 
@@ -149,6 +152,9 @@ class ItemGroupControllerIntegrationTest {
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_bad_status")))
                 .andExpect(status().isBadRequest())
+                .andExpect(
+                        content().string(containsString(
+                                "status: must be one of [pending, processing, satisfied, cancelled, failed]")))
                 .andDo(print());
     }
 
@@ -176,6 +182,12 @@ class ItemGroupControllerIntegrationTest {
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
                 .andExpect(status().isBadRequest())
+                .andExpect(
+                        content().string(containsString(
+                                "digital_document_location: " +
+                                         "s3:// document-api-images-cidev/docs/" +
+                                         "--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf " +
+                                         "is not a valid URI.")))
                 .andDo(print());
     }
 
@@ -187,6 +199,7 @@ class ItemGroupControllerIntegrationTest {
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isNotFound())
+                .andExpect(content().string("")) // NOTE actual response does have meaningful content
                 .andDo(print());
     }
 
