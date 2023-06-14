@@ -52,15 +52,10 @@ class ItemGroupControllerTest {
     private Logger logger;
 
     @Mock
-    private HttpServletRequest request;
-
-    @Mock
     private ItemGroupsValidator requestValidator;
 
     @Mock
     private ItemGroupsService itemGroupsService;
-
-    private ItemGroupsRepository itemGroupsRepository;
 
     @Test
     @DisplayName("create item group succeeds return 201 CREATED")
@@ -135,7 +130,6 @@ class ItemGroupControllerTest {
         final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
-        List<String> xxx = Arrays.asList(EXAMPLE_ERROR_MESSAGE);
 
         when(itemGroupsService.doesItemGroupExist(itemGroupData)).thenReturn(true);
         when(loggingUtils.getLogger()).thenReturn(logger);
@@ -183,7 +177,7 @@ class ItemGroupControllerTest {
         return dto;
     }
     /**
-     * Invalid DTO. No validation criteria met, at all...
+     * Invalid DTO. No validation criteria met, at all...a reject, an outsider, probably had a very troubled upbringing...
      */
     private ItemGroupData invalidItemGroupsDtoMissingAllValidationCriteria() {
         final ItemGroupData dto = new ItemGroupData();
