@@ -40,9 +40,6 @@ class ItemGroupControllerTest {
     private static final String VALID_DELIVERY_COMPANY_NAME = "Delivery Test Company";
     private static final String VALID_ITEM_COMPANY_NAME = "Item Test Company";
     private static final String VALID_COMPANY_NUMBER = "IG-12345-67890";
-    private static final String INVALID_DESC_ID = "XXX";
-    private static final String INVALID_ITEM_KIND = "XXX";
-    private static final String INVALID_ITEM_COST_PRODUCT_TYPE = "XXX";
     private static final String EXAMPLE_ERROR_MESSAGE = "Example error message";
 
     @InjectMocks
