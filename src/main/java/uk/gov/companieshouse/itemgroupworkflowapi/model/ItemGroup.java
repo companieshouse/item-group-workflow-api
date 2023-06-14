@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ItemGroup {
     @Id
     private String id;
-    public final String getId() {
+    public String getId() {
         return id;
     }
     public void setId(final String id){

@@ -76,9 +76,9 @@ public class ItemGroupsService {
         itemGroup.setUpdatedAt(now);
         data.setItems(updatedItems);
 
-        itemGroupsRepository.save(itemGroup);
+        final var savedItemGroup = itemGroupsRepository.save(itemGroup);
 
-        return updatedItem;
+        return getSavedItem(savedItemGroup, itemId);
     }
 
 
@@ -108,6 +108,13 @@ public class ItemGroupsService {
     private ItemGroup findGroup(final String itemGroupId, final String itemId) {
         return itemGroupsRepository.findById(itemGroupId)
                 .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
+    }
+
+    private Item getSavedItem(final ItemGroup savedItemGroup, final String itemId) {
+        return savedItemGroup.getData().getItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> itemNotFound(savedItemGroup.getId(), itemId));
     }
 
     private Map<String, Object> getLogMap(final String itemGroupId, final String itemId, final String error) {

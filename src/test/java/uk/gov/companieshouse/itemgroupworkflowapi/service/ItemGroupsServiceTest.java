@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -94,6 +95,7 @@ class ItemGroupsServiceTest {
     void updateItemUpdatesItemSuccessfully() {
 
         setUpItemWithId("IT1");
+        when(itemGroupsRepository.save(group)).thenReturn(group);
 
         final var savedItem = serviceUnderTest.updateItem("IG1", "IT1", item);
         verifyItemAndGroupUpdated(savedItem);
@@ -111,24 +113,26 @@ class ItemGroupsServiceTest {
         assertThat(exception.getMessage(), Matchers.is("Not able to find item IT1 in group IG1."));
     }
 
-    // In reality, it is fine that no exception is thrown in this case. An exception will already have
-    // been thrown from the getItem() call that precedes this one in the controller.
     @Test
-    @DisplayName("updateItem() does not throw ItemNotFoundException for unknown item")
-    void updateItemDoesNotThrowItemNotFoundExceptionForUnknownItem() {
+    @DisplayName("updateItem() throws ItemNotFoundException for unknown item")
+    void updateItemThrowsItemNotFoundExceptionForUnknownItem() {
 
         setUpItemWithId("unknown");
+        when(itemGroupsRepository.save(group)).thenReturn(group);
+        when(group.getId()).thenReturn("IG1");
+        when(loggingUtils.getLogger()).thenReturn(logger);
 
-        final var savedItem = serviceUnderTest.updateItem("IG1", "IT1", item);
-        verifyItemAndGroupUpdated(savedItem);
+        final var exception = assertThrows(ItemNotFoundException.class,
+                () -> serviceUnderTest.updateItem("IG1", "IT1", item));
+        assertThat(exception.getMessage(), Matchers.is("Not able to find item IT1 in group IG1."));
     }
 
     private void verifyItemAndGroupUpdated(final Item savedItem) {
         assertThat(savedItem, is(item));
         verify(item).setUpdatedAt(any(LocalDateTime.class));
-        verify(item).getId();
+        verify(item, times(2)).getId();
         verify(group).setUpdatedAt(any(LocalDateTime.class));
-        verify(group).getData();
+        verify(group, times(2)).getData();
         verify(itemGroupData).setItems(anyList());
     }
 
