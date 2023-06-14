@@ -16,7 +16,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMerger;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.PatchItemRequestValidator;
+import uk.gov.companieshouse.itemgroupworkflowapi.validation.PatchItemRequestValidator;
 import uk.gov.companieshouse.logging.util.DataMap;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.validator;
+package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonMergePatch;

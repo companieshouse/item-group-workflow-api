@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.validator;
+package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
 public enum Status {
 

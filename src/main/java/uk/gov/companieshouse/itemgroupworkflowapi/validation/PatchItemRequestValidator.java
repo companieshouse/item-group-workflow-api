@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.validator;
+package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

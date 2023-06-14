@@ -16,8 +16,8 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static uk.gov.companieshouse.itemgroupworkflowapi.validator.Status.PENDING;
-import static uk.gov.companieshouse.itemgroupworkflowapi.validator.Status.SATISFIED;
+import static uk.gov.companieshouse.itemgroupworkflowapi.validation.Status.PENDING;
+import static uk.gov.companieshouse.itemgroupworkflowapi.validation.Status.SATISFIED;
 
 
 /**

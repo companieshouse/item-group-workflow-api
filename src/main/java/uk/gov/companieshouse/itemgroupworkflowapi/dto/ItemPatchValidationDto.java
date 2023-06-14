@@ -2,9 +2,9 @@ package uk.gov.companieshouse.itemgroupworkflowapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.Status;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.Uri;
-import uk.gov.companieshouse.itemgroupworkflowapi.validator.ValueOfEnum;
+import uk.gov.companieshouse.itemgroupworkflowapi.validation.Status;
+import uk.gov.companieshouse.itemgroupworkflowapi.validation.Uri;
+import uk.gov.companieshouse.itemgroupworkflowapi.validation.ValueOfEnum;
 
 import javax.validation.constraints.NotNull;
 

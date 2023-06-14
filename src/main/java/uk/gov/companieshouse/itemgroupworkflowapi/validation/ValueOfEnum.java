@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.itemgroupworkflowapi.validator;
+package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -17,9 +17,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = UriValidator.class)
-public @interface Uri {
-    String message() default "URI is invalid";
+@Constraint(validatedBy = ValueOfEnumValidator.class)
+public @interface ValueOfEnum {
+    Class<? extends Enum> enumClass();
+    String message() default "must be any of enum {enumClass}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
