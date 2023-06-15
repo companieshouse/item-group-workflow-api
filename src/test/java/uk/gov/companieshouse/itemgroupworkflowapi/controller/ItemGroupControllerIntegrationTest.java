@@ -32,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
 
+/**
+ * Integration tests the {@link ItemGroupController} class.
+ */
 @AutoConfigureMockMvc
 @SpringBootTest
 class ItemGroupControllerIntegrationTest {

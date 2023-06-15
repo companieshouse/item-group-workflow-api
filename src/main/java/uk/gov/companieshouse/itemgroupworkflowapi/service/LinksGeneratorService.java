@@ -9,7 +9,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * Service that generates the links for the item ID specified.
+ * Service that generates the links for the item group/item identified.
  */
 @Service
 public class LinksGeneratorService {

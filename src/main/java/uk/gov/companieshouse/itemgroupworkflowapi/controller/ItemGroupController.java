@@ -84,6 +84,15 @@ public class ItemGroupController {
         }
     }
 
+    /**
+     * Patches a partial update to the item group item identified. Requires the presence of a
+     * <code>Content-Type=application/merge-patch+json</code> header in the request.
+     * @param mergePatchDocument the JSON payload detailing the new field values for the item
+     * @param itemGroupId identifies the item group
+     * @param itemId identifies the item within the group
+     * @param requestId the <code>X-Request-ID</code> header value used to identify each request in logs
+     * @return the updated item, or an error response
+     */
     @PatchMapping(path = PATCH_ITEM_URI, consumes = APPLICATION_MERGE_PATCH_VALUE)
     public ResponseEntity<Object> patchItem(
             final @RequestBody JsonMergePatch mergePatchDocument,
