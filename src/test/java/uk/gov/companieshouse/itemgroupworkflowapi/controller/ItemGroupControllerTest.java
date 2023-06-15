@@ -24,19 +24,17 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
-import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
 import uk.gov.companieshouse.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class ItemGroupControllerTest {
-    private static final String xRequestId = "12345";
+    private static final String X_REQUEST_ID = "12345";
     private static final String VALID_ORDER_NUMBER = "lucky string";
     private static final String VALID_DELIVERY_COMPANY_NAME = "Delivery Test Company";
     private static final String VALID_ITEM_COMPANY_NAME = "Item Test Company";
@@ -70,7 +68,7 @@ class ItemGroupControllerTest {
         //
         // Verify HttpStatus.CREATED returned.
         //
-        final ResponseEntity<Object> response = controller.createItemGroup(xRequestId, itemGroupData);
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
         //
         // ItemGroup
@@ -112,7 +110,7 @@ class ItemGroupControllerTest {
         when(requestValidator.validateCreateItemData(itemGroupData)).thenReturn(Arrays.asList(EXAMPLE_ERROR_MESSAGE));
         when(loggingUtils.getLogger()).thenReturn(logger);
 
-        final ResponseEntity<Object> response = controller.createItemGroup(xRequestId, itemGroupData);
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
 
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
@@ -132,7 +130,7 @@ class ItemGroupControllerTest {
         when(itemGroupsService.doesItemGroupExist(itemGroupData)).thenReturn(true);
         when(loggingUtils.getLogger()).thenReturn(logger);
 
-        final ResponseEntity<Object> response = controller.createItemGroup(xRequestId, itemGroupData);
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
 
         assertThat(response.getStatusCode(), is(HttpStatus.CONFLICT));
 
@@ -175,7 +173,7 @@ class ItemGroupControllerTest {
         return dto;
     }
     /**
-     * Invalid DTO. No validation criteria met, at all...a reject, an outsider, probably had a very troubled upbringing...
+     * Invalid DTO. No validation criteria met.
      */
     private ItemGroupData invalidItemGroupsDtoMissingAllValidationCriteria() {
         final ItemGroupData dto = new ItemGroupData();
