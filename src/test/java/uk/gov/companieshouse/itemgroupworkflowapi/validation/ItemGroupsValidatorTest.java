@@ -51,7 +51,7 @@ class ItemGroupsValidatorTest {
         Assertions.assertEquals(0, errors.size());
     }
     /**
-     * Fair weather with all validation triggered DTO
+     * This DTO has all the mandatory and optional attributes present that will trigger all validation checks.
      */
     private ItemGroupData fairWeatherAllValidationTriggeredDto() {
         final ItemGroupData dto = new ItemGroupData();
