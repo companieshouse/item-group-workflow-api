@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
+@TestConfiguration
 public class ItemGroupController {
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
     public static final String REQUEST_ID_PREFIX = "create_item_group: request_id";
@@ -42,7 +45,9 @@ public class ItemGroupController {
      * Item group already exists check performed, if already exists return CONFLICT<p>
      * Item group created, on success return CREATED, on error return BAD_REQUEST<p>
      */
-    @PostMapping("${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}")
+    @PostMapping(name = "${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createItemGroup(final @RequestHeader(REQUEST_ID_HEADER_NAME) String requestId,
                                                   final @RequestBody ItemGroupData itemGroupData) {
         logRequestId(requestId);
