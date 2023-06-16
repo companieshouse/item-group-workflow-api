@@ -24,18 +24,17 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
-import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
 import uk.gov.companieshouse.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class ItemGroupControllerTest {
+    private static final String X_REQUEST_ID = "12345";
     private static final String VALID_ORDER_NUMBER = "lucky string";
     private static final String VALID_DELIVERY_COMPANY_NAME = "Delivery Test Company";
     private static final String VALID_ITEM_COMPANY_NAME = "Item Test Company";
@@ -52,20 +51,14 @@ class ItemGroupControllerTest {
     private Logger logger;
 
     @Mock
-    private HttpServletRequest request;
-
-    @Mock
     private ItemGroupsValidator requestValidator;
 
     @Mock
     private ItemGroupsService itemGroupsService;
 
-    private ItemGroupsRepository itemGroupsRepository;
-
     @Test
     @DisplayName("create item group succeeds return 201 CREATED")
     void createItemGroupReturnCreated201()  throws Exception {
-        final String requestId = "12345";
         final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
@@ -75,7 +68,7 @@ class ItemGroupControllerTest {
         //
         // Verify HttpStatus.CREATED returned.
         //
-        final ResponseEntity<Object> response = controller.createItemGroup(requestId, itemGroupData);
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
         //
         // ItemGroup
@@ -110,7 +103,6 @@ class ItemGroupControllerTest {
     @Test
     @DisplayName("validation fails return 400 BAD_REQUEST")
     void validationFailsReturnBadRequest400()  throws Exception {
-        final String requestId = "12345";
         final ItemGroupData itemGroupData = invalidItemGroupsDtoMissingAllValidationCriteria();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
@@ -118,7 +110,7 @@ class ItemGroupControllerTest {
         when(requestValidator.validateCreateItemData(itemGroupData)).thenReturn(Arrays.asList(EXAMPLE_ERROR_MESSAGE));
         when(loggingUtils.getLogger()).thenReturn(logger);
 
-        final ResponseEntity<Object> response = controller.createItemGroup(requestId, itemGroupData);
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
 
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
@@ -131,16 +123,14 @@ class ItemGroupControllerTest {
     @Test
     @DisplayName("item group already exists return 409 CONFLICT")
     void itemGroupAlreadyExistsReturnConflict409()  throws Exception {
-        final String requestId = "12345";
         final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
-        List<String> xxx = Arrays.asList(EXAMPLE_ERROR_MESSAGE);
 
         when(itemGroupsService.doesItemGroupExist(itemGroupData)).thenReturn(true);
         when(loggingUtils.getLogger()).thenReturn(logger);
 
-        final ResponseEntity<Object> response = controller.createItemGroup(requestId, itemGroupData);
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
 
         assertThat(response.getStatusCode(), is(HttpStatus.CONFLICT));
 
@@ -183,7 +173,7 @@ class ItemGroupControllerTest {
         return dto;
     }
     /**
-     * Invalid DTO. No validation criteria met, at all...
+     * Invalid DTO. No validation criteria met.
      */
     private ItemGroupData invalidItemGroupsDtoMissingAllValidationCriteria() {
         final ItemGroupData dto = new ItemGroupData();

@@ -21,12 +21,12 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @TestConfiguration
 public class ItemGroupController {
-    public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
+    public static final String X_REQUEST_ID_HEADER_NAME = "X-Request-ID";
     public static final String REQUEST_ID_PREFIX = "create_item_group: request_id";
     public static final String CREATE_ITEM_GROUP_CREATED_PREFIX = "create_item_group: created";
     public static final String CREATE_ITEM_GROUP_ERROR_PREFIX = "create_item_group: error";
     public static final String CREATE_ITEM_GROUP_VALIDATION_PREFIX = "create_item_group: validation failed";
-    public static final String ITEM_GROUP_ALREADY_EXISTS_PREFIX = "create_item_group: already exists";
+    public static final String CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX = "create_item_group: already exists";
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
     private final ItemGroupsValidator itemGroupsValidator;
@@ -48,41 +48,41 @@ public class ItemGroupController {
     @PostMapping(name = "${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createItemGroup(final @RequestHeader(REQUEST_ID_HEADER_NAME) String requestId,
+    public ResponseEntity<Object> createItemGroup(final @RequestHeader(X_REQUEST_ID_HEADER_NAME) String xRequestId,
                                                   final @RequestBody ItemGroupData itemGroupData) {
-        logRequestId(requestId);
+        logRequestId(xRequestId);
         List<String> errors = itemGroupsValidator.validateCreateItemData(itemGroupData);
 
         if (!errors.isEmpty()) {
-            return buildValidationResponse(requestId, errors);
+            return buildValidationResponse(xRequestId, errors);
         }
 
         try {
             if (itemGroupsService.doesItemGroupExist(itemGroupData))
-                return buildItemAlreadyExistsResponse(requestId, itemGroupData);
+                return buildItemAlreadyExistsResponse(xRequestId, itemGroupData);
 
             final ItemGroup savedItem = itemGroupsService.createItemGroup(itemGroupData);
-            return buildCreateSuccessResponse(requestId, savedItem);
+            return buildCreateSuccessResponse(xRequestId, savedItem);
         }
         catch (Exception ex) {
-            return buildErrorResponse(requestId, ex, itemGroupData);
+            return buildErrorResponse(xRequestId, ex, itemGroupData);
         }
     }
 
-    private void logRequestId(String requestId) {
+    private void logRequestId(String xRequestId) {
         DataMap dataMap = new DataMap.Builder()
-            .requestId(requestId)
+            .xRequestId(xRequestId)
             .build();
 
         logger.getLogger().info(REQUEST_ID_PREFIX, dataMap.getLogMap());
     }
     /**
-     * @return ResponseEntity.status(CREATED)
+     * @return HttpStatus.CREATED
      */
-    private ResponseEntity<Object> buildCreateSuccessResponse(String requestId,
+    private ResponseEntity<Object> buildCreateSuccessResponse(String xRequestId,
                                                               final ItemGroup savedItem) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(requestId)
+            .xRequestId(xRequestId)
             .orderId(savedItem.getData().getOrderNumber())
             .build();
 
@@ -90,12 +90,12 @@ public class ItemGroupController {
         return ResponseEntity.status(CREATED).body(savedItem);
     }
     /**
-     * @return ResponseEntity.status(BAD_REQUEST)
+     * @return HttpStatus.BAD_REQUEST
      */
-    private ResponseEntity<Object> buildValidationResponse(String requestId,
+    private ResponseEntity<Object> buildValidationResponse(String xRequestId,
                                                            final List<String> errors) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(requestId)
+            .xRequestId(xRequestId)
             .errors(errors)
             .build();
 
@@ -103,26 +103,26 @@ public class ItemGroupController {
         return ResponseEntity.status(BAD_REQUEST).body(errors);
     }
     /**
-     * @return ResponseEntity.status(CONFLICT)
+     * @return HttpStatus.CONFLICT
      */
-    private ResponseEntity<Object> buildItemAlreadyExistsResponse(String requestId,
+    private ResponseEntity<Object> buildItemAlreadyExistsResponse(String xRequestId,
                                                                   final ItemGroupData itemGroupData) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(requestId)
+            .xRequestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .build();
 
-        logger.getLogger().error(ITEM_GROUP_ALREADY_EXISTS_PREFIX, dataMap.getLogMap());
+        logger.getLogger().error(CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX, dataMap.getLogMap());
         return ResponseEntity.status(CONFLICT).body(itemGroupData);
     }
     /**
-     * @return ResponseEntity.status(BAD_REQUEST)
+     * @return HttpStatus.BAD_REQUEST
      */
-    private ResponseEntity<Object> buildErrorResponse(String requestId,
+    private ResponseEntity<Object> buildErrorResponse(String xRequestId,
                                                       final Exception ex,
                                                       final ItemGroupData itemGroupData) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(requestId)
+            .xRequestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .message(ex.getMessage())
             .build();
