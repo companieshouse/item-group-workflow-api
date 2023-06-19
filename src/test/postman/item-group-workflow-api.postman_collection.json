@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "bc84bc92-bdd8-4cb6-8242-7192a45a6798",
+		"_postman_id": "241213f6-d9ed-4210-aaf3-996a50759e73",
 		"name": "item-group-workflow-api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7646296"
 	},
 	"item": [
 		{
@@ -138,6 +139,331 @@
 							"path": [
 								"item-groups",
 								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Patch Item",
+			"item": [
+				{
+					"name": "patch item",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"satisfied\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/IG-419016-866612/items/CCD-768116-517930",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"IG-419016-866612",
+								"items",
+								"CCD-768116-517930"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch item unknown item",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"satisfied\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/IG-268916-863247/items/unknown",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"IG-268916-863247",
+								"items",
+								"unknown"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch item unknown item group",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"satisfied\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/unknown/items/111-222-333",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"unknown",
+								"items",
+								"111-222-333"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch item without status",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"IG-954916-860369",
+								"items",
+								"111-222-333"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch item with invalid status",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"unknown\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"IG-954916-860369",
+								"items",
+								"111-222-333"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch item with blank status",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"digital_document_location\": \"s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"IG-954916-860369",
+								"items",
+								"111-222-333"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch item without digital document location",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"satisfied\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"IG-954916-860369",
+								"items",
+								"111-222-333"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch item invalid digital document location",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/merge-patch+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"digital_document_location\": \"s3:// document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf\",\n    \"status\": \"satisfied\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item-groups/IG-954916-860369/items/111-222-333",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item-groups",
+								"IG-954916-860369",
+								"items",
+								"111-222-333"
 							]
 						}
 					},
