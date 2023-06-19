@@ -52,12 +52,12 @@ public class ItemGroupControllerIntegrationTest {
 
     @AfterEach
     void tearDown() {
-        repository.findById(EXPECTED_ORDER_NUMBER).ifPresent(repository::delete);
+        repository.deleteAll();
     }
 
     @Test
-    @DisplayName("Create successful itemGroup")
-    void createItemGroupSuccessful() throws Exception {
+    @DisplayName("Create successful itemGroup - 201 Created")
+    void createItemGroupSuccessful_201Created() throws Exception {
 
         // Given
         final ItemGroupData newItemGroupData = createValidNewItemGroupData();
@@ -72,6 +72,48 @@ public class ItemGroupControllerIntegrationTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    @DisplayName("Create itemGroup unsuccessful - 400 Bad Request")
+    void createItemGroupUnsuccessful_400BadRequest() throws Exception {
+
+        // Given
+        final ItemGroupData newItemGroupData = createInvalidNewItemGroupData();
+
+        // When and Then
+        mockMvc.perform(post("/item-groups" )
+                        .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(newItemGroupData)))
+                .andExpect(status().isBadRequest())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("create duplicate itemGroup fails - 409 Conflict")
+    void createDuplicateItemGroupUnsuccessful_409Conflict() throws Exception {
+
+        // Given
+        final ItemGroupData newItemGroupData = createValidNewItemGroupData();
+
+        // Create item group and get success status.
+        mockMvc.perform(post("/item-groups" )
+                        .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(newItemGroupData)))
+                .andExpect(status().isCreated())
+                .andDo(MockMvcResultHandlers.print());
+
+        // Attempt to create the same item group and get failure status, 409 - CONFLICT.
+        mockMvc.perform(post("/item-groups" )
+                        .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(newItemGroupData)))
+                .andExpect(status().isConflict())
+                .andDo(MockMvcResultHandlers.print());
+    }
 
     /**
      * Factory method that produces a DTO for a valid create item group payload.
@@ -110,5 +152,32 @@ public class ItemGroupControllerIntegrationTest {
         return newItemGroupData;
     }
 
+    /**
+     * Factory method that produces a DTO for an invalid create item group payload - will fail validation
+     *
+     * @return an invalid item DTO
+     */
+    private ItemGroupData createInvalidNewItemGroupData() {
+        final ItemGroupData newItemGroupData = new ItemGroupData();
+
+        DeliveryDetails deliveryDetails = new DeliveryDetails();
+        newItemGroupData.setDeliveryDetails(deliveryDetails);
+
+        ItemCosts itemCost = new ItemCosts();
+        List<ItemCosts> itemCosts = new ArrayList<>();
+        itemCosts.add(itemCost);
+
+        Links links = new Links();
+        newItemGroupData.setLinks(links);
+
+        Item item = new Item();
+        item.setItemCosts(itemCosts);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+
+        newItemGroupData.setItems(items);
+
+        return newItemGroupData;
+    }
 
 }
