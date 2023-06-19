@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public enum ItemCostProductType {
-    CERTIFICATE("productTypeName"),
+    CERTIFICATE("certificate"),
     CERTIFICATE_SAME_DAY("certificate-same-day"),
     CERTIFICATE_ADDITIONAL_COPY("certificate-additional-copy"),
     MISSING_IMAGE_DELIVERY_ACCOUNTS("missing-image-delivery-accounts"),
