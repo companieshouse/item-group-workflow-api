@@ -50,7 +50,7 @@ public class ItemGroupData {
     }
 
     private Links links;
-    public Links getLinks() {return links;}
+    public Links getLinks() { return links; }
 
     private String orderNumber;
     public String getOrderNumber() {
