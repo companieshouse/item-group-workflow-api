@@ -45,7 +45,7 @@ public class ItemGroupController {
      * Item group already exists check performed, if already exists return CONFLICT<p>
      * Item group created, on success return CREATED, on error return BAD_REQUEST<p>
      */
-    @PostMapping(name = "${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}",
+    @PostMapping(path = "${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createItemGroup(final @RequestHeader(X_REQUEST_ID_HEADER_NAME) String xRequestId,

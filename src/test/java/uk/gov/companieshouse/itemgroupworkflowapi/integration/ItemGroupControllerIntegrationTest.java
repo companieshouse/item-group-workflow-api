@@ -1,49 +1,38 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-
-import uk.gov.companieshouse.itemgroupworkflowapi.config.MongoConfig;
-import uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController;
-import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.*;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifier;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
-import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
-import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class.
  */
-
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = ItemGroupController.class)
-@ContextConfiguration(classes = {MongoConfig.class})
-@Import({MongoConfig.class, ItemGroupController.class})
+@SpringBootTest
 @AutoConfigureMockMvc
+@ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
 public class ItemGroupControllerIntegrationTest {
 
     private static final String EXPECTED_ORDER_NUMBER = "123456";
@@ -55,23 +44,11 @@ public class ItemGroupControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper mapper;
 
-    @MockBean
+    @Autowired
     private ItemGroupsRepository repository;
-
-    @MockBean
-    private ItemGroupsService service;
-
-    @MockBean
-    private LoggingUtils loggingUtils;
-
-    @MockBean
-    private ItemGroupsValidator validator;
-
-    @MockBean
-    private MappingMongoConverter mappingMongoConverter;
 
     @AfterEach
     void tearDown() {
@@ -80,17 +57,17 @@ public class ItemGroupControllerIntegrationTest {
 
     @Test
     @DisplayName("Create successful itemGroup")
-    public void createItemGroupSuccessful() throws Exception {
+    void createItemGroupSuccessful() throws Exception {
 
         // Given
         final ItemGroupData newItemGroupData = createValidNewItemGroupData();
 
         // When and Then
-        mockMvc.perform(post("/item-groups/" )
+        mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(newItemGroupData.toString()))
+                        .content(mapper.writeValueAsString(newItemGroupData)))
                 .andExpect(status().isCreated())
                 .andDo(MockMvcResultHandlers.print());
     }
