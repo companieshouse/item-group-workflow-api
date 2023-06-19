@@ -18,6 +18,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifier;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 
@@ -97,11 +98,15 @@ public class ItemGroupControllerIntegrationTest {
         newItemGroupData.setLinks(links);
 
         Item item = new Item();
+        item.setId("CCD-768116-517930");
         item.setCompanyNumber(VALID_COMPANY_NUMBER);
         item.setCompanyName(VALID_ITEM_COMPANY_NAME);
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
         item.setItemCosts(itemCosts);
+        ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("/orderable/certified-copies/CCD-768116-517930");
+        item.setLinks(itemLinks);
 
         List<Item> items = new ArrayList<>();
         items.add(item);

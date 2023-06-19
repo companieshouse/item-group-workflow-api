@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.http.MediaType;
 import jakarta.json.JsonMergePatch;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +37,6 @@ public class ItemGroupController {
     private static final String PATCH_ITEM_URI =
             "${uk.gov.companieshouse.itemgroupworkflowapi.patchitem}";
 
-    public static final String REQUEST_ID_LOG_KEY = "request_id";
-    public static final String CREATE_ITEM_GROUP_REQUEST = "create_item_group: request";
-    public static final String CREATE_ITEM_GROUP_RESPONSE = "create_item_group: response";
-    public static final String CREATE_ITEM_GROUP_CREATED = "create_item_group: created";
     public static final String X_REQUEST_ID_HEADER_NAME = "X-Request-ID";
     public static final String REQUEST_ID_PREFIX = "create_item_group: request_id";
     public static final String CREATE_ITEM_GROUP_CREATED_PREFIX = "create_item_group: created";
