@@ -19,7 +19,6 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
-@TestConfiguration
 public class ItemGroupController {
     public static final String X_REQUEST_ID_HEADER_NAME = "X-Request-ID";
     public static final String REQUEST_ID_PREFIX = "create_item_group: request_id";
@@ -71,7 +70,7 @@ public class ItemGroupController {
 
     private void logRequestId(String xRequestId) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(xRequestId)
+            .requestId(xRequestId)
             .build();
 
         logger.getLogger().info(REQUEST_ID_PREFIX, dataMap.getLogMap());
@@ -82,7 +81,7 @@ public class ItemGroupController {
     private ResponseEntity<Object> buildCreateSuccessResponse(String xRequestId,
                                                               final ItemGroup savedItem) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(xRequestId)
+            .requestId(xRequestId)
             .orderId(savedItem.getData().getOrderNumber())
             .build();
 
@@ -95,7 +94,7 @@ public class ItemGroupController {
     private ResponseEntity<Object> buildValidationResponse(String xRequestId,
                                                            final List<String> errors) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(xRequestId)
+            .requestId(xRequestId)
             .errors(errors)
             .build();
 
@@ -108,7 +107,7 @@ public class ItemGroupController {
     private ResponseEntity<Object> buildItemAlreadyExistsResponse(String xRequestId,
                                                                   final ItemGroupData itemGroupData) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(xRequestId)
+            .requestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .build();
 
@@ -122,7 +121,7 @@ public class ItemGroupController {
                                                       final Exception ex,
                                                       final ItemGroupData itemGroupData) {
         DataMap dataMap = new DataMap.Builder()
-            .xRequestId(xRequestId)
+            .requestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .message(ex.getMessage())
             .build();

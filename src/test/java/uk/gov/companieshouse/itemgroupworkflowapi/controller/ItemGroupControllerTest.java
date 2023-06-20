@@ -139,7 +139,7 @@ class ItemGroupControllerTest {
         assertThat(returnedItemGroupData, is(itemGroupData));
     }
     /**
-     * Fair weather with all validation triggered DTO
+     * DTO which will trigger all validation checks and pass
      */
     private ItemGroupData fairWeatherItemGroupsDto() {
         final ItemGroupData dto = new ItemGroupData();
