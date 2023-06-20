@@ -2,18 +2,18 @@ package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.google.gson.Gson;
 
-public class Links {
+public class ItemLinks {
 
-    private String order;
+    private String originalItem;
 
     private String self;
 
-    public String getOrder() {
-        return order;
+    public String getOriginalItem() {
+        return originalItem;
     }
 
-    public void setOrder(String order) {
-        this.order = order;
+    public void setOriginalItem(String originalItem) {
+        this.originalItem = originalItem;
     }
 
     public String getSelf() {
