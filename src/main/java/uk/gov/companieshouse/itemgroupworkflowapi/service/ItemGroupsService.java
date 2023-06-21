@@ -35,7 +35,6 @@ public class ItemGroupsService {
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
-        // TODO check for NEW uniqueness here...
         return itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
     }
 
@@ -48,7 +47,6 @@ public class ItemGroupsService {
         setCreationTimeStamp(itemGroup);
         itemGroup.setData(itemGroupData);
 
-        // TODO generate links here...
         regenerateLinks(itemGroupData, itemGroupId);
 
         final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
