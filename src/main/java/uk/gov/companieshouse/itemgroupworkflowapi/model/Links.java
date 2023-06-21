@@ -15,10 +15,20 @@ public class Links {
         this.order = order;
     }
 
+    private String self;
+    public String getSelf() {
+        return self;
+    }
+
+    public void setSelf(String self) {
+        this.self = self;
+    }
+
     @Override
     public String toString() {
         return "links {" +
-                "order='" + order + '\'' +
+            "order='" + order + '\'' +
+            "self='" + self + '\'' +
                 '}';
     }
 }

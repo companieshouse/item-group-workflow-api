@@ -46,7 +46,7 @@ public class Item {
     private String kind;
 
     @JsonProperty("links")
-    private Links links;
+    private ItemLinks itemLinks;
 
     @JsonProperty("postage_cost")
     @Field("postage_cost")
@@ -150,12 +150,12 @@ public class Item {
         this.kind = kind;
     }
 
-    public Links getLinks() {
-        return links;
+    public ItemLinks getItemLinks() {
+        return itemLinks;
     }
 
-    public void setLinks(Links links) {
-        this.links = links;
+    public void setItemLinks(ItemLinks itemLinks) {
+        this.itemLinks = itemLinks;
     }
 
     public String getPostageCost() {
@@ -204,7 +204,7 @@ public class Item {
                 ", item_costs='" + itemCosts +
                 ", item_options='" + itemOptions +
                 ", kind='" + kind +
-                ", links='" + links +
+                ", links='" + itemLinks +
                 ", postage_cost='" + postageCost +
                 ", postal_delivery='" + postalDelivery +
                 ", quantity='" + quantity +
