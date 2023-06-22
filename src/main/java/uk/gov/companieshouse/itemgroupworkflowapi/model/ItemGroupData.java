@@ -57,7 +57,7 @@ public class ItemGroupData {
 
     @JsonProperty("links")
     private Links links;
-    public Links getLinks() {return links;}
+    public Links getLinks() { return links; }
 
     @JsonProperty("order_number")
     @Field("order_number")
