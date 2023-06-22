@@ -38,7 +38,7 @@ public class ItemGroupsService {
         return itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
     }
 
-    public ItemGroup createItemGroup(ItemGroupData itemGroupData) {
+    public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
         final ItemGroup itemGroup = new ItemGroup();
 
         String itemGroupId = autoGenerateId();
@@ -50,7 +50,7 @@ public class ItemGroupsService {
         regenerateLinks(itemGroupData, itemGroupId);
 
         final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
-        return savedItemGroup;
+        return savedItemGroup.getData();
     }
 
     private void setCreationTimeStamp(final ItemGroup itemGroup) {
