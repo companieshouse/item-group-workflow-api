@@ -19,6 +19,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifie
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class ItemGroupControllerIntegrationTest {
 
     @Test
     @DisplayName("Create successful itemGroup - 201 Created")
-    void createItemGroupSuccessful_201Created() throws Exception {
+    void createItemGroupSuccessful201Created() throws Exception {
 
         // Given
         final ItemGroupData newItemGroupData = createValidNewItemGroupData();
@@ -74,7 +75,7 @@ public class ItemGroupControllerIntegrationTest {
 
     @Test
     @DisplayName("Create itemGroup unsuccessful - 400 Bad Request")
-    void createItemGroupUnsuccessful_400BadRequest() throws Exception {
+    void createItemGroupUnsuccessful400BadRequest() throws Exception {
 
         // Given
         final ItemGroupData newItemGroupData = createInvalidNewItemGroupData();
@@ -91,7 +92,7 @@ public class ItemGroupControllerIntegrationTest {
 
     @Test
     @DisplayName("create duplicate itemGroup fails - 409 Conflict")
-    void createDuplicateItemGroupUnsuccessful_409Conflict() throws Exception {
+    void createDuplicateItemGroupUnsuccessful409Conflict() throws Exception {
 
         // Given
         final ItemGroupData newItemGroupData = createValidNewItemGroupData();
@@ -136,14 +137,20 @@ public class ItemGroupControllerIntegrationTest {
 
         Links links = new Links();
         links.setOrder(EXPECTED_ORDER_NUMBER);
+        links.setSelf("/orderable/certificates/mycert-123");
         newItemGroupData.setLinks(links);
 
         Item item = new Item();
         item.setCompanyNumber(VALID_COMPANY_NUMBER);
+        item.setId("111-222-333");
         item.setCompanyName(VALID_ITEM_COMPANY_NAME);
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
         item.setItemCosts(itemCosts);
+
+        ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("/orderable/certificates/mycert-123");
+        item.setItemLinks(itemLinks);
 
         List<Item> items = new ArrayList<>();
         items.add(item);

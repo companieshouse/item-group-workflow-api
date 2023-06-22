@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
