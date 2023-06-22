@@ -20,6 +20,8 @@ import java.util.Calendar;
 @Service
 public class ItemGroupsService {
     private static String ITEM_GROUP_CREATE_ID_PREFIX = "IG-";
+    public static String MONGO_EXISTS_EXCEPTION_MESSAGE = "Mongo EXISTS operation failed for item group order number : ";
+    public static String MONGO_SAVE_EXCEPTION_MESSAGE = "Mongo SAVE operation failed for item group order number : ";
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
     private final String pathToSelf;
@@ -31,7 +33,6 @@ public class ItemGroupsService {
         this.logger = logger;
         this.itemGroupsRepository = itemGroupsRepository;
 
-
         if (isBlank(pathToSelf))
             throw new IllegalArgumentException("Path to self URI not configured!");
         this.pathToSelf = pathToSelf;
@@ -42,7 +43,7 @@ public class ItemGroupsService {
         try {
             itemExists = itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
         } catch (MongoException mex) {
-            throw new MongoOperationException("Mongo EXISTS operation failed for item group order number %s" + itemGroupData.getOrderNumber(), mex);
+            throw new MongoOperationException(MONGO_EXISTS_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
         }
 
         return itemExists;
@@ -64,7 +65,7 @@ public class ItemGroupsService {
             savedItemGroup = itemGroupsRepository.save(itemGroup);
         }
         catch(MongoException mex) {
-            throw new MongoOperationException("Mongo SAVE operation failed for item group order number %s" + itemGroupData.getOrderNumber(), mex);
+            throw new MongoOperationException(MONGO_SAVE_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
         }
         return savedItemGroup.getData();
     }

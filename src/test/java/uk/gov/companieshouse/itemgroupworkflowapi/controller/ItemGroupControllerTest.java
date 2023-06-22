@@ -6,6 +6,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService.MONGO_EXISTS_EXCEPTION_MESSAGE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService.MONGO_SAVE_EXCEPTION_MESSAGE;
+import com.mongodb.MongoException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -24,6 +28,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
+import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
 import uk.gov.companieshouse.logging.Logger;
@@ -137,6 +142,60 @@ class ItemGroupControllerTest {
         ItemGroupData returnedItemGroupData = (ItemGroupData) response.getBody();
         assertNotNull(returnedItemGroupData);
         assertThat(returnedItemGroupData, is(itemGroupData));
+    }
+
+    @Test
+    @DisplayName("Mongo EXISTS operation return 500 INTERNAL_SERVER_ERROR")
+    void mongoExistsReturnInternalServerError500()  throws Exception {
+        final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
+        ItemGroup itemGroup = new ItemGroup();
+        itemGroup.setData(itemGroupData);
+        //
+        // Mongo EXISTS operation throws MongoOperationException.
+        //
+        final MongoOperationException moe = new MongoOperationException(
+            MONGO_EXISTS_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(),
+            new MongoException(""));
+        when(itemGroupsService.doesItemGroupExist(itemGroupData)).thenThrow(moe);
+
+        when(loggingUtils.getLogger()).thenReturn(logger);
+        //
+        // Verify HttpStatus.INTERNAL_SERVER_ERROR returned.
+        //
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
+        assertThat(response.getStatusCode(), is(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        String errorMessage = (String) response.getBody();
+        assertNotNull(errorMessage);
+        assert(errorMessage.contains(MONGO_EXISTS_EXCEPTION_MESSAGE));
+        assert(errorMessage.contains(itemGroupData.getOrderNumber()));
+    }
+
+    @Test
+    @DisplayName("Mongo SAVE operation return 500 INTERNAL_SERVER_ERROR")
+    void mongoSaveReturnInternalServerError500()  throws Exception {
+        final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
+        ItemGroup itemGroup = new ItemGroup();
+        itemGroup.setData(itemGroupData);
+        //
+        // Mongo SAVE operation throws MongoOperationException.
+        //
+        final MongoOperationException moe = new MongoOperationException(
+            MONGO_SAVE_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(),
+            new MongoException(""));
+        when(itemGroupsService.createItemGroup(itemGroupData)).thenThrow(moe);
+
+        when(loggingUtils.getLogger()).thenReturn(logger);
+        //
+        // Verify HttpStatus.INTERNAL_SERVER_ERROR returned.
+        //
+        final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
+        assertThat(response.getStatusCode(), is(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        String errorMessage = (String) response.getBody();
+        assertNotNull(errorMessage);
+        assert(errorMessage.contains(MONGO_SAVE_EXCEPTION_MESSAGE));
+        assert(errorMessage.contains(itemGroupData.getOrderNumber()));
     }
     /**
      * DTO which will trigger all validation checks and pass

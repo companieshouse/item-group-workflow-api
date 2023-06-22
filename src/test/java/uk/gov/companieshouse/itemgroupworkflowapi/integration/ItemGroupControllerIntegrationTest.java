@@ -117,8 +117,8 @@ public class ItemGroupControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("Create itemGroup unsuccessful - 500 Internal Server Error")
-    void internalServerError500InternalServerError() throws Exception {
+    @DisplayName("500 Internal Server Error - invalid item group")
+    void invalidItemGroupInternalServerError500() throws Exception {
 
         // Given
         final ItemGroupData newItemGroupData = createInternalServerErrorItemGroupData();
