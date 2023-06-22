@@ -13,7 +13,7 @@ public class UriValidator implements ConstraintValidator<Uri, CharSequence> {
             return true;
         }
 
-        boolean isValid = true;
+        var isValid = true;
         try {
             new URI(value.toString());
         } catch (URISyntaxException e) {

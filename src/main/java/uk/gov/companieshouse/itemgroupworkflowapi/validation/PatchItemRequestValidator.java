@@ -65,8 +65,8 @@ public class PatchItemRequestValidator {
     }
 
     private ApiError raiseError(ConstraintViolation<ItemPatchValidationDto> violation) {
-        String fieldName = violation.getPropertyPath().toString();
-        String snakeCaseFieldName = converter.fromUpperCamelToSnakeCase(fieldName);
+        var fieldName = violation.getPropertyPath().toString();
+        var snakeCaseFieldName = converter.fromUpperCamelToSnakeCase(fieldName);
         return ApiErrorBuilder.builder(
                 new ApiError(converter.fromLowerUnderscoreToLowerHyphenCase(snakeCaseFieldName) + "-error",
                         snakeCaseFieldName, OBJECT_LOCATION_TYPE, ERROR_TYPE_VALIDATION))

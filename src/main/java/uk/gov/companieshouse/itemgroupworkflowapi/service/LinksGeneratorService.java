@@ -50,7 +50,7 @@ public class LinksGeneratorService {
         if (isBlank(itemGroupId)) {
             throw new IllegalArgumentException("Item Group ID not populated!");
         }
-        final Links links = new Links();
+        final var links = new Links();
         links.setOrder(orderPath);
         links.setSelf(pathToSelf + "/" + itemGroupId);
         return links;
@@ -71,7 +71,7 @@ public class LinksGeneratorService {
         if (isBlank(itemId)) {
             throw new IllegalArgumentException("Item ID not populated!");
         }
-        final ItemLinks links = new ItemLinks();
+        final var links = new ItemLinks();
         links.setOriginalItem(originalItem);
         links.setSelf(pathToSelf + "/" + itemGroupId + "/items/" +itemId);
         return links;

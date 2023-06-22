@@ -214,7 +214,7 @@ public class Item {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
+        var item = (Item) o;
         return Objects.equals(companyName, item.companyName) &&
                 Objects.equals(companyNumber, item.companyNumber) &&
                 Objects.equals(customerReference, item.customerReference) &&
