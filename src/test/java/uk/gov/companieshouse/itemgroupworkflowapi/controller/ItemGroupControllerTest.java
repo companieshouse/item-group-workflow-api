@@ -63,7 +63,7 @@ class ItemGroupControllerTest {
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
 
-        when(itemGroupsService.createItemGroup(itemGroupData)).thenReturn(itemGroup);
+        when(itemGroupsService.createItemGroup(itemGroupData)).thenReturn(itemGroupData);
         when(loggingUtils.getLogger()).thenReturn(logger);
         //
         // Verify HttpStatus.CREATED returned.
@@ -73,18 +73,18 @@ class ItemGroupControllerTest {
         //
         // ItemGroup
         //
-        final ItemGroup createdItemGroup = (ItemGroup) response.getBody();
-        assertNotNull(createdItemGroup);
-        assertThat(createdItemGroup.getData().getOrderNumber(), is(VALID_ORDER_NUMBER));
+        final ItemGroupData createdItemGroupData = (ItemGroupData) response.getBody();
+        assertNotNull(createdItemGroupData);
+        assertThat(createdItemGroupData.getOrderNumber(), is(VALID_ORDER_NUMBER));
 
-        assertThat(createdItemGroup.getData().getOrderNumber(), is(VALID_ORDER_NUMBER));
-        assertThat(createdItemGroup.getData().getDeliveryDetails().getCompanyName(), is(VALID_DELIVERY_COMPANY_NAME));
-        assertThat(createdItemGroup.getData().getLinks().getOrder(), is(VALID_ORDER_NUMBER));
+        assertThat(createdItemGroupData.getOrderNumber(), is(VALID_ORDER_NUMBER));
+        assertThat(createdItemGroupData.getDeliveryDetails().getCompanyName(), is(VALID_DELIVERY_COMPANY_NAME));
+        assertThat(createdItemGroupData.getLinks().getOrder(), is(VALID_ORDER_NUMBER));
         //
         // Item
         //
-        assertEquals(1, createdItemGroup.getData().getItems().size());
-        Item item = createdItemGroup.getData().getItems().get(0);
+        assertEquals(1, createdItemGroupData.getItems().size());
+        Item item = createdItemGroupData.getItems().get(0);
         assertNotNull(item);
 
         assertThat(item.getCompanyNumber(), is(VALID_COMPANY_NUMBER));

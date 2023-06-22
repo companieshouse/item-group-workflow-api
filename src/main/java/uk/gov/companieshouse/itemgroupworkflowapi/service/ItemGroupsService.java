@@ -37,7 +37,7 @@ public class ItemGroupsService {
         return itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
     }
 
-    public ItemGroup createItemGroup(ItemGroupData itemGroupData) {
+    public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
         final ItemGroup itemGroup = new ItemGroup();
 
         String itemGroupId = autoGenerateId();
@@ -48,7 +48,7 @@ public class ItemGroupsService {
         itemGroup.setData(itemGroupData);
 
         final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
-        return savedItemGroup;
+        return savedItemGroup.getData();
     }
 
     public Item getItem(final String itemGroupId, final String itemId) {

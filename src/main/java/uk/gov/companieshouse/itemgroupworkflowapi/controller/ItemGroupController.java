@@ -83,8 +83,8 @@ public class ItemGroupController {
             if (itemGroupsService.doesItemGroupExist(itemGroupData))
                 return buildItemAlreadyExistsResponse(xRequestId, itemGroupData);
 
-            final ItemGroup savedItem = itemGroupsService.createItemGroup(itemGroupData);
-            return buildCreateSuccessResponse(xRequestId, savedItem);
+            final ItemGroupData savedItemGroupData = itemGroupsService.createItemGroup(itemGroupData);
+            return buildCreateSuccessResponse(xRequestId, savedItemGroupData);
         }
         catch (Exception ex) {
             return buildErrorResponse(xRequestId, ex, itemGroupData);
@@ -141,10 +141,10 @@ public class ItemGroupController {
      * @return HttpStatus.CREATED
      */
     private ResponseEntity<Object> buildCreateSuccessResponse(String xRequestId,
-                                                              final ItemGroup savedItem) {
+                                                              final ItemGroupData savedItem) {
         DataMap dataMap = new DataMap.Builder()
             .requestId(xRequestId)
-            .orderId(savedItem.getData().getOrderNumber())
+            .orderId(savedItem.getOrderNumber())
             .build();
 
         logger.getLogger().info(CREATE_ITEM_GROUP_CREATED_PREFIX, dataMap.getLogMap());
