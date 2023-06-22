@@ -141,12 +141,12 @@ public class Item {
         this.kind = kind;
     }
 
-    public ItemLinks getLinks() {
-        return links;
+    public ItemLinks getItemLinks() {
+        return itemLinks;
     }
 
-    public void setLinks(ItemLinks links) {
-        this.links = links;
+    public void setItemLinks(ItemLinks itemLinks) {
+        this.itemLinks = itemLinks;
     }
 
     public String getPostageCost() {
