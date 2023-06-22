@@ -1,8 +1,11 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+
+import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
@@ -35,7 +38,14 @@ public class ItemGroupsService {
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
-        return itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
+        boolean itemExists;
+        try {
+            itemExists = itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
+        } catch (MongoException mex) {
+            throw new MongoOperationException("Mongo EXISTS operation failed for item group order number %s" + itemGroupData.getOrderNumber(), mex);
+        }
+
+        return itemExists;
     }
 
     public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
@@ -49,7 +59,13 @@ public class ItemGroupsService {
 
         regenerateLinks(itemGroupData, itemGroupId);
 
-        final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
+        ItemGroup savedItemGroup;
+        try {
+            savedItemGroup = itemGroupsRepository.save(itemGroup);
+        }
+        catch(MongoException mex) {
+            throw new MongoOperationException("Mongo SAVE operation failed for item group order number %s" + itemGroupData.getOrderNumber(), mex);
+        }
         return savedItemGroup.getData();
     }
 

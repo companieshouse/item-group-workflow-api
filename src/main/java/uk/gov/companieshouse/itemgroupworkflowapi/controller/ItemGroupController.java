@@ -1,11 +1,13 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
@@ -59,11 +61,13 @@ public class ItemGroupController {
             if (itemGroupsService.doesItemGroupExist(itemGroupData))
                 return buildItemAlreadyExistsResponse(xRequestId, itemGroupData);
 
-            final ItemGroupData savedItemGroupData = itemGroupsService.createItemGroup(itemGroupData);
-            return buildCreateSuccessResponse(xRequestId, savedItemGroupData);
+            final ItemGroupData savedItem = itemGroupsService.createItemGroup(itemGroupData);
+            return buildCreateSuccessResponse(xRequestId, savedItem);
         }
-        catch (Exception ex) {
-            return buildErrorResponse(xRequestId, ex, itemGroupData);
+        catch(IllegalArgumentException | MongoOperationException serverFailureException) {
+            return buildServerErrorResponse(xRequestId, serverFailureException, itemGroupData, INTERNAL_SERVER_ERROR);
+        } catch(Exception errorException) {
+            return buildServerErrorResponse(xRequestId, errorException, itemGroupData, BAD_REQUEST);
         }
     }
 
@@ -127,5 +131,23 @@ public class ItemGroupController {
 
         logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX, dataMap.getLogMap());
         return ResponseEntity.status(BAD_REQUEST).body(ex.getMessage());
+    }
+
+    /**
+     * @return Stand-in for global exception handler.
+     */
+    private ResponseEntity<Object> buildServerErrorResponse(
+            String xRequestId,
+            final Exception ex,
+            final ItemGroupData itemGroupData,
+            HttpStatus httpStatus) {
+        DataMap dataMap = new DataMap.Builder()
+                .requestId(xRequestId)
+                .orderId(itemGroupData.getOrderNumber())
+                .message(ex.getMessage())
+                .build();
+
+        logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX, dataMap.getLogMap());
+        return ResponseEntity.status(httpStatus).body(ex.getMessage());
     }
 }
