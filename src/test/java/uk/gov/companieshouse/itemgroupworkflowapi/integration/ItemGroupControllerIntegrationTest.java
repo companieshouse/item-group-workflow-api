@@ -150,7 +150,7 @@ public class ItemGroupControllerIntegrationTest {
 
         ItemLinks itemLinks = new ItemLinks();
         itemLinks.setOriginalItem("/orderable/certificates/mycert-123");
-        item.setItemLinks(itemLinks);
+        item.setLinks(itemLinks);
 
         List<Item> items = new ArrayList<>();
         items.add(item);
