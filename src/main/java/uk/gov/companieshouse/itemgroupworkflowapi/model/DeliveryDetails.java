@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class DeliveryDetails {
@@ -13,31 +14,20 @@ public class DeliveryDetails {
     @Field("address_line_2")
     private String addressLine2;
 
-    @JsonProperty("company_name")
-    @Field("company_name")
     private String companyName;
 
-    @JsonProperty("country")
     private String country;
 
-    @JsonProperty("forename")
     private String forename;
 
-    @JsonProperty("locality")
     private String locality;
 
-    @JsonProperty("po_box")
-    @Field("po_box")
     private String poBox;
 
-    @JsonProperty("postal_code")
-    @Field("postal_code")
     private String postalCode;
 
-    @JsonProperty("region")
     private String region;
 
-    @JsonProperty("surname")
     private String surname;
 
     public String getAddressLine1() {
@@ -120,22 +110,9 @@ public class DeliveryDetails {
         this.surname = surname;
     }
 
-
     @Override
     public String toString() {
-        return "delivery_details {" +
-                "address_line_1='" + addressLine1 + '\'' +
-                ", address_line_2='" + addressLine2 +
-                ", company_name='" + companyName +
-                ", country='" + country +
-                ", forename='" + forename +
-                ", locality='" + locality +
-                ", po_box='" + poBox +
-                ", postal_code='" + postalCode +
-                ", region='" + region +
-                ", surname='" + surname +
-                '}';
+        return new Gson().toJson(this);
     }
-
 
 }

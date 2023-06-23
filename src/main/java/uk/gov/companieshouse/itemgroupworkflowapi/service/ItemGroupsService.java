@@ -1,37 +1,36 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemNotFoundException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
+import uk.gov.companieshouse.logging.util.DataMap;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Map;
+
+import static java.time.LocalDateTime.now;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class ItemGroupsService {
     private static String ITEM_GROUP_CREATE_ID_PREFIX = "IG-";
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
-    private final String pathToSelf;
+    private final LinksGeneratorService linksGenerator;
 
-    public ItemGroupsService(
-        LoggingUtils logger,
-        ItemGroupsRepository itemGroupsRepository,
-        final @Value("${uk.gov.companieshouse.itemgroupworkflowapi.createitemgroup}") String pathToSelf) {
+    public ItemGroupsService(LoggingUtils logger,
+                             ItemGroupsRepository itemGroupsRepository,
+                             LinksGeneratorService linksGenerator) {
         this.logger = logger;
         this.itemGroupsRepository = itemGroupsRepository;
-
-
-        if (isBlank(pathToSelf))
-            throw new IllegalArgumentException("Path to self URI not configured!");
-        this.pathToSelf = pathToSelf;
+        this.linksGenerator = linksGenerator;
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
@@ -45,52 +44,48 @@ public class ItemGroupsService {
         itemGroup.setId(itemGroupId);
 
         setCreationTimeStamp(itemGroup);
+        linksGenerator.regenerateLinks(itemGroupData, itemGroupId);
         itemGroup.setData(itemGroupData);
-
-        regenerateLinks(itemGroupData, itemGroupId);
 
         final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
         return savedItemGroup.getData();
     }
 
+    public Item getItem(final String itemGroupId, final String itemId) {
+        final var itemGroup = findGroup(itemGroupId, itemId);
+        return itemGroup.getData()
+                        .getItems()
+                        .stream()
+                        .filter(item -> item.getId().equals(itemId))
+                        .findFirst()
+                        .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
+    }
+
+    public Item updateItem(final String itemGroupId,
+                           final String itemId,
+                           final Item updatedItem) {
+        final var itemGroup = findGroup(itemGroupId, itemId);
+
+        final var now = now();
+        updatedItem.setUpdatedAt(now);
+        final var data = itemGroup.getData();
+        final var items = data.getItems();
+        final var updatedItems = items.stream()
+                                      .map(item -> item.getId().equals(itemId) ? updatedItem : item)
+                                      .collect(toList());
+        itemGroup.setUpdatedAt(now);
+        data.setItems(updatedItems);
+
+        final var savedItemGroup = itemGroupsRepository.save(itemGroup);
+
+        return getSavedItem(savedItemGroup, itemId);
+    }
+
+
     private void setCreationTimeStamp(final ItemGroup itemGroup) {
         final LocalDateTime now = LocalDateTime.now();
         itemGroup.setCreatedAt(now);
         itemGroup.setUpdatedAt(now);
-    }
-
-    public void regenerateLinks(final ItemGroupData itemGroupData, final String itemGroupId) {
-
-        itemGroupData.setLinks(generateItemGroupLinks(itemGroupData.getLinks().getOrder(), itemGroupId));
-
-        itemGroupData.getItems().forEach(item ->
-            item.setItemLinks(generateItemLinks(item.getItemLinks().getOriginalItem(), itemGroupId, item.getId()))
-        );
-    }
-
-    Links generateItemGroupLinks(final String orderPath, final String itemGroupId) {
-        if (isBlank(itemGroupId)) {
-            throw new IllegalArgumentException("Item Group ID not populated!");
-        }
-        final Links links = new Links();
-        links.setOrder(orderPath);
-        links.setSelf(pathToSelf + "/" + itemGroupId);
-        return links;
-    }
-
-    ItemLinks generateItemLinks(final String originalItem,
-                                final String itemGroupId,
-                                final String itemId) {
-        if (isBlank(itemGroupId)) {
-            throw new IllegalArgumentException("Item Group ID not populated!");
-        }
-        if (isBlank(itemId)) {
-            throw new IllegalArgumentException("Item ID not populated!");
-        }
-        final ItemLinks links = new ItemLinks();
-        links.setOriginalItem(originalItem);
-        links.setSelf(pathToSelf + "/" + itemGroupId + "/items/" +itemId);
-        return links;
     }
 
     private String autoGenerateId() {
@@ -103,4 +98,32 @@ public class ItemGroupsService {
         String[] tranId = rawId.split("(?<=\\G.{6})");
         return ITEM_GROUP_CREATE_ID_PREFIX + String.join("-", tranId);
     }
+
+    private ItemNotFoundException itemNotFound(final String itemGroupId, final String itemId) {
+        final String error = "Not able to find item " + itemId + " in group " + itemGroupId + ".";
+        logger.getLogger().error(error, getLogMap(itemGroupId, itemId, error));
+        return new ItemNotFoundException(error);
+    }
+
+    private ItemGroup findGroup(final String itemGroupId, final String itemId) {
+        return itemGroupsRepository.findById(itemGroupId)
+                .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
+    }
+
+    private Item getSavedItem(final ItemGroup savedItemGroup, final String itemId) {
+        return savedItemGroup.getData().getItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> itemNotFound(savedItemGroup.getId(), itemId));
+    }
+
+    private Map<String, Object> getLogMap(final String itemGroupId, final String itemId, final String error) {
+        return new DataMap.Builder()
+                .itemGroupId(itemGroupId)
+                .itemId(itemId)
+                .errors(singletonList(error))
+                .build()
+                .getLogMap();
+    }
+
 }
