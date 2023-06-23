@@ -61,13 +61,13 @@ public class ItemGroupController {
             if (itemGroupsService.doesItemGroupExist(itemGroupData))
                 return buildItemAlreadyExistsResponse(xRequestId, itemGroupData);
 
-            final ItemGroupData savedItem = itemGroupsService.createItemGroup(itemGroupData);
-            return buildCreateSuccessResponse(xRequestId, savedItem);
+            final ItemGroupData savedItemGroup = itemGroupsService.createItemGroup(itemGroupData);
+            return buildCreateSuccessResponse(xRequestId, savedItemGroup);
         }
         catch(IllegalArgumentException | MongoOperationException serverFailureException) {
             return buildServerErrorResponse(xRequestId, serverFailureException, itemGroupData, INTERNAL_SERVER_ERROR);
         } catch(Exception errorException) {
-            return buildServerErrorResponse(xRequestId, errorException, itemGroupData, BAD_REQUEST);
+            return buildServerErrorResponse(xRequestId, errorException, itemGroupData, SERVICE_UNAVAILABLE);
         }
     }
 
@@ -145,6 +145,7 @@ public class ItemGroupController {
                 .requestId(xRequestId)
                 .orderId(itemGroupData.getOrderNumber())
                 .message(ex.getMessage())
+                .status(httpStatus.toString())
                 .build();
 
         logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX, dataMap.getLogMap());
