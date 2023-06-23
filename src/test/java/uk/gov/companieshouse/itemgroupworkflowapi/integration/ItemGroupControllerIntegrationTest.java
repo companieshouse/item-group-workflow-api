@@ -230,7 +230,7 @@ public class ItemGroupControllerIntegrationTest {
 
         Item item = new Item();
         item.setCompanyNumber(VALID_COMPANY_NUMBER);
-        item.setId(null);  // NULL for INTERNAL_SERVER_ERROR
+        item.setId(null);  // Generates INTERNAL_SERVER_ERROR
         item.setCompanyName(VALID_ITEM_COMPANY_NAME);
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
