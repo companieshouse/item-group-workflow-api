@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.error.ApiError;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
@@ -85,6 +86,12 @@ public class ItemGroupController {
 
             final ItemGroupData savedItemGroupData = itemGroupsService.createItemGroup(itemGroupData);
             return buildCreateSuccessResponse(xRequestId, savedItemGroupData);
+        }
+        catch (MongoOperationException ex) {
+            return buildErrorResponse(xRequestId, ex, itemGroupData);
+        }
+        catch (IllegalArgumentException ex) {
+            return buildErrorResponse(xRequestId, ex, itemGroupData);
         }
         catch (Exception ex) {
             return buildErrorResponse(xRequestId, ex, itemGroupData);
