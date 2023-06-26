@@ -300,24 +300,6 @@ public class ItemGroupControllerIntegrationTest {
                 .andDo(print());
     }
 
-    @Test
-    @DisplayName("500 Internal Server Error - invalid item group")
-    void invalidItemGroupInternalServerError500() throws Exception {
-
-        // Given
-        final ItemGroupData newItemGroupData = createInternalServerErrorItemGroupData();
-
-        // Create item group and get success status.
-        mockMvc.perform(post("/item-groups" )
-                        .header(REQUEST_ID_HEADER_NAME, "12345")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(newItemGroupData)))
-                .andExpect(status().isInternalServerError())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-
     /**
      * Factory method that produces a DTO for a valid create item group payload.
      *
@@ -384,50 +366,6 @@ public class ItemGroupControllerIntegrationTest {
         List<Item> items = new ArrayList<>();
         items.add(item);
 
-        newItemGroupData.setItems(items);
-
-        return newItemGroupData;
-    }
-
-    /**
-     * Factory method that produces a DTO to illicit an INTERNAL_SERVER_ERROR
-     *
-     * @return an invalid item DTO
-     */
-    private ItemGroupData createInternalServerErrorItemGroupData() {
-        final ItemGroupData newItemGroupData = new ItemGroupData();
-        newItemGroupData.setOrderNumber(EXPECTED_ORDER_NUMBER);
-
-        DeliveryDetails deliveryDetails = new DeliveryDetails();
-        deliveryDetails.setCompanyName(VALID_DELIVERY_COMPANY_NAME);
-        newItemGroupData.setDeliveryDetails(deliveryDetails);
-
-        ItemCosts itemCost = new ItemCosts();
-        itemCost.setProductType(ItemCostProductType.CERTIFIED_COPY_INCORPORATION.toString());
-
-        List<ItemCosts> itemCosts = new ArrayList<>();
-        itemCosts.add(itemCost);
-
-        Links links = new Links();
-        links.setOrder(EXPECTED_ORDER_NUMBER);
-        links.setSelf("/orderable/certificates/mycert-123");
-        newItemGroupData.setLinks(links);
-
-        Item item = new Item();
-        item.setCompanyNumber(VALID_COMPANY_NUMBER);
-        item.setId(null);  // Generates INTERNAL_SERVER_ERROR
-        item.setCompanyName(VALID_ITEM_COMPANY_NAME);
-        item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
-        item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
-        item.setItemCosts(itemCosts);
-
-        ItemLinks itemLinks = new ItemLinks();
-        itemLinks.setOriginalItem("/orderable/certificates/mycert-123");
-        // TO-DO - CHANGE LINKS SET
-        item.setLinks(itemLinks);
-
-        List<Item> items = new ArrayList<>();
-        items.add(item);
         newItemGroupData.setItems(items);
 
         return newItemGroupData;

@@ -2,6 +2,7 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemNotFoundException;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
@@ -42,9 +43,15 @@ public class ItemGroupsService {
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
-        return itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
-    }
+        boolean itemExists;
+        try {
+            itemExists = itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
+        } catch (MongoException mex) {
+            throw new MongoOperationException(MONGO_EXISTS_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
+        }
 
+        return itemExists;
+    }
     public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
         final ItemGroup itemGroup = new ItemGroup();
 
@@ -55,7 +62,14 @@ public class ItemGroupsService {
         linksGenerator.regenerateLinks(itemGroupData, itemGroupId);
         itemGroup.setData(itemGroupData);
 
-        final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
+        ItemGroup savedItemGroup;
+        try {
+            savedItemGroup = itemGroupsRepository.save(itemGroup);
+        }
+        catch(MongoException mex) {
+            throw new MongoOperationException(MONGO_SAVE_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
+        }
+
         return savedItemGroup.getData();
     }
 
