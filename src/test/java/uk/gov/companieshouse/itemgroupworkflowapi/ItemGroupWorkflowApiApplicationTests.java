@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class ItemGroupWorkflowApiApplicationTests {
 
+    @SuppressWarnings("squid:S2699") // at least one assertion
     @Test
     void contextLoads() {
     }

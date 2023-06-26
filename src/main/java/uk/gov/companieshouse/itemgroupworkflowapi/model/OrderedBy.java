@@ -1,13 +1,13 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 public class OrderedBy {
 
-    @JsonProperty("email")
     private String email;
 
-    @JsonProperty("id")
+    @Field("id")
     private String id;
 
     public String getEmail() {
@@ -28,9 +28,6 @@ public class OrderedBy {
 
     @Override
     public String toString() {
-        return "ordered_by {" +
-                "email='" + email + '\'' +
-                ", id='" + id +
-                '}';
+        return new Gson().toJson(this);
     }
 }

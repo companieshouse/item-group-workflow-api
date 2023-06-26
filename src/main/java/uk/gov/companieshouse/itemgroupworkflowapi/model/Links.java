@@ -1,11 +1,12 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 
 public class Links {
 
-    @JsonProperty("order")
     private String order;
+
+    private String self;
 
     public String getOrder() {
         return order;
@@ -15,7 +16,6 @@ public class Links {
         this.order = order;
     }
 
-    private String self;
     public String getSelf() {
         return self;
     }
@@ -26,9 +26,6 @@ public class Links {
 
     @Override
     public String toString() {
-        return "links {" +
-            "order='" + order + '\'' +
-            "self='" + self + '\'' +
-                '}';
+        return new Gson().toJson(this);
     }
 }

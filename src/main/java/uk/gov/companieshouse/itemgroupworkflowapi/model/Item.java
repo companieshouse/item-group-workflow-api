@@ -1,66 +1,57 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.JSON_DATE_TIME_FORMAT;
 
 public class Item {
 
-    @JsonProperty("company_name")
     private String companyName;
 
-    @JsonProperty("company_number")
     private String companyNumber;
 
-    @JsonProperty("company_reference")
-    private String companyReference;
+    private String customerReference;
 
-    @JsonProperty("description")
     private String description;
 
-    @JsonProperty("description_identifier")
-    @Field("description_identifier")
     private String descriptionIdentifier;
 
-    @JsonProperty("description_values")
-    @Field("description_values")
     private Map descriptionValues;
 
-    @JsonProperty("etag")
     private String etag;
 
-    @JsonProperty("id")
+    @Field("id")
     private String id;
 
-    @JsonProperty("item_costs")
-    @Field("item_costs")
     private List<ItemCosts> itemCosts;
 
-    @JsonProperty("item_options")
-    @Field("item_options")
     private Map itemOptions;
 
-    @JsonProperty("kind")
     private String kind;
 
-    @JsonProperty("links")
-    private ItemLinks itemLinks;
+    private ItemLinks links;
 
-    @JsonProperty("postage_cost")
-    @Field("postage_cost")
     private String postageCost;
 
-    @JsonProperty("postal_delivery")
     private Boolean postalDelivery;
 
-    @JsonProperty("quantity")
     private Integer quantity;
 
-    @JsonProperty("total_item_cost")
-    @Field("total_item_cost")
     private String totalItemCost;
+
+    private String digitalDocumentLocation;
+
+    private String status;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=JSON_DATE_TIME_FORMAT)
+    private LocalDateTime updatedAt;
 
     public String getCompanyName() {
         return companyName;
@@ -78,12 +69,12 @@ public class Item {
         this.companyNumber = companyNumber;
     }
 
-    public String getCompanyReference() {
-        return companyReference;
+    public String getCustomerReference() {
+        return customerReference;
     }
 
-    public void setCompanyReference(String companyReference) {
-        this.companyReference = companyReference;
+    public void setCustomerReference(String customerReference) {
+        this.customerReference = customerReference;
     }
 
     public String getDescription() {
@@ -150,12 +141,12 @@ public class Item {
         this.kind = kind;
     }
 
-    public ItemLinks getItemLinks() {
-        return itemLinks;
+    public ItemLinks getLinks() {
+        return links;
     }
 
-    public void setItemLinks(ItemLinks itemLinks) {
-        this.itemLinks = itemLinks;
+    public void setLinks(ItemLinks links) {
+        this.links = links;
     }
 
     public String getPostageCost() {
@@ -190,26 +181,78 @@ public class Item {
         this.totalItemCost = totalItemCost;
     }
 
-    @Override
-    public String toString() {
-        return "item {" +
-                "company_name='" + companyName + '\'' +
-                ", company_number='" + companyNumber +
-                ", company_reference='" + companyReference +
-                ", description='" + description +
-                ", description_identifier='" + descriptionIdentifier +
-                ", description_values='" + descriptionValues +
-                ", etag='" + etag +
-                ", id='" + id +
-                ", item_costs='" + itemCosts +
-                ", item_options='" + itemOptions +
-                ", kind='" + kind +
-                ", links='" + itemLinks +
-                ", postage_cost='" + postageCost +
-                ", postal_delivery='" + postalDelivery +
-                ", quantity='" + quantity +
-                ", total_item_cost='" + totalItemCost +
-                '}';
+    public String getDigitalDocumentLocation() {
+        return digitalDocumentLocation;
     }
 
+    public void setDigitalDocumentLocation(String digitalDocumentLocation) {
+        this.digitalDocumentLocation = digitalDocumentLocation;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        var item = (Item) o;
+        return Objects.equals(companyName, item.companyName) &&
+                Objects.equals(companyNumber, item.companyNumber) &&
+                Objects.equals(customerReference, item.customerReference) &&
+                Objects.equals(description, item.description) &&
+                Objects.equals(descriptionIdentifier, item.descriptionIdentifier) &&
+                Objects.equals(descriptionValues, item.descriptionValues) &&
+                Objects.equals(etag, item.etag) && Objects.equals(id, item.id) &&
+                Objects.equals(itemCosts, item.itemCosts) &&
+                Objects.equals(itemOptions, item.itemOptions) &&
+                Objects.equals(kind, item.kind) &&
+                Objects.equals(links, item.links) &&
+                Objects.equals(postageCost, item.postageCost) &&
+                Objects.equals(postalDelivery, item.postalDelivery) &&
+                Objects.equals(quantity, item.quantity) &&
+                Objects.equals(totalItemCost, item.totalItemCost) &&
+                Objects.equals(digitalDocumentLocation, item.digitalDocumentLocation) &&
+                Objects.equals(status, item.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(companyName,
+                companyNumber,
+                customerReference,
+                description,
+                descriptionIdentifier,
+                descriptionValues,
+                etag,
+                id,
+                itemCosts,
+                itemOptions,
+                kind,
+                links,
+                postageCost,
+                postalDelivery,
+                quantity,
+                totalItemCost,
+                digitalDocumentLocation,
+                status);
+    }
 }
