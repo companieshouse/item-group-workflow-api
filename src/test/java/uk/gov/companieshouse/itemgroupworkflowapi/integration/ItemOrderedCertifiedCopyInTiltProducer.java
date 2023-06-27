@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.SAME_PARTITION_KEY;
 
@@ -47,7 +48,6 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.SAME
 class ItemOrderedCertifiedCopyInTiltProducer {
 
     private static final String KAFKA_IN_TILT_BOOTSTRAP_SERVER_URL = "localhost:29092";
-    private static final String TOPIC_NAME = "item-ordered-certified-copy";
 
     @Rule
     private static final EnvironmentVariables ENVIRONMENT_VARIABLES;
@@ -130,7 +130,6 @@ class ItemOrderedCertifiedCopyInTiltProducer {
         }
 
     }
-
 
     @Autowired
     private KafkaProducer<String, ItemOrderedCertifiedCopy> testProducer;

@@ -24,13 +24,16 @@ public class ItemGroupsService {
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
     private final LinksGeneratorService linksGenerator;
+    private final KafkaProducerService producerService;
 
     public ItemGroupsService(LoggingUtils logger,
                              ItemGroupsRepository itemGroupsRepository,
-                             LinksGeneratorService linksGenerator) {
+                             LinksGeneratorService linksGenerator,
+                             KafkaProducerService producerService) {
         this.logger = logger;
         this.itemGroupsRepository = itemGroupsRepository;
         this.linksGenerator = linksGenerator;
+        this.producerService = producerService;
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
@@ -47,8 +50,9 @@ public class ItemGroupsService {
         linksGenerator.regenerateLinks(itemGroupData, itemGroupId);
         itemGroup.setData(itemGroupData);
 
-        final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
-        return savedItemGroup.getData();
+        final ItemGroupData savedItemGroupData = itemGroupsRepository.save(itemGroup).getData();
+        producerService.produceMessages(savedItemGroupData);
+        return savedItemGroupData;
     }
 
     public Item getItem(final String itemGroupId, final String itemId) {
