@@ -62,7 +62,7 @@ public class KafkaProducerService implements InitializingBean {
                     .setCompanyNumber(item.getCompanyNumber())
                     .setFilingHistoryId("TODO DCAC-68")
                     .setFilingHistoryType("TODO DCAC-68")
-                    .setItemGroupItemUri(item.getLinks().getSelf())
+                    .setGroupItem(item.getLinks().getSelf())
                     .setFilingHistoryDescription("TODO DCAC-68")
                     .setFilingHistoryDescriptionValues(
                             Map.of("TODO DCAC-68 field 1", "TODO DCAC-68 field 1 value"))

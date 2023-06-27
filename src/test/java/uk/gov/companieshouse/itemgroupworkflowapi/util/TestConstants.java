@@ -13,7 +13,7 @@ public class TestConstants {
     public static final ItemOrderedCertifiedCopy CERTIFIED_COPY = ItemOrderedCertifiedCopy.newBuilder()
             .setOrderNumber("ORD-152416-079544")
             .setItemId("CCD-768116-517930")
-            .setItemGroupItemUri("/item-groups/IG-000216-873460/items/CCD-768116-517930")
+            .setGroupItem("/item-groups/IG-000216-873460/items/CCD-768116-517930")
             .setCompanyName("Test Company Limited")
             .setCompanyNumber("00006400")
             .setFilingHistoryDescription("A test filing history document")
