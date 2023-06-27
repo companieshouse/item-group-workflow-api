@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
@@ -49,9 +50,10 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APP
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class.
  */
 @SpringBootTest
+@EmbeddedKafka
 @AutoConfigureMockMvc
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
-public class ItemGroupControllerIntegrationTest {
+class ItemGroupControllerIntegrationTest {
 
     private static final String EXPECTED_ORDER_NUMBER = "123456";
     private static final String VALID_DELIVERY_COMPANY_NAME = "Delivery Test Company";
