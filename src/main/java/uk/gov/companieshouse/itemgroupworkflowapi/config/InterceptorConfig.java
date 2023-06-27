@@ -9,13 +9,17 @@ import uk.gov.companieshouse.itemgroupworkflowapi.interceptor.UserAuthorisationI
 
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
-    @Autowired
-    UserAuthorisationInterceptor userAuthenticationInterceptor;
-    @Autowired
-    UserAuthenticationInterceptor userAuthorisationInterceptor;
+    private final UserAuthenticationInterceptor userAuthenticationInterceptor;
+    private final UserAuthorisationInterceptor userAuthorisationInterceptor;
 
+    @Autowired
+    public InterceptorConfig(UserAuthenticationInterceptor userAuthenticationInterceptor,
+                             UserAuthorisationInterceptor userAuthorisationInterceptor) {
+        this.userAuthenticationInterceptor = userAuthenticationInterceptor;
+        this.userAuthorisationInterceptor = userAuthorisationInterceptor;
+    }
     @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userAuthenticationInterceptor);
         registry.addInterceptor(userAuthorisationInterceptor);
     }
