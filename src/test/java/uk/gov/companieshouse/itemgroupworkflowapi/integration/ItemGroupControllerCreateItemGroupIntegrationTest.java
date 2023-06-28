@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import consumer.deserialization.AvroDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -35,23 +33,16 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifier;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.TimestampedEntity;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.IdGenerator;
-import uk.gov.companieshouse.itemgroupworkflowapi.util.TimestampedEntityVerifier;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,27 +53,22 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
 
 /**
- * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class.
+ * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
+ * handling of the create item group POST request only.
  */
 @SpringBootTest
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
-class ItemGroupControllerIntegrationTest {
+class ItemGroupControllerCreateItemGroupIntegrationTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("ItemGroupControllerIntegrationTest");
 
@@ -92,16 +78,6 @@ class ItemGroupControllerIntegrationTest {
     private static final String VALID_COMPANY_NUMBER = "IG-12345-67890";
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
 
-    private static final String ITEM_GROUP_ID = "IG-922016-860413";
-    private static final String ITEM_ID = "111-222-333";
-    private static final String UNKNOWN_ITEM_ID = "111-222-4444";
-    private static final String PATCH_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/" + ITEM_ID;
-    private static final String PATCH_UNKNOWN_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/" + UNKNOWN_ITEM_ID;
-    private static final String REQUEST_ID = "WmuRTepX70C635NKm5rbYTciSsOR";
-
-    private static final String EXPECTED_DIGITAL_DOCUMENT_LOCATION =
-            "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
-    private static final String EXPECTED_STATUS = "satisfied";
     private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 5;
 
     private static final ItemOrderedCertifiedCopy EXPECTED_CERTIFIED_COPY = ItemOrderedCertifiedCopy.newBuilder()
@@ -115,47 +91,6 @@ class ItemGroupControllerIntegrationTest {
             .setFilingHistoryType("TODO DCAC-68")
             .setFilingHistoryDescriptionValues(Map.of("TODO DCAC-68 field 1", "TODO DCAC-68 field 1 value"))
             .build();
-
-    private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
-
-        private final ItemGroup group;
-
-        private ItemGroupTimeStampedEntity(ItemGroup group) {
-            this.group = group;
-        }
-
-        @Override
-        public LocalDateTime getCreatedAt() {
-            return group.getCreatedAt();
-        }
-
-        @Override
-        public LocalDateTime getUpdatedAt() {
-            return group.getUpdatedAt();
-        }
-    }
-
-    private static final class ItemTimestampedEntity implements TimestampedEntity {
-
-        private final Item item;
-        private final ItemGroup group;
-
-        private ItemTimestampedEntity(Item item, ItemGroup group) {
-            this.item = item;
-            this.group = group;
-        }
-
-        @Override
-        public LocalDateTime getCreatedAt() {
-            // use item group's creation time as there is none on the item
-            return group.getCreatedAt();
-        }
-
-        @Override
-        public LocalDateTime getUpdatedAt() {
-            return item.getUpdatedAt();
-        }
-    }
 
     @Configuration
     static class Config {
@@ -196,9 +131,6 @@ class ItemGroupControllerIntegrationTest {
 
     @Autowired
     private ItemGroupsRepository repository;
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
     @MockBean
     private IdGenerator idGenerator;
@@ -286,119 +218,6 @@ class ItemGroupControllerIntegrationTest {
 
         verifyWhetherMessageIsReceived(false);
     }
-
-    @Test
-    @DisplayName("patch item handles valid request successfully")
-    void patchItemSuccessfully() throws Exception {
-
-        setUpItemGroup();
-
-        final var timestamps = new TimestampedEntityVerifier();
-        timestamps.start();
-
-        mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.digital_document_location", is(EXPECTED_DIGITAL_DOCUMENT_LOCATION)))
-                .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
-                .andDo(print());
-
-        timestamps.end();
-
-        final var optionalGroup = repository.findById(ITEM_GROUP_ID);
-        assertThat(optionalGroup.isPresent(), is(true));
-        final var retrievedGroup = optionalGroup.get();
-        final var retrievedItem = retrievedGroup.getData().getItems().get(0);
-        assertThat(retrievedItem.getDigitalDocumentLocation(), is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
-        assertThat(retrievedItem.getStatus(), is(EXPECTED_STATUS));
-        timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(new ItemGroupTimeStampedEntity(retrievedGroup));
-        timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(
-                new ItemTimestampedEntity(retrievedItem, retrievedGroup));
-    }
-
-    @Test
-    @DisplayName("patch item rejects request missing the status field")
-    void patchItemRejectsRequestWithoutStatus() throws Exception {
-        mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_without_status")))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("status: must not be null")))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("patch item rejects request with an invalid status field value")
-    void patchItemRejectsRequestWithInvalidStatus() throws Exception {
-        mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_with_bad_status")))
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                        content().string(containsString(
-                                "status: must be one of [pending, processing, satisfied, cancelled, failed]")))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("patch item patches without the digital_document_location field")
-    void patchItemPatchesWithoutDocumentLocation() throws Exception {
-
-        setUpItemGroup();
-
-        mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_without_document_location")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.digital_document_location").doesNotHaveJsonPath())
-                .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("patch item rejects request with an invalid digital_document_location field value")
-    void patchItemRejectsRequestWithInvalidDocumentLocation() throws Exception {
-        mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                        content().string(containsString(
-                                "digital_document_location: " +
-                                        "s3:// document-api-images-cidev/docs/" +
-                                        "--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf " +
-                                        "is not a valid URI.")))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("patch item reports item not found when it cannot find it")
-    void patchItemReportsNotFoundWhenCannotFindItem() throws Exception {
-        mockMvc.perform(patch(PATCH_UNKNOWN_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body")))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("")) // NOTE actual response does have meaningful content
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("patch item patches without a Content-Type=application/merge-patch+json header value ")
-    void patchItemRejectsRequestWithoutApplicationMergePatchContentType() throws Exception {
-        mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .content(getJsonFromFile("patch_item_body")))
-                .andExpect(status().isUnsupportedMediaType())
-                .andDo(print());
-    }
-
 
     /**
      * Factory method that produces a DTO for a valid create item group payload.
@@ -492,15 +311,6 @@ class ItemGroupControllerIntegrationTest {
 
     private void resetMessageReceivedLatch() {
         messageReceivedLatch = new CountDownLatch(1);
-    }
-
-    private void setUpItemGroup() throws IOException {
-        final String itemGroup = getJsonFromFile("item_group");
-        mongoTemplate.insert(Document.parse(itemGroup), "item_groups");
-    }
-
-    private String getJsonFromFile(final String fileBasename) throws IOException {
-        return new String(Files.readAllBytes(Paths.get("src/test/resources/testdata/" + fileBasename + ".json")));
     }
 
 }
