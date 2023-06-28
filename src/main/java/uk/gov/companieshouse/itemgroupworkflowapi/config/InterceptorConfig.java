@@ -18,6 +18,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
         this.userAuthenticationInterceptor = userAuthenticationInterceptor;
         this.userAuthorisationInterceptor = userAuthorisationInterceptor;
     }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userAuthenticationInterceptor);

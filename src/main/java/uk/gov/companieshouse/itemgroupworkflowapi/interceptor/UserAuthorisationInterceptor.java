@@ -18,6 +18,7 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsCon
 @Component
 public class UserAuthorisationInterceptor implements HandlerInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
+
     /**
      * @return true if ERIC-Authorised-Key-Roles="*" or false and sets response status to UNAUTHORIZED
      */

@@ -14,6 +14,7 @@ public class LoggingUtilsConfiguration {
     public static final String IDENTITY_LOG_KEY = "ERIC Identity";
     public static final String IDENTITY_TYPE_LOG_KEY = "ERIC Identity Type";
     public static final String MISSING_REQUIRED_INFO = "Required information missing";
+
     @Bean
     Logger getLogger(){
         return LoggerFactory.getLogger(APPLICATION_NAMESPACE);
