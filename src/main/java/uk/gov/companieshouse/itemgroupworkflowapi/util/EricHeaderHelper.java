@@ -3,9 +3,9 @@ package uk.gov.companieshouse.itemgroupworkflowapi.util;
 import org.apache.commons.lang.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
-public class EricHeaderHelper {
-    public static final String ERIC_IDENTITY            = "ERIC-Identity";
-    public static final String ERIC_IDENTITY_TYPE       = "ERIC-Identity-Type";
+public final class EricHeaderHelper {
+    public static final String ERIC_IDENTITY = "ERIC-Identity";
+    public static final String ERIC_IDENTITY_TYPE = "ERIC-Identity-Type";
 
     private EricHeaderHelper() { }
 
@@ -21,8 +21,7 @@ public class EricHeaderHelper {
         String headerValue = request.getHeader(headerName);
         if (StringUtils.isNotBlank(headerValue)) {
             return headerValue;
-        } else {
-            return null;
         }
+        return null;
     }
 }

@@ -19,6 +19,10 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsCon
 public class UserAuthenticationInterceptor implements HandlerInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
 
+    /**
+     * @return true if ERIC-Identity-Type and ERIC-Identity headers exist and have a value
+     * or false and sets response status to UNAUTHORIZED
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Map<String, Object> logMap = new HashMap<>();
@@ -41,7 +45,6 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
             response.setStatus(UNAUTHORIZED.value());
             return false;  // NOT Authorised.
         }
-
         return true;   // Authorised OK...
     }
 }
