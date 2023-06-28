@@ -44,8 +44,7 @@
         <jackson.version>2.15.2</jackson.version>
         <guava.version>32.0.0-jre</guava.version>
         <api-sdk-java.version>4.3.30</api-sdk-java.version>
-        <!-- TODO DCAC-68: > 1.0.32 -->
-        <kafka-models.version>unversioned</kafka-models.version>
+        <kafka-models.version>1.0.33</kafka-models.version>
         <ch-kafka.version>1.4.8</ch-kafka.version>
         <!-- system-rules: 1.17.2 is the latest version that works with JUnit 5.
              See https://github.com/stefanbirkner/system-rules/issues/70 -->
