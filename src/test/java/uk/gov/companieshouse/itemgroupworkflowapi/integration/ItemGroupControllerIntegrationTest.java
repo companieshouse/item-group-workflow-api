@@ -69,6 +69,16 @@ public class ItemGroupControllerIntegrationTest {
     private static final String EXPECTED_DIGITAL_DOCUMENT_LOCATION =
             "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
     private static final String EXPECTED_STATUS = "satisfied";
+    //Header key/values for authorisation and authentication
+    public static final String ERIC_IDENTITY_TYPE_HEADER_NAME = "ERIC-Identity-Type";
+    public static final String ERIC_IDENTITY_TYPE_HEADER_VALUE = "apikey";
+
+    public static final String ERIC_IDENTITY_HEADER_NAME = "ERIC-Identity";
+    public static final String ERIC_IDENTITY_HEADER_VALUE = "some-key";
+
+    public static final String ERIC_AUTHORISED_ROLES_HEADER_NAME = "ERIC-Authorised-Key-Roles";
+    public static final String ERIC_AUTHORISED_ROLES_HEADER_VALUE = "*";
+
 
     private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
 
@@ -138,6 +148,9 @@ public class ItemGroupControllerIntegrationTest {
         // When and Then
         mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(newItemGroupData)))
@@ -155,6 +168,9 @@ public class ItemGroupControllerIntegrationTest {
         // When and Then
         mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(newItemGroupData)))
@@ -172,6 +188,9 @@ public class ItemGroupControllerIntegrationTest {
         // Create item group and get success status.
         mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(newItemGroupData)))
@@ -199,6 +218,9 @@ public class ItemGroupControllerIntegrationTest {
 
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isOk())
@@ -224,6 +246,9 @@ public class ItemGroupControllerIntegrationTest {
     void patchItemRejectsRequestWithoutStatus() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_without_status")))
                 .andExpect(status().isBadRequest())
@@ -236,6 +261,9 @@ public class ItemGroupControllerIntegrationTest {
     void patchItemRejectsRequestWithInvalidStatus() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_bad_status")))
                 .andExpect(status().isBadRequest())
@@ -253,6 +281,9 @@ public class ItemGroupControllerIntegrationTest {
 
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_without_document_location")))
                 .andExpect(status().isOk())
@@ -266,6 +297,9 @@ public class ItemGroupControllerIntegrationTest {
     void patchItemRejectsRequestWithInvalidDocumentLocation() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
                 .andExpect(status().isBadRequest())
@@ -283,6 +317,9 @@ public class ItemGroupControllerIntegrationTest {
     void patchItemReportsNotFoundWhenCannotFindItem() throws Exception {
         mockMvc.perform(patch(PATCH_UNKNOWN_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isNotFound())
