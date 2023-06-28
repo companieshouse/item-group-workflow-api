@@ -92,12 +92,8 @@ public class ItemGroupController {
         }
         catch (IllegalArgumentException ex) {
             return buildServerErrorResponse(xRequestId, ex, itemGroupData, BAD_REQUEST);
-        }
-        catch (MongoOperationException ex) {
+        } catch (Exception ex) {
             return buildServerErrorResponse(xRequestId, ex, itemGroupData, INTERNAL_SERVER_ERROR);
-        }
-        catch (Exception ex) {
-            return buildServerErrorResponse(xRequestId, ex, itemGroupData, SERVICE_UNAVAILABLE);
         }
     }
 
