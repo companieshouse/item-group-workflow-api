@@ -1,17 +1,32 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import consumer.deserialization.AvroDeserializer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
@@ -27,6 +42,9 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.TimestampedEntity;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.TimestampedEntityVerifier;
+import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,16 +52,22 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
 
 /**
@@ -52,8 +76,11 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APP
 @SpringBootTest
 @EmbeddedKafka
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
 class ItemGroupControllerIntegrationTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("ItemGroupControllerIntegrationTest");
 
     private static final String EXPECTED_ORDER_NUMBER = "123456";
     private static final String VALID_DELIVERY_COMPANY_NAME = "Delivery Test Company";
@@ -71,6 +98,7 @@ class ItemGroupControllerIntegrationTest {
     private static final String EXPECTED_DIGITAL_DOCUMENT_LOCATION =
             "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
     private static final String EXPECTED_STATUS = "satisfied";
+    private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 5;
 
     private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
 
@@ -113,6 +141,37 @@ class ItemGroupControllerIntegrationTest {
         }
     }
 
+    @Configuration
+    static class Config {
+
+        @Bean
+        public ConsumerFactory<String, ItemOrderedCertifiedCopy> consumerFactory(
+                @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers) {
+            return new DefaultKafkaConsumerFactory<>(
+                    Map.of(
+                            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
+                            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class,
+                            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class,
+                            ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class,
+                            ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, AvroDeserializer.class,
+                            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest",
+                            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"),
+                    new StringDeserializer(),
+                    new ErrorHandlingDeserializer<>(new AvroDeserializer<>(ItemOrderedCertifiedCopy.class)));
+        }
+
+        @Bean
+        public ConcurrentKafkaListenerContainerFactory<String, ItemOrderedCertifiedCopy> kafkaListenerContainerFactory(
+                ConsumerFactory<String, ItemOrderedCertifiedCopy> consumerFactory) {
+            ConcurrentKafkaListenerContainerFactory<String, ItemOrderedCertifiedCopy> factory =
+                    new ConcurrentKafkaListenerContainerFactory<>();
+            factory.setConsumerFactory(consumerFactory);
+            factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+            return factory;
+        }
+
+    }
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -125,9 +184,18 @@ class ItemGroupControllerIntegrationTest {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    private CountDownLatch messageReceivedLatch;
+    private ItemOrderedCertifiedCopy messageReceived;
+
+    @BeforeEach
+    void setUp() {
+        resetMessageReceivedLatch();
+    }
+
     @AfterEach
     void tearDown() {
         repository.deleteAll();
+        messageReceived = null;
     }
 
     @Test
@@ -145,6 +213,9 @@ class ItemGroupControllerIntegrationTest {
                         .content(mapper.writeValueAsString(newItemGroupData)))
                 .andExpect(status().isCreated())
                 .andDo(MockMvcResultHandlers.print());
+
+        verifyWhetherMessageIsReceived(true);
+        assertThat(messageReceived, is(notNullValue()));
     }
 
     @Test
@@ -162,6 +233,8 @@ class ItemGroupControllerIntegrationTest {
                         .content(mapper.writeValueAsString(newItemGroupData)))
                 .andExpect(status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
+
+        verifyWhetherMessageIsReceived(false);
     }
 
     @Test
@@ -180,6 +253,9 @@ class ItemGroupControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andDo(MockMvcResultHandlers.print());
 
+        verifyWhetherMessageIsReceived(true);
+        resetMessageReceivedLatch();
+
         // Attempt to create the same item group and get failure status, 409 - CONFLICT.
         mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
@@ -188,6 +264,8 @@ class ItemGroupControllerIntegrationTest {
                         .content(mapper.writeValueAsString(newItemGroupData)))
                 .andExpect(status().isConflict())
                 .andDo(MockMvcResultHandlers.print());
+
+        verifyWhetherMessageIsReceived(false);
     }
 
     @Test
@@ -372,6 +450,23 @@ class ItemGroupControllerIntegrationTest {
         newItemGroupData.setItems(items);
 
         return newItemGroupData;
+    }
+
+    @KafkaListener(topics = TOPIC_NAME, groupId = "test-group")
+    public void receiveMessage(final @Payload ItemOrderedCertifiedCopy message) {
+        LOGGER.info("Received message: " + message);
+        messageReceivedLatch.countDown();
+        messageReceived = message;
+    }
+
+    private void verifyWhetherMessageIsReceived(final boolean messageIsReceived) throws InterruptedException {
+        LOGGER.info("Waiting to receive message for up to " + MESSAGE_WAIT_TIMEOUT_SECONDS + " seconds.");
+        final var received = messageReceivedLatch.await(MESSAGE_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        assertThat(received, is(messageIsReceived));
+    }
+
+    private void resetMessageReceivedLatch() {
+        messageReceivedLatch = new CountDownLatch(1);
     }
 
     private void setUpItemGroup() throws IOException {
