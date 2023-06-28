@@ -200,6 +200,9 @@ public class ItemGroupControllerIntegrationTest {
         // Attempt to create the same item group and get failure status, 409 - CONFLICT.
         mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(newItemGroupData)))
