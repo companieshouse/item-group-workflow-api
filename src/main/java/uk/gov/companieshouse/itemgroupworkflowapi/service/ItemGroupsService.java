@@ -9,9 +9,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.logging.util.DataMap;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Map;
 
 import static java.time.LocalDateTime.now;
@@ -20,20 +18,23 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 public class ItemGroupsService {
-    private static String ITEM_GROUP_CREATE_ID_PREFIX = "IG-";
+
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
     private final LinksGeneratorService linksGenerator;
     private final KafkaProducerService producerService;
+    private final IdGenerator idGenerator;
 
     public ItemGroupsService(LoggingUtils logger,
                              ItemGroupsRepository itemGroupsRepository,
                              LinksGeneratorService linksGenerator,
-                             KafkaProducerService producerService) {
+                             KafkaProducerService producerService,
+                             IdGenerator idGenerator) {
         this.logger = logger;
         this.itemGroupsRepository = itemGroupsRepository;
         this.linksGenerator = linksGenerator;
         this.producerService = producerService;
+        this.idGenerator = idGenerator;
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
@@ -43,7 +44,7 @@ public class ItemGroupsService {
     public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
         final ItemGroup itemGroup = new ItemGroup();
 
-        String itemGroupId = autoGenerateId();
+        String itemGroupId = idGenerator.generateId();
         itemGroup.setId(itemGroupId);
 
         setCreationTimeStamp(itemGroup);
@@ -90,17 +91,6 @@ public class ItemGroupsService {
         final LocalDateTime now = LocalDateTime.now();
         itemGroup.setCreatedAt(now);
         itemGroup.setUpdatedAt(now);
-    }
-
-    private String autoGenerateId() {
-        SecureRandom random = new SecureRandom();
-        byte[] values = new byte[4];
-        random.nextBytes(values);
-        String rand = String.format("%04d", random.nextInt(9999));
-        String time = String.format("%08d", Calendar.getInstance().getTimeInMillis() / 100000L);
-        String rawId = rand + time;
-        String[] tranId = rawId.split("(?<=\\G.{6})");
-        return ITEM_GROUP_CREATE_ID_PREFIX + String.join("-", tranId);
     }
 
     private ItemNotFoundException itemNotFound(final String itemGroupId, final String itemId) {

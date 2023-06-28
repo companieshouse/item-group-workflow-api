@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +42,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.TimestampedEntity;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
+import uk.gov.companieshouse.itemgroupworkflowapi.service.IdGenerator;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.TimestampedEntityVerifier;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 import uk.gov.companieshouse.logging.Logger;
@@ -53,6 +55,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -60,6 +63,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -99,6 +103,18 @@ class ItemGroupControllerIntegrationTest {
             "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
     private static final String EXPECTED_STATUS = "satisfied";
     private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 5;
+
+    private static final ItemOrderedCertifiedCopy EXPECTED_CERTIFIED_COPY = ItemOrderedCertifiedCopy.newBuilder()
+            .setOrderNumber("123456")
+            .setItemId("111-222-333")
+            .setGroupItem("/item-groups/IG-123456-123456/items/111-222-333")
+            .setCompanyName("Item Test Company")
+            .setCompanyNumber("IG-12345-67890")
+            .setFilingHistoryDescription("TODO DCAC-68")
+            .setFilingHistoryId("TODO DCAC-68")
+            .setFilingHistoryType("TODO DCAC-68")
+            .setFilingHistoryDescriptionValues(Map.of("TODO DCAC-68 field 1", "TODO DCAC-68 field 1 value"))
+            .build();
 
     private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
 
@@ -184,12 +200,16 @@ class ItemGroupControllerIntegrationTest {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @MockBean
+    private IdGenerator idGenerator;
+
     private CountDownLatch messageReceivedLatch;
     private ItemOrderedCertifiedCopy messageReceived;
 
     @BeforeEach
     void setUp() {
         resetMessageReceivedLatch();
+        when(idGenerator.generateId()).thenReturn("IG-123456-123456");
     }
 
     @AfterEach
@@ -214,8 +234,7 @@ class ItemGroupControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andDo(MockMvcResultHandlers.print());
 
-        verifyWhetherMessageIsReceived(true);
-        assertThat(messageReceived, is(notNullValue()));
+        verifyExpectedMessageIsReceived();
     }
 
     @Test
@@ -457,6 +476,12 @@ class ItemGroupControllerIntegrationTest {
         LOGGER.info("Received message: " + message);
         messageReceivedLatch.countDown();
         messageReceived = message;
+    }
+
+    private void verifyExpectedMessageIsReceived() throws InterruptedException {
+        verifyWhetherMessageIsReceived(true);
+        assertThat(messageReceived, is(notNullValue()));
+        assertThat(Objects.deepEquals(messageReceived, EXPECTED_CERTIFIED_COPY), is(true));
     }
 
     private void verifyWhetherMessageIsReceived(final boolean messageIsReceived) throws InterruptedException {
