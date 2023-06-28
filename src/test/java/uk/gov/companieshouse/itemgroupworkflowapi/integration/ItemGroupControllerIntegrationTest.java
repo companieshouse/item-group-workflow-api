@@ -300,7 +300,6 @@ public class ItemGroupControllerIntegrationTest {
                 .andDo(print());
     }
 
-
     /**
      * Factory method that produces a DTO for a valid create item group payload.
      *

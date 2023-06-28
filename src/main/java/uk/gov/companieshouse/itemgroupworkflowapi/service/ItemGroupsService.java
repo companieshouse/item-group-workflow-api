@@ -2,12 +2,19 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemNotFoundException;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.logging.util.DataMap;
+import static org.apache.commons.lang.StringUtils.isBlank;
+
+import com.mongodb.MongoException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -21,6 +28,8 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ItemGroupsService {
     private static String ITEM_GROUP_CREATE_ID_PREFIX = "IG-";
+    public static String MONGO_EXISTS_EXCEPTION_MESSAGE = "Mongo EXISTS operation failed for item group order number : ";
+    public static String MONGO_SAVE_EXCEPTION_MESSAGE = "Mongo SAVE operation failed for item group order number : ";
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
     private final LinksGeneratorService linksGenerator;
@@ -34,9 +43,15 @@ public class ItemGroupsService {
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
-        return itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
-    }
+        boolean itemExists;
+        try {
+            itemExists = itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
+        } catch (MongoException mex) {
+            throw new MongoOperationException(MONGO_EXISTS_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
+        }
 
+        return itemExists;
+    }
     public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
         final ItemGroup itemGroup = new ItemGroup();
 
@@ -47,7 +62,14 @@ public class ItemGroupsService {
         linksGenerator.regenerateLinks(itemGroupData, itemGroupId);
         itemGroup.setData(itemGroupData);
 
-        final ItemGroup savedItemGroup = itemGroupsRepository.save(itemGroup);
+        ItemGroup savedItemGroup;
+        try {
+            savedItemGroup = itemGroupsRepository.save(itemGroup);
+        }
+        catch(MongoException mex) {
+            throw new MongoOperationException(MONGO_SAVE_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
+        }
+
         return savedItemGroup.getData();
     }
 
