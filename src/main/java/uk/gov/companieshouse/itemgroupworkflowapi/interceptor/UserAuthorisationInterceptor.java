@@ -1,11 +1,14 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.interceptor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.api.util.security.AuthorisationUtil;
+import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.logging.util.DataMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +20,12 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsCon
 
 @Component
 public class UserAuthorisationInterceptor implements HandlerInterceptor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
+    @Autowired
+    private final LoggingUtils logger;
+
+    public UserAuthorisationInterceptor(LoggingUtils logger) {
+        this.logger = logger;
+    }
 
     /**
      * @return true if ERIC-Authorised-Key-Roles="*" or false and sets response status to UNAUTHORIZED
@@ -32,15 +40,20 @@ public class UserAuthorisationInterceptor implements HandlerInterceptor {
     }
 
     private boolean hasInternalUserRole(HttpServletRequest request) {
-        Map<String, Object> logMap = new HashMap<>();
-        logMap.put(REQUEST_ID_LOG_KEY, request.getHeader(REQUEST_ID_HEADER_NAME));
-
         if(AuthorisationUtil.hasInternalUserRole(request)) {
-            LOGGER.trace("API is permitted to view the resource", logMap);
+            DataMap dataMap = new DataMap.Builder()
+                    .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
+                    .build();
+            logger.getLogger().trace("API is permitted to view the resource",
+                    dataMap.getLogMap());
             return true;
         } else {
-            logMap.put(STATUS_LOG_KEY, UNAUTHORIZED);
-            LOGGER.error("API is NOT permitted to perform a " + request.getMethod(), logMap);
+            DataMap dataMap = new DataMap.Builder()
+                    .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
+                    .status(UNAUTHORIZED.toString())
+                    .build();
+            logger.getLogger().info("API is NOT permitted to perform a " + request.getMethod(),
+                    dataMap.getLogMap());
             return false;
         }
     }
