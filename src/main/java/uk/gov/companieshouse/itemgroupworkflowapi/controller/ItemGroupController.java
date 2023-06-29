@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import jakarta.json.JsonMergePatch;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.error.ApiError;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
 
@@ -86,8 +90,10 @@ public class ItemGroupController {
             final ItemGroupData savedItemGroupData = itemGroupsService.createItemGroup(itemGroupData);
             return buildCreateSuccessResponse(xRequestId, savedItemGroupData);
         }
-        catch (Exception ex) {
-            return buildErrorResponse(xRequestId, ex, itemGroupData);
+        catch (IllegalArgumentException ex) {
+            return buildServerErrorResponse(xRequestId, ex, itemGroupData, BAD_REQUEST);
+        } catch (Exception ex) {
+            return buildServerErrorResponse(xRequestId, ex, itemGroupData, INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -177,21 +183,23 @@ public class ItemGroupController {
         return ResponseEntity.status(CONFLICT).body(itemGroupData);
     }
     /**
-     * @return HttpStatus.BAD_REQUEST
+     * @return Stand-in for global exception handler.
      */
-    private ResponseEntity<Object> buildErrorResponse(String xRequestId,
-                                                      final Exception ex,
-                                                      final ItemGroupData itemGroupData) {
+    private ResponseEntity<Object> buildServerErrorResponse(
+        String xRequestId,
+        final Exception ex,
+        final ItemGroupData itemGroupData,
+        HttpStatus httpStatus) {
         DataMap dataMap = new DataMap.Builder()
             .requestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .message(ex.getMessage())
+            .status(httpStatus.toString())
             .build();
 
         logger.getLogger().error(CREATE_ITEM_GROUP_ERROR_PREFIX, dataMap.getLogMap());
-        return ResponseEntity.status(BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(httpStatus).body(ex.getMessage());
     }
-
     private Map<String, Object> getLogMap(final String itemGroupId, final String itemId, final String requestId) {
         return new DataMap.Builder()
                 .itemGroupId(itemGroupId)
