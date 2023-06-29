@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORIZED_KEY_ROLES;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
 
 @ExtendWith(MockitoExtension.class)
 public class UserAuthorisationInterceptorTest {
@@ -43,7 +43,7 @@ public class UserAuthorisationInterceptorTest {
         lenient()
                 .doReturn("*")
                 .when(request)
-                .getHeader(ERIC_AUTHORIZED_KEY_ROLES);
+                .getHeader(ERIC_AUTHORISED_ROLES_HEADER_NAME);
 
         assertTrue(userAuthorisationInterceptor.preHandle(request, response, null));
     }
@@ -53,7 +53,7 @@ public class UserAuthorisationInterceptorTest {
         lenient()
                 .doReturn(null)
                 .when(request)
-                .getHeader(ERIC_AUTHORIZED_KEY_ROLES);
+                .getHeader(ERIC_AUTHORISED_ROLES_HEADER_NAME);
 
         assertFalse(userAuthorisationInterceptor.preHandle(request, response, null));
     }
@@ -63,7 +63,7 @@ public class UserAuthorisationInterceptorTest {
         lenient()
                 .doReturn("xxx")
                 .when(request)
-                .getHeader(ERIC_AUTHORIZED_KEY_ROLES);
+                .getHeader(ERIC_AUTHORISED_ROLES_HEADER_NAME);
 
         assertFalse(userAuthorisationInterceptor.preHandle(request, response, null));
     }

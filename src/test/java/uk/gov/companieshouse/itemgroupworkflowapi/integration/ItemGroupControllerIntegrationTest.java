@@ -44,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.*;
 
 /**
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class.
@@ -69,16 +70,6 @@ public class ItemGroupControllerIntegrationTest {
     private static final String EXPECTED_DIGITAL_DOCUMENT_LOCATION =
             "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
     private static final String EXPECTED_STATUS = "satisfied";
-    //Header key/values for authorisation and authentication
-    public static final String ERIC_IDENTITY_TYPE_HEADER_NAME = "ERIC-Identity-Type";
-    public static final String ERIC_IDENTITY_TYPE_HEADER_VALUE = "apikey";
-
-    public static final String ERIC_IDENTITY_HEADER_NAME = "ERIC-Identity";
-    public static final String ERIC_IDENTITY_HEADER_VALUE = "some-key";
-
-    public static final String ERIC_AUTHORISED_ROLES_HEADER_NAME = "ERIC-Authorised-Key-Roles";
-    public static final String ERIC_AUTHORISED_ROLES_HEADER_VALUE = "*";
-
 
     private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
 
