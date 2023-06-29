@@ -12,7 +12,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private final UserAuthenticationInterceptor userAuthenticationInterceptor;
     private final UserAuthorisationInterceptor userAuthorisationInterceptor;
 
-    @Autowired
     public InterceptorConfig(UserAuthenticationInterceptor userAuthenticationInterceptor,
                              UserAuthorisationInterceptor userAuthorisationInterceptor) {
         this.userAuthenticationInterceptor = userAuthenticationInterceptor;

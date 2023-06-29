@@ -22,7 +22,6 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_
 
 @Component
 public class UserAuthenticationInterceptor implements HandlerInterceptor {
-    @Autowired
     private final LoggingUtils logger;
 
     public UserAuthenticationInterceptor(LoggingUtils logger) {
@@ -35,13 +34,13 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        DataMap dataMap = new DataMap.Builder()
-                .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
-                .status(UNAUTHORIZED.toString())
-                .build();
-
         String identityType = EricHeaderHelper.getIdentityType(request);
         if(identityType == null) {
+            DataMap dataMap = new DataMap.Builder()
+                    .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
+                    .status(UNAUTHORIZED.toString())
+                    .build();
+
             String errorMessage = "UserAuthenticationInterceptor error: no ERIC-Identity-Type header";
             logFailureToAuthenticate(errorMessage, dataMap);
             response.setStatus(UNAUTHORIZED.value());
@@ -50,7 +49,12 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
         String identity = EricHeaderHelper.getIdentity(request);
         if(identity == null) {
+            DataMap dataMap = new DataMap.Builder()
+                    .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
+                    .status(UNAUTHORIZED.toString())
+                    .build();
             String errorMessage = "UserAuthenticationInterceptor error: no ERIC-Identity header";
+
             logFailureToAuthenticate(errorMessage, dataMap);
             response.setStatus(UNAUTHORIZED.value());
             return false;  // NOT Authorised.

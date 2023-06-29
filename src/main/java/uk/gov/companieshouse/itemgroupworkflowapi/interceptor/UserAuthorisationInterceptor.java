@@ -21,7 +21,6 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_
 
 @Component
 public class UserAuthorisationInterceptor implements HandlerInterceptor {
-    @Autowired
     private final LoggingUtils logger;
 
     public UserAuthorisationInterceptor(LoggingUtils logger) {
