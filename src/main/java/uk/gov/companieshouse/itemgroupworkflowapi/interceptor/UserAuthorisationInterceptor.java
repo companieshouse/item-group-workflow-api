@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.*;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 
 @Component
 public class UserAuthorisationInterceptor implements HandlerInterceptor {

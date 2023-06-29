@@ -18,13 +18,12 @@ import java.util.Map;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.*;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 
 @Component
 public class UserAuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     private final LoggingUtils logger;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
 
     public UserAuthenticationInterceptor(LoggingUtils logger) {
         this.logger = logger;
