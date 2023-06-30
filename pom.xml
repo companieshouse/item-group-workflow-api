@@ -126,12 +126,6 @@
             <artifactId>ch-kafka</artifactId>
             <version>${ch-kafka.version}</version>
         </dependency>
-        <!-- DCAC-68: If we really need this, can we make it test scoped? -->
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala-library.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -147,6 +141,12 @@
             <groupId>com.github.stefanbirkner</groupId>
             <artifactId>system-rules</artifactId>
             <version>${system-rules-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala-library.version}</version>
             <scope>test</scope>
         </dependency>
 
