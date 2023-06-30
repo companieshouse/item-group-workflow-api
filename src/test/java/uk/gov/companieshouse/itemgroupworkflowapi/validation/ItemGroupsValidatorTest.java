@@ -17,6 +17,8 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY_ITEM_OPTIONS;
+
 class ItemGroupsValidatorTest {
     private static final String VALID_ORDER_NUMBER = "12345";
     private static final String VALID_DELIVERY_COMPANY_NAME = "Delivery Test Company";
@@ -77,6 +79,8 @@ class ItemGroupsValidatorTest {
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
         item.setItemCosts(itemCosts);
+
+        item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
         List<Item> items = new ArrayList<>();
         items.add(item);
@@ -181,6 +185,8 @@ class ItemGroupsValidatorTest {
         item.setDescriptionIdentifier(INVALID_DESC_ID); // Invalid
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
 
+        item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
+
         List<Item> items = new ArrayList<>();
         items.add(item);
         dto.setItems(items);
@@ -221,6 +227,8 @@ class ItemGroupsValidatorTest {
         List<ItemCosts> itemCosts = new ArrayList<>();
         itemCosts.add(itemCost);
         item.setItemCosts(itemCosts);
+
+        item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
         List<Item> items = new ArrayList<>();
         items.add(item);
@@ -294,6 +302,8 @@ class ItemGroupsValidatorTest {
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
 
+        item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
+
         List<Item> items = new ArrayList<>();
         items.add(item);
         dto.setItems(items);
@@ -331,6 +341,8 @@ class ItemGroupsValidatorTest {
         item.setCompanyName(VALID_ITEM_COMPANY_NAME);    // company NUMBER missing
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
+
+        item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
         List<Item> items = new ArrayList<>();
         items.add(item);

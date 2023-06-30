@@ -1,8 +1,5 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -15,6 +12,11 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 @Component
 public class ItemGroupsValidator {
@@ -39,13 +41,14 @@ public class ItemGroupsValidator {
             validateItemKind(dto, errors);
             validateItemCostsProductType(dto, errors);
             validateDeliveryDetailsCompanyNumberAndName(dto, errors);
+            validateItemOptions(dto, errors);
         }
 
         return errors;
     }
 
     private boolean orderNumberValid(ItemGroupData dto, List<String> errors) {
-        if (StringUtils.isBlank(dto.getOrderNumber())) {
+        if (isBlank(dto.getOrderNumber())) {
             errors.add(ORDER_NUMBER_INVALID);
             return false;
         }
@@ -72,7 +75,7 @@ public class ItemGroupsValidator {
             return false;
         }
 
-        if (StringUtils.isBlank(links.getOrder())) {
+        if (isBlank(links.getOrder())) {
             errors.add(LINKS_ORDER_NUMBER_MISSING);
             return false;
         }
@@ -92,15 +95,15 @@ public class ItemGroupsValidator {
             return;
 
         String deliveryCompanyName = deliveryDetails.getCompanyName();
-        if (StringUtils.isBlank(deliveryCompanyName))
+        if (isBlank(deliveryCompanyName))
             return;
 
         for (Item item : dto.getItems()) {
-            if (StringUtils.isBlank(item.getCompanyNumber())) {
+            if (isBlank(item.getCompanyNumber())) {
                 errors.add(COMPANY_NUMBER_MISSING + deliveryCompanyName);
             }
 
-            if (StringUtils.isBlank(item.getCompanyName())) {
+            if (isBlank(item.getCompanyName())) {
                 errors.add(COMPANY_NAME_MISSING + deliveryCompanyName);
             }
         }
@@ -138,5 +141,51 @@ public class ItemGroupsValidator {
                 errors.add(INVALID_ITEM_KIND_NAME + itemKind);
             }
         }
+    }
+
+    private void validateItemOptions(final ItemGroupData itemGroup, final List<String> errors) {
+        itemGroup.getItems().forEach(item -> validateItemOptions(item, errors));
+    }
+
+    private void validateItemOptions(final Item item, final List<String> errors) {
+        final var kind = ItemKind.getEnumValue(item.getKind());
+        if (kind == null) {
+            return;
+        }
+        switch (kind) {
+            case ITEM_CERTIFIED_COPY:
+                validateCertifiedCopyItemOptions(item, errors);
+            break;
+        }
+    }
+
+    private void validateCertifiedCopyItemOptions(final Item item, final List<String> errors) {
+        final var options = item.getItemOptions();
+        if (isNull(options) || options.isEmpty()) {
+            errors.add("Missing item options for certified copy item " + item.getId() + ".");
+            return;
+        }
+        final var filingHistoryDocuments = (List<Object>) options.get("filing_history_documents");
+        if (isNull(filingHistoryDocuments) || filingHistoryDocuments.isEmpty()) {
+            errors.add("Missing filing history documents for certified copy item " + item.getId() + ".");
+            return;
+        }
+
+        // TODO DCAC-68 If it turns out having an FHD type is not useful, then could carry out following
+        // using iteration
+        final var filingHistoryDocument = (Map<String, Object>)filingHistoryDocuments.get(0);
+        final var description = (String) filingHistoryDocument.get("filing_history_description");
+        if (isBlank(description)) {
+            errors.add("Missing filing history description for certified copy item " + item.getId() + ".");
+        }
+        final var type = (String) filingHistoryDocument.get("filing_history_type");
+        if (isBlank(type)) {
+            errors.add("Missing filing history type for certified copy item " + item.getId() + ".");
+        }
+        final var id = (String) filingHistoryDocument.get("filing_history_id");
+        if (isBlank(id)) {
+            errors.add("Missing filing history ID for certified copy item " + item.getId() + ".");
+        }
+
     }
 }

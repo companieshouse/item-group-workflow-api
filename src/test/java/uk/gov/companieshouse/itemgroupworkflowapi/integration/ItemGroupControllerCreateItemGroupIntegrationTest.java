@@ -63,6 +63,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY_ITEM_OPTIONS;
 
 /**
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
@@ -313,25 +314,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
         itemLinks.setOriginalItem("/orderable/certificates/mycert-123");
         item.setLinks(itemLinks);
 
-        item.setItemOptions(
-            Map.of("filing_history_documents",
-                List.of(
-                    Map.of(
-                        "filing_history_date", "2023-05-18",
-                        "filing_history_description", "appoint-person-director-company-with-name-date",
-                        "filing_history_description_values", Map.of(
-                                "appointment_date", "2023-05-01",
-                                "officer_name", "Mr Tom Sunburn"
-                        ),
-                        "filing_history_id", "OTYyMTM3NjgxOGFkaXF6a2N4",
-                        "filing_history_type", "AP01",
-                        "filing_history_cost", "50"
-                    )
-                ),
-                "delivery_method", "collection",
-                "delivery_timescale", "standard"
-            )
-        );
+        item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
         List<Item> items = new ArrayList<>();
         items.add(item);
