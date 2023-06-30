@@ -10,12 +10,6 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.logging.util.DataMap;
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import com.mongodb.MongoException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -27,7 +21,6 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ItemGroupsService {
 
-    private static String ITEM_GROUP_CREATE_ID_PREFIX = "IG-";
     public static String MONGO_EXISTS_EXCEPTION_MESSAGE = "Mongo EXISTS operation failed for item group order number : ";
     public static String MONGO_SAVE_EXCEPTION_MESSAGE = "Mongo SAVE operation failed for item group order number : ";
     private final LoggingUtils logger;

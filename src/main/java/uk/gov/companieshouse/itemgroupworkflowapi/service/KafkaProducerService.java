@@ -8,8 +8,10 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
+import uk.gov.companieshouse.logging.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
@@ -19,26 +21,25 @@ public class KafkaProducerService implements InitializingBean {
 
     private static class DefaultMessageSender implements MessageSender {
 
-        private final LoggingUtils logger;
+        private final Logger logger;
 
-        DefaultMessageSender(LoggingUtils logger) {
+        DefaultMessageSender(Logger logger) {
             this.logger = logger;
         }
 
         @Override
         public void sendMessage(final ItemGroupData group, final Item item) {
             // TODO DCAC-68 Structured logging
-            logger.getLogger().info(
-                    "NOT sending a message for item " + item.getId() + " with kind " + item.getKind() + ".");
+            logger.info("NOT sending a message for item " + item.getId() + " with kind " + item.getKind() + ".");
         }
     }
 
     private static class CertifiedCopyMessageSender implements MessageSender {
 
         private final KafkaTemplate<String, ItemOrderedCertifiedCopy> kafkaTemplate;
-        private final LoggingUtils logger;
+        private final Logger logger;
 
-        CertifiedCopyMessageSender(KafkaTemplate<String, ItemOrderedCertifiedCopy> kafkaTemplate, LoggingUtils logger) {
+        CertifiedCopyMessageSender(KafkaTemplate<String, ItemOrderedCertifiedCopy> kafkaTemplate, Logger logger) {
             this.kafkaTemplate = kafkaTemplate;
             this.logger = logger;
         }
@@ -46,39 +47,48 @@ public class KafkaProducerService implements InitializingBean {
         @Override
         public void sendMessage(final ItemGroupData group, final Item item) {
             // TODO DCAC-68 Structured logging
-            logger.getLogger().info(
-                    "Sending a message for item " + item.getId() + " with kind " + item.getKind() + ".");
+            logger.info("Sending a message for item " + item.getId() + " with kind " + item.getKind() + ".");
             final ItemOrderedCertifiedCopy message = buildMessage(group, item);
             // TODO DCAC-68 interrogate, log result?
             kafkaTemplate.send(TOPIC_NAME, message);
         }
 
         private ItemOrderedCertifiedCopy buildMessage(final ItemGroupData groupCreated, final Item item) {
-            // TODO DCAC-68 Plumb in each field correctly and safely.
+            // TODO DCAC-68 Introduce some type safety here?
+            final var filingHistoryDocument = getFilingHistoryDocument(item);
             return ItemOrderedCertifiedCopy.newBuilder()
                     .setOrderNumber(groupCreated.getOrderNumber())
                     .setItemId(item.getId())
                     .setCompanyName(item.getCompanyName())
                     .setCompanyNumber(item.getCompanyNumber())
-                    .setFilingHistoryId("TODO DCAC-68")
-                    .setFilingHistoryType("TODO DCAC-68")
+                    .setFilingHistoryId((String) filingHistoryDocument.get("filing_history_id"))
+                    .setFilingHistoryType((String) filingHistoryDocument.get("filing_history_type"))
                     .setGroupItem(item.getLinks().getSelf())
-                    .setFilingHistoryDescription("TODO DCAC-68")
-                    .setFilingHistoryDescriptionValues(
-                            Map.of("TODO DCAC-68 field 1", "TODO DCAC-68 field 1 value"))
+                    .setFilingHistoryDescription((String) filingHistoryDocument.get("filing_history_description"))
+                    .setFilingHistoryDescriptionValues((Map)
+                    filingHistoryDocument.get("filing_history_description_values"))
                     .build();
+        }
+
+        private Map getFilingHistoryDocument(final Item item) {
+            // TODO DCAC-68 Is is safe to assume we can always get FH details from the 1st filing history document?
+            final var options = item.getItemOptions();
+            final var filingHistoryDocument = (Map) ((List) options.get("filing_history_documents")).get(0);
+            // TODO DCAC-68 Structured logging, or remove this.
+            logger.info("filingHistoryDocument = " + filingHistoryDocument);
+            return filingHistoryDocument;
         }
     }
 
     private final KafkaTemplate<String, ItemOrderedCertifiedCopy> kafkaTemplate;
-    private final LoggingUtils logger;
+    private final Logger logger;
     private final Map<ItemKind, MessageSender> senders;
 
     public KafkaProducerService(KafkaTemplate<String,
-                           ItemOrderedCertifiedCopy> kafkaTemplate,
+                                ItemOrderedCertifiedCopy> kafkaTemplate,
                                 LoggingUtils logger) {
         this.kafkaTemplate = kafkaTemplate;
-        this.logger = logger;
+        this.logger = logger.getLogger();
         this.senders = new HashMap<>();
     }
 
