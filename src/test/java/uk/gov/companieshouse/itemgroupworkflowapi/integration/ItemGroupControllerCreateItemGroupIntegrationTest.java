@@ -86,10 +86,13 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
             .setGroupItem("/item-groups/IG-123456-123456/items/111-222-333")
             .setCompanyName("Item Test Company")
             .setCompanyNumber("IG-12345-67890")
-            .setFilingHistoryDescription("TODO DCAC-68")
-            .setFilingHistoryId("TODO DCAC-68")
-            .setFilingHistoryType("TODO DCAC-68")
-            .setFilingHistoryDescriptionValues(Map.of("TODO DCAC-68 field 1", "TODO DCAC-68 field 1 value"))
+            .setFilingHistoryDescription("appoint-person-director-company-with-name-date")
+            .setFilingHistoryId("OTYyMTM3NjgxOGFkaXF6a2N4")
+            .setFilingHistoryType("AP01")
+            .setFilingHistoryDescriptionValues(
+                    Map.of("appointment_date", "2023-05-01",
+                           "officer_name", "Mr Tom Sunburn")
+            )
             .build();
 
     @Configuration
