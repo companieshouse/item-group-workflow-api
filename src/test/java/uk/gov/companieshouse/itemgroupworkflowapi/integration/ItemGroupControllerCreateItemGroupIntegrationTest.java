@@ -137,7 +137,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
 
             @Override
             protected Map<String, Object> getFilingHistoryDocument(Item item) {
-                // TODO DCAC-68 Is is safe to assume we can always get FH details from the 1st filing history document?
+
                 final var options = item.getItemOptions();
 
                 // TODO DCAC-68: This Scala weirdness only seems to arise in our Spring Boot integration tests.
