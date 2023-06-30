@@ -49,6 +49,7 @@
         <!-- system-rules: 1.17.2 is the latest version that works with JUnit 5.
              See https://github.com/stefanbirkner/system-rules/issues/70 -->
         <system-rules-version>1.17.2</system-rules-version>
+        <scala-library.version>2.13.6</scala-library.version>
     </properties>
 
     <dependencyManagement>
@@ -125,6 +126,12 @@
             <artifactId>ch-kafka</artifactId>
             <version>${ch-kafka.version}</version>
         </dependency>
+        <!-- DCAC-68: If we really need this, can we make it test scoped? -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala-library.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -142,6 +149,7 @@
             <version>${system-rules-version}</version>
             <scope>test</scope>
         </dependency>
+
 
         <!-- Structured logging -->
         <dependency>
