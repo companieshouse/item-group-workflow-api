@@ -136,7 +136,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
             }
 
             @Override
-            protected Map getFilingHistoryDocument(Item item) {
+            protected Map<String, Object> getFilingHistoryDocument(Item item) {
                 // TODO DCAC-68 Is is safe to assume we can always get FH details from the 1st filing history document?
                 final var options = item.getItemOptions();
 
@@ -156,7 +156,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
                 return filingHistoryDocument;
             }
 
-            private Map buildFilingHistoryDocumentFromOptionsScalaDocuments(final Map options) {
+            private Map<String, Object> buildFilingHistoryDocumentFromOptionsScalaDocuments(final Map options) {
                 final var scalaFilingHistoryDocuments =
                         (scala.collection.immutable.List) options.get("filing_history_documents");
                 final var javaFilingHistoryDocuments = JavaConverters.asJava(scalaFilingHistoryDocuments);

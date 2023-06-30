@@ -23,7 +23,7 @@ public class Item {
 
     private String descriptionIdentifier;
 
-    private Map descriptionValues;
+    private Map<String, String> descriptionValues;
 
     private String etag;
 
@@ -32,7 +32,7 @@ public class Item {
 
     private List<ItemCosts> itemCosts;
 
-    private Map itemOptions;
+    private Map<String,Object> itemOptions;
 
     private String kind;
 
@@ -93,11 +93,11 @@ public class Item {
         this.descriptionIdentifier = descriptionIdentifier;
     }
 
-    public Map getDescriptionValues() {
+    public Map<String, String> getDescriptionValues() {
         return descriptionValues;
     }
 
-    public void setDescriptionValues(Map descriptionValues) {
+    public void setDescriptionValues(Map<String, String> descriptionValues) {
         this.descriptionValues = descriptionValues;
     }
 
@@ -125,11 +125,11 @@ public class Item {
         this.itemCosts = itemCosts;
     }
 
-    public Map getItemOptions() {
+    public Map<String, Object> getItemOptions() {
         return itemOptions;
     }
 
-    public void setItemOptions(Map itemOptions) {
+    public void setItemOptions(Map<String, Object> itemOptions) {
         this.itemOptions = itemOptions;
     }
 

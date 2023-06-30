@@ -36,7 +36,7 @@ public class ItemOrderedCertifiedCopyFactory {
                 .build();
     }
 
-    protected Map getFilingHistoryDocument(final Item item) {
+    protected Map<String, Object> getFilingHistoryDocument(final Item item) {
         // TODO DCAC-68 Is is safe to assume we can always get FH details from the 1st filing history document?
         final var options = item.getItemOptions();
         final var filingHistoryDocument = (Map) ((List) options.get("filing_history_documents")).get(0);
