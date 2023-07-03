@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -29,9 +28,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import scala.collection.JavaConverters;
-import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemOrderedCertifiedCopyFactory;
-import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
@@ -48,7 +44,6 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -128,56 +123,6 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
             factory.setConsumerFactory(consumerFactory);
             factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
             return factory;
-        }
-
-        static class TestItemOrderedCertifiedCopyFactory extends ItemOrderedCertifiedCopyFactory {
-
-            public TestItemOrderedCertifiedCopyFactory(LoggingUtils loggingUtils) {
-                super(loggingUtils);
-            }
-
-            @Override
-            protected Map<String, Object> getFilingHistoryDocument(Item item) {
-
-                final var options = item.getItemOptions();
-
-                // TODO DCAC-68: This Scala weirdness only seems to arise in our Spring Boot integration tests.
-                // This problem might disappear if we use typed collections to create the request body?
-                final Map filingHistoryDocument;
-                if (options.get("filing_history_documents") instanceof scala.collection.immutable.List) {
-                    getLogger().info("Scala classes detected in the filing history documents.");
-                    filingHistoryDocument = buildFilingHistoryDocumentFromOptionsScalaDocuments(options);
-                } else {
-                    getLogger().info("Scala classes not detected in the filing history documents.");
-                    filingHistoryDocument = (Map) ((List) options.get("filing_history_documents")).get(0);
-                }
-
-                // TODO DCAC-68 Structured logging, or remove this.
-                getLogger().info("filingHistoryDocument = " + filingHistoryDocument);
-                return filingHistoryDocument;
-            }
-
-            private Map<String, Object> buildFilingHistoryDocumentFromOptionsScalaDocuments(final Map options) {
-                final var scalaFilingHistoryDocuments =
-                        (scala.collection.immutable.List) options.get("filing_history_documents");
-                final var javaFilingHistoryDocuments = JavaConverters.asJava(scalaFilingHistoryDocuments);
-                final var scalaFilingHistoryDocument = (scala.collection.immutable.Map) javaFilingHistoryDocuments.get(0);
-                final var immutableJavaFilingHistoryDocument = JavaConverters.asJava(scalaFilingHistoryDocument);
-                final var scalaDescriptionValues =
-                        (scala.collection.immutable.Map)
-                                immutableJavaFilingHistoryDocument.get("filing_history_description_values");
-                final var javaDescriptionValues = JavaConverters.asJava(scalaDescriptionValues);
-                // The put operation requires that the map in question is mutable.
-                final var filingHistoryDocument = new HashMap(immutableJavaFilingHistoryDocument);
-                filingHistoryDocument.put("filing_history_description_values", javaDescriptionValues);
-                return filingHistoryDocument;
-            }
-        }
-
-        @Bean
-        @Primary
-        public ItemOrderedCertifiedCopyFactory getItemOrderedCertifiedCopyFactory(final LoggingUtils loggingUtils) {
-            return new TestItemOrderedCertifiedCopyFactory(loggingUtils);
         }
 
     }
