@@ -56,6 +56,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY_ITEM_OPTIONS;
@@ -187,6 +188,28 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(newItemGroupData)))
                 .andExpect(status().isBadRequest())
+                .andDo(MockMvcResultHandlers.print());
+
+        verifyWhetherMessageIsReceived(false);
+    }
+
+
+    @Test
+    @DisplayName("Create item group with missing item options is rejected with 400 Bad Request")
+    void createItemGroupWithoutItemOptionsIsBadRequest() throws Exception {
+
+        // Given
+        final ItemGroupData newItemGroupData = createValidNewItemGroupData();
+        newItemGroupData.getItems().get(0).setItemOptions(null);
+
+        // When and Then
+        mockMvc.perform(post("/item-groups" )
+                        .header(REQUEST_ID_HEADER_NAME, "12345")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(newItemGroupData)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.[0]", is("Missing item options for certified copy item 111-222-333.")))
                 .andDo(MockMvcResultHandlers.print());
 
         verifyWhetherMessageIsReceived(false);

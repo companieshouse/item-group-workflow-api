@@ -20,6 +20,12 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 @Component
 public class ItemGroupsValidator {
+
+    private static final Map<String,String> MANDATORY_CERTIFIED_COPY_FILING_HISTORY_DOCUMENT_FIELDS =
+            Map.of("filing_history_description", "description",
+                    "filing_history_type", "type",
+                    "filing_history_id", "ID");
+
     public static final String ORDER_NUMBER_INVALID = "Items Group : order number invalid";
     public static final String ITEM_GROUP_ITEMS_MISSING = "Items Group : items not provided";
     public static final String ITEM_GROUP_LINKS_MISSING = "Items Group : links not provided";
@@ -148,44 +154,46 @@ public class ItemGroupsValidator {
     }
 
     private void validateItemOptions(final Item item, final List<String> errors) {
-        final var kind = ItemKind.getEnumValue(item.getKind());
-        if (kind == null) {
-            return;
-        }
-        switch (kind) {
-            case ITEM_CERTIFIED_COPY:
-                validateCertifiedCopyItemOptions(item, errors);
-            break;
-        }
-    }
-
-    private void validateCertifiedCopyItemOptions(final Item item, final List<String> errors) {
         final var options = item.getItemOptions();
         if (isNull(options) || options.isEmpty()) {
             errors.add("Missing item options for certified copy item " + item.getId() + ".");
             return;
         }
+        final var kind = ItemKind.getEnumValue(item.getKind());
+        if (kind == null) {
+            return; // This should not happen due to prior validation of kind.
+        }
+        switch (kind) {
+            case ITEM_CERTIFIED_COPY:
+                validateCertifiedCopyItemOptions(item, options, errors);
+            break;
+        }
+    }
+
+    private void validateCertifiedCopyItemOptions(final Item item, final Map<String, Object> options, final List<String> errors) {
         final var filingHistoryDocuments = (List<Object>) options.get("filing_history_documents");
         if (isNull(filingHistoryDocuments) || filingHistoryDocuments.isEmpty()) {
             errors.add("Missing filing history documents for certified copy item " + item.getId() + ".");
             return;
         }
-
-        // TODO DCAC-68 If it turns out having an FHD type is not useful, then could carry out following
-        // using iteration
         final var filingHistoryDocument = (Map<String, Object>)filingHistoryDocuments.get(0);
-        final var description = (String) filingHistoryDocument.get("filing_history_description");
-        if (isBlank(description)) {
-            errors.add("Missing filing history description for certified copy item " + item.getId() + ".");
-        }
-        final var type = (String) filingHistoryDocument.get("filing_history_type");
-        if (isBlank(type)) {
-            errors.add("Missing filing history type for certified copy item " + item.getId() + ".");
-        }
-        final var id = (String) filingHistoryDocument.get("filing_history_id");
-        if (isBlank(id)) {
-            errors.add("Missing filing history ID for certified copy item " + item.getId() + ".");
-        }
+        MANDATORY_CERTIFIED_COPY_FILING_HISTORY_DOCUMENT_FIELDS.keySet()
+                .forEach(field -> checkForBlankFilingHistoryDocumentField(
+                        item,
+                        errors,
+                        filingHistoryDocument,
+                        field,
+                        MANDATORY_CERTIFIED_COPY_FILING_HISTORY_DOCUMENT_FIELDS.get(field)));
+    }
 
+    private void checkForBlankFilingHistoryDocumentField(final Item item,
+                                                         final List<String> errors,
+                                                         final Map<String, Object> document,
+                                                         final String jsonFieldName,
+                                                         final String errorFieldName) {
+        final var field = (String) document.get(jsonFieldName);
+        if (isBlank(field)) {
+            errors.add("Missing filing history " + errorFieldName + " for certified copy item " + item.getId() + ".");
+        }
     }
 }
