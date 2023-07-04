@@ -408,7 +408,7 @@ class ItemGroupsValidatorTest {
     private ItemGroupData createGroupWithCertifiedCopyItemFilingHistoryDocument(final String fhdFieldName,
                                                                                 final String fhdFieldValue) {
         final var options = new HashMap<>(CERTIFIED_COPY_ITEM_OPTIONS);
-        final var documents = new ArrayList(((List<Object>) options.get("filing_history_documents")));
+        final var documents = new ArrayList<>(((List<Object>) options.get("filing_history_documents")));
         final var document = new HashMap<>((Map<String, Object>) documents.get(0));
         document.put(fhdFieldName, fhdFieldValue);
         documents.set(0, document);
@@ -417,7 +417,7 @@ class ItemGroupsValidatorTest {
     }
 
     private ItemGroupData createGroupWithCertifiedCopyItem(final Map<String, Object> itemOptions) {
-        final ItemGroupData group = fairWeatherAllValidationTriggeredDto();
+        final var group = fairWeatherAllValidationTriggeredDto();
         group.getItems().get(0).setItemOptions(itemOptions);
         return group;
     }

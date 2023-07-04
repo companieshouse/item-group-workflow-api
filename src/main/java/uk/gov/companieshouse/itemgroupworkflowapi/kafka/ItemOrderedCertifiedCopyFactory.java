@@ -20,7 +20,6 @@ public class ItemOrderedCertifiedCopyFactory {
     }
 
     public ItemOrderedCertifiedCopy buildMessage(final ItemGroupData groupCreated, final Item item) {
-        // TODO DCAC-68 Introduce some type safety here?
         final var filingHistoryDocument = getFilingHistoryDocument(item);
         return ItemOrderedCertifiedCopy.newBuilder()
                 .setOrderNumber(groupCreated.getOrderNumber())
@@ -31,22 +30,18 @@ public class ItemOrderedCertifiedCopyFactory {
                 .setFilingHistoryType((String) filingHistoryDocument.get("filing_history_type"))
                 .setGroupItem(item.getLinks().getSelf())
                 .setFilingHistoryDescription((String) filingHistoryDocument.get("filing_history_description"))
-                .setFilingHistoryDescriptionValues((Map)
+                .setFilingHistoryDescriptionValues((Map<String, String>)
                         filingHistoryDocument.get("filing_history_description_values"))
                 .build();
     }
 
     protected Map<String, Object> getFilingHistoryDocument(final Item item) {
         final var options = item.getItemOptions();
-        final var filingHistoryDocument = (Map) ((List) options.get("filing_history_documents")).get(0);
+        final var filingHistoryDocument =
+                 (Map<String, Object>) ((List<Object>) options.get("filing_history_documents")).get(0);
         // TODO DCAC-68 Structured logging, or remove this.
         logger.info("filingHistoryDocument = " + filingHistoryDocument);
         return filingHistoryDocument;
     }
-
-    protected Logger getLogger() {
-        return this.logger;
-    }
-
 
 }

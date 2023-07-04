@@ -176,7 +176,7 @@ public class ItemGroupsValidator {
             errors.add("Missing filing history documents for certified copy item " + item.getId() + ".");
             return;
         }
-        final var filingHistoryDocument = (Map<String, Object>)filingHistoryDocuments.get(0);
+        final var filingHistoryDocument = (Map<String, Object>) filingHistoryDocuments.get(0);
         MANDATORY_CERTIFIED_COPY_FILING_HISTORY_DOCUMENT_FIELDS.keySet()
                 .forEach(field -> checkForBlankFilingHistoryDocumentField(
                         item,
