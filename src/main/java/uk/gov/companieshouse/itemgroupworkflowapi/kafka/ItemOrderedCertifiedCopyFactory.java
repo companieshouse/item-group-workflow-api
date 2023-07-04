@@ -13,12 +13,6 @@ import java.util.Map;
 @Component
 public class ItemOrderedCertifiedCopyFactory {
 
-    private final Logger logger;
-
-    public ItemOrderedCertifiedCopyFactory(final LoggingUtils loggingUtils) {
-        this.logger = loggingUtils.getLogger();
-    }
-
     public ItemOrderedCertifiedCopy buildMessage(final ItemGroupData groupCreated, final Item item) {
         final var filingHistoryDocument = getFilingHistoryDocument(item);
         return ItemOrderedCertifiedCopy.newBuilder()
@@ -37,11 +31,7 @@ public class ItemOrderedCertifiedCopyFactory {
 
     protected Map<String, Object> getFilingHistoryDocument(final Item item) {
         final var options = item.getItemOptions();
-        final var filingHistoryDocument =
-                 (Map<String, Object>) ((List<Object>) options.get("filing_history_documents")).get(0);
-        // TODO DCAC-68 Structured logging, or remove this.
-        logger.info("filingHistoryDocument = " + filingHistoryDocument);
-        return filingHistoryDocument;
+        return (Map<String, Object>) ((List<Object>) options.get("filing_history_documents")).get(0);
     }
 
 }

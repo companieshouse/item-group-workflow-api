@@ -13,8 +13,10 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.util.DataMap;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFICATE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFIED_COPY;
@@ -34,9 +36,10 @@ public class KafkaProducerService implements InitializingBean {
 
         @Override
         public void sendMessage(final ItemGroupData group, final Item item) {
-            // TODO DCAC-68 Structured logging
-            logger.info("NOT sending a message for item " + item.getId() + " with kind " + item.getKind() + ".");
+            logger.info("NOT sending a message for item " + item.getId() + " with kind " + item.getKind() + ".",
+                    getLogMap(item.getId()));
         }
+
     }
 
     private static class CertifiedCopyMessageSender implements MessageSender {
@@ -55,8 +58,8 @@ public class KafkaProducerService implements InitializingBean {
 
         @Override
         public void sendMessage(final ItemGroupData group, final Item item) {
-            // TODO DCAC-68 Structured logging for all logging here
-            logger.info("Sending a message for item " + item.getId() + " with kind " + item.getKind() + ".");
+            logger.info("Sending a message for item " + item.getId() + " with kind " + item.getKind() + ".",
+                    getLogMap(item.getId()));
             final ItemOrderedCertifiedCopy message = certifiedCopyFactory.buildMessage(group, item);
             final ListenableFuture<SendResult<String, ItemOrderedCertifiedCopy>> future =
                     kafkaTemplate.send(TOPIC_NAME, message);
@@ -67,7 +70,8 @@ public class KafkaProducerService implements InitializingBean {
                     final var partition = metadata.partition();
                     final var offset = metadata.offset();
                     logger.info("Message " + message + " delivered to topic " + TOPIC_NAME + " on partition " +
-                                    partition + " with offset " + offset + ".");
+                                    partition + " with offset " + offset + ".",
+                            getLogMap(message.getItemId(), TOPIC_NAME, partition, offset));
                 }
 
                 @Override
@@ -112,6 +116,26 @@ public class KafkaProducerService implements InitializingBean {
 
     private MessageSender getMessageSender(final Item item) {
         return senders.get(ItemKind.getEnumValue(item.getKind()));
+    }
+
+    private static Map<String, Object> getLogMap(final String itemId) {
+        return new DataMap.Builder()
+                .itemId(itemId)
+                .build()
+                .getLogMap();
+    }
+
+    private static Map<String, Object> getLogMap(final String itemId,
+                                                 final String topic,
+                                                 final int partition,
+                                                 final long offset) {
+        return new DataMap.Builder()
+                .itemId(itemId)
+                .topic(topic)
+                .partition(partition)
+                .offset(offset)
+                .build()
+                .getLogMap();
     }
 
 }
