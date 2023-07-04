@@ -2,7 +2,10 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemOrderedCertifiedCopyFactory;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -50,11 +53,26 @@ public class KafkaProducerService implements InitializingBean {
 
         @Override
         public void sendMessage(final ItemGroupData group, final Item item) {
-            // TODO DCAC-68 Structured logging
+            // TODO DCAC-68 Structured logging for all logging here
             logger.info("Sending a message for item " + item.getId() + " with kind " + item.getKind() + ".");
             final ItemOrderedCertifiedCopy message = certifiedCopyFactory.buildMessage(group, item);
-            // TODO DCAC-68 interrogate, log result?
-            kafkaTemplate.send(TOPIC_NAME, message);
+            final ListenableFuture<SendResult<String, ItemOrderedCertifiedCopy>> future =
+                    kafkaTemplate.send(TOPIC_NAME, message);
+            future.addCallback(new ListenableFutureCallback<>() {
+                @Override
+                public void onSuccess(SendResult<String, ItemOrderedCertifiedCopy> result) {
+                    final var metadata =  result.getRecordMetadata();
+                    final var partition = metadata.partition();
+                    final var offset = metadata.offset();
+                    logger.info("Message " + message + " delivered to topic " + TOPIC_NAME + " on partition " +
+                                    partition + " with offset " + offset + ".");
+                }
+
+                @Override
+                public void onFailure(Throwable ex) {
+                    logger.error("Unable to deliver message " + message + ". Error: " + ex.getMessage() + ".");
+                }
+            });
         }
 
     }
