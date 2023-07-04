@@ -14,9 +14,11 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 import uk.gov.companieshouse.logging.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
+import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFICATE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFIED_COPY;
+import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_MISSING_IMAGE_DELIVERY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
 
 @Service
@@ -79,7 +81,7 @@ public class KafkaProducerService implements InitializingBean {
 
     private final KafkaTemplate<String, ItemOrderedCertifiedCopy> kafkaTemplate;
     private final Logger logger;
-    private final Map<ItemKind, MessageSender> senders;
+    private final EnumMap<ItemKind, MessageSender> senders;
     private final ItemOrderedCertifiedCopyFactory certifiedCopyFactory;
 
     public KafkaProducerService(KafkaTemplate<String,
@@ -88,23 +90,22 @@ public class KafkaProducerService implements InitializingBean {
                                 ItemOrderedCertifiedCopyFactory certifiedCopyFactory) {
         this.kafkaTemplate = kafkaTemplate;
         this.logger = logger.getLogger();
-        this.senders = new HashMap<>();
+        this.senders = new EnumMap<>(ItemKind.class);
         this.certifiedCopyFactory = certifiedCopyFactory;
     }
 
     public void produceMessages(final ItemGroupData groupCreated) {
-        groupCreated.getItems().stream().forEach(item -> produceMessage(groupCreated, item));
+        groupCreated.getItems().forEach(item -> produceMessage(groupCreated, item));
     }
 
     @Override
     public void afterPropertiesSet() {
-        senders.put(ItemKind.ITEM_CERTIFICATE, new DefaultMessageSender(logger));
-        senders.put(ItemKind.ITEM_MISSING_IMAGE_DELIVERY, new DefaultMessageSender(logger));
-        senders.put(ItemKind.ITEM_CERTIFIED_COPY, new CertifiedCopyMessageSender(kafkaTemplate, logger, certifiedCopyFactory));
+        senders.put(ITEM_CERTIFICATE, new DefaultMessageSender(logger));
+        senders.put(ITEM_MISSING_IMAGE_DELIVERY, new DefaultMessageSender(logger));
+        senders.put(ITEM_CERTIFIED_COPY, new CertifiedCopyMessageSender(kafkaTemplate, logger, certifiedCopyFactory));
     }
 
     private void produceMessage(final ItemGroupData group, final Item item) {
-        // TODO DCAC-68 Consider whether lookup could fail
         final MessageSender sender = getMessageSender(item);
         sender.sendMessage(group, item);
     }
