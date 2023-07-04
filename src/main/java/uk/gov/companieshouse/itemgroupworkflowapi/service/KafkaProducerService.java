@@ -21,7 +21,7 @@ import java.util.Map;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFICATE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFIED_COPY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_MISSING_IMAGE_DELIVERY;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 
 @Service
 public class KafkaProducerService implements InitializingBean {
@@ -62,16 +62,16 @@ public class KafkaProducerService implements InitializingBean {
                     getLogMap(item.getId()));
             final ItemOrderedCertifiedCopy message = certifiedCopyFactory.buildMessage(group, item);
             final ListenableFuture<SendResult<String, ItemOrderedCertifiedCopy>> future =
-                    kafkaTemplate.send(TOPIC_NAME, message);
+                    kafkaTemplate.send(ITEM_ORDERED_CERTIFIED_COPY_TOPIC, message);
             future.addCallback(new ListenableFutureCallback<>() {
                 @Override
                 public void onSuccess(SendResult<String, ItemOrderedCertifiedCopy> result) {
                     final var metadata =  result.getRecordMetadata();
                     final var partition = metadata.partition();
                     final var offset = metadata.offset();
-                    logger.info("Message " + message + " delivered to topic " + TOPIC_NAME + " on partition " +
-                                    partition + " with offset " + offset + ".",
-                            getLogMap(message.getItemId(), TOPIC_NAME, partition, offset));
+                    logger.info("Message " + message + " delivered to topic " + ITEM_ORDERED_CERTIFIED_COPY_TOPIC
+                                    + " on partition " + partition + " with offset " + offset + ".",
+                            getLogMap(message.getItemId(), ITEM_ORDERED_CERTIFIED_COPY_TOPIC, partition, offset));
                 }
 
                 @Override

@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.SAME_PARTITION_KEY;
 
@@ -143,12 +143,12 @@ class ItemOrderedCertifiedCopyInTiltProducer {
     @Test
     void produceMessageToTiltThroughKafkaProducer() {
         testProducer.send(new ProducerRecord<>(
-                TOPIC_NAME, 0, System.currentTimeMillis(), SAME_PARTITION_KEY, CERTIFIED_COPY));
+                ITEM_ORDERED_CERTIFIED_COPY_TOPIC, 0, System.currentTimeMillis(), SAME_PARTITION_KEY, CERTIFIED_COPY));
     }
 
     @SuppressWarnings("squid:S2699") // at least one assertion
     @Test
     void produceMessageToTiltThroughKafkaTemplate() {
-        testTemplate.send(TOPIC_NAME, CERTIFIED_COPY);
+        testTemplate.send(ITEM_ORDERED_CERTIFIED_COPY_TOPIC, CERTIFIED_COPY);
     }
 }

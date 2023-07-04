@@ -58,7 +58,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.TOPIC_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY_ITEM_OPTIONS;
 
 /**
@@ -319,7 +319,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
         return newItemGroupData;
     }
 
-    @KafkaListener(topics = TOPIC_NAME, groupId = "test-group")
+    @KafkaListener(topics = ITEM_ORDERED_CERTIFIED_COPY_TOPIC, groupId = "test-group")
     public void receiveMessage(final @Payload ItemOrderedCertifiedCopy message) {
         LOGGER.info("Received message: " + message);
         messageReceivedLatch.countDown();
