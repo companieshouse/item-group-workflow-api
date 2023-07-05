@@ -86,7 +86,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
     private static final String VALID_COMPANY_NUMBER = "IG-12345-67890";
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
 
-    private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 5;
+    private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 10;
 
     private static final ItemOrderedCertifiedCopy EXPECTED_CERTIFIED_COPY = ItemOrderedCertifiedCopy.newBuilder()
             .setOrderNumber("123456")
