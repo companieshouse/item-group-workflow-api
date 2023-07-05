@@ -12,7 +12,8 @@ public class EnvironmentVariablesChecker {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
 
     public enum RequiredEnvironmentVariables {
-        MONGODB_URL("MONGODB_URL");
+        MONGODB_URL("MONGODB_URL"),
+        BOOTSTRAP_SERVER_URL("BOOTSTRAP_SERVER_URL");
 
         private final String name;
 

@@ -1,11 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import com.mongodb.MongoException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -27,15 +23,18 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
 import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
-import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
-import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService.MONGO_EXISTS_EXCEPTION_MESSAGE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService.MONGO_SAVE_EXCEPTION_MESSAGE;
-import com.mongodb.MongoException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService.MONGO_EXISTS_EXCEPTION_MESSAGE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService.MONGO_SAVE_EXCEPTION_MESSAGE;
 
 @ExtendWith(MockitoExtension.class)
 class ItemGroupControllerTest {

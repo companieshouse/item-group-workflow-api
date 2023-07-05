@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
+import com.mongodb.MongoException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemNotFoundException;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
@@ -9,16 +10,8 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.logging.util.DataMap;
-import static org.apache.commons.lang.StringUtils.isBlank;
 
-import com.mongodb.MongoException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Map;
 
 import static java.time.LocalDateTime.now;
@@ -27,19 +20,25 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 public class ItemGroupsService {
-    private static String ITEM_GROUP_CREATE_ID_PREFIX = "IG-";
+
     public static String MONGO_EXISTS_EXCEPTION_MESSAGE = "Mongo EXISTS operation failed for item group order number : ";
     public static String MONGO_SAVE_EXCEPTION_MESSAGE = "Mongo SAVE operation failed for item group order number : ";
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
     private final LinksGeneratorService linksGenerator;
+    private final KafkaProducerService producerService;
+    private final IdGenerator idGenerator;
 
     public ItemGroupsService(LoggingUtils logger,
                              ItemGroupsRepository itemGroupsRepository,
-                             LinksGeneratorService linksGenerator) {
+                             LinksGeneratorService linksGenerator,
+                             KafkaProducerService producerService,
+                             IdGenerator idGenerator) {
         this.logger = logger;
         this.itemGroupsRepository = itemGroupsRepository;
         this.linksGenerator = linksGenerator;
+        this.producerService = producerService;
+        this.idGenerator = idGenerator;
     }
 
     public boolean doesItemGroupExist(ItemGroupData itemGroupData){
@@ -55,22 +54,20 @@ public class ItemGroupsService {
     public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
         final ItemGroup itemGroup = new ItemGroup();
 
-        String itemGroupId = autoGenerateId();
+        String itemGroupId = idGenerator.generateId();
         itemGroup.setId(itemGroupId);
 
         setCreationTimeStamp(itemGroup);
         linksGenerator.regenerateLinks(itemGroupData, itemGroupId);
         itemGroup.setData(itemGroupData);
 
-        ItemGroup savedItemGroup;
         try {
-            savedItemGroup = itemGroupsRepository.save(itemGroup);
-        }
-        catch(MongoException mex) {
+            final var savedItemGroupData = itemGroupsRepository.save(itemGroup).getData();
+            producerService.produceMessages(savedItemGroupData);
+            return savedItemGroupData;
+        } catch (MongoException mex) {
             throw new MongoOperationException(MONGO_SAVE_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
         }
-
-        return savedItemGroup.getData();
     }
 
     public Item getItem(final String itemGroupId, final String itemId) {
@@ -108,17 +105,6 @@ public class ItemGroupsService {
         final LocalDateTime now = LocalDateTime.now();
         itemGroup.setCreatedAt(now);
         itemGroup.setUpdatedAt(now);
-    }
-
-    private String autoGenerateId() {
-        SecureRandom random = new SecureRandom();
-        byte[] values = new byte[4];
-        random.nextBytes(values);
-        String rand = String.format("%04d", random.nextInt(9999));
-        String time = String.format("%08d", Calendar.getInstance().getTimeInMillis() / 100000L);
-        String rawId = rand + time;
-        String[] tranId = rawId.split("(?<=\\G.{6})");
-        return ITEM_GROUP_CREATE_ID_PREFIX + String.join("-", tranId);
     }
 
     private ItemNotFoundException itemNotFound(final String itemGroupId, final String itemId) {
