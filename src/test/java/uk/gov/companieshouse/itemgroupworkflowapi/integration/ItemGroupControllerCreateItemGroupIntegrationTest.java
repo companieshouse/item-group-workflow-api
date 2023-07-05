@@ -343,8 +343,8 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
     @KafkaListener(topics = ITEM_ORDERED_CERTIFIED_COPY_TOPIC, groupId = "test-group")
     public void receiveMessage(final @Payload ItemOrderedCertifiedCopy message) {
         LOGGER.info("Received message: " + message);
-        messageReceivedLatch.countDown();
         messageReceived = message;
+        messageReceivedLatch.countDown();
     }
 
     private void verifyExpectedMessageIsReceived() throws InterruptedException {
