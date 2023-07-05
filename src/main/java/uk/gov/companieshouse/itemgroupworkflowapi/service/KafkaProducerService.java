@@ -110,7 +110,7 @@ public class KafkaProducerService implements InitializingBean {
     }
 
     private void produceMessage(final ItemGroupData group, final Item item) {
-        final MessageSender sender = getMessageSender(item);
+        final var sender = getMessageSender(item);
         sender.sendMessage(group, item);
     }
 

@@ -1,11 +1,9 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.kafka;
 
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
-import uk.gov.companieshouse.logging.Logger;
 
 import java.util.List;
 import java.util.Map;

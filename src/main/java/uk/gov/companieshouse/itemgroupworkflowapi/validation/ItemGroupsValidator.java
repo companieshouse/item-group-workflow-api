@@ -167,6 +167,10 @@ public class ItemGroupsValidator {
             case ITEM_CERTIFIED_COPY:
                 validateCertifiedCopyItemOptions(item, options, errors);
             break;
+
+            default:
+                // For now, we only validate item options for certified copies. Nothing to do here.
+            break;
         }
     }
 

@@ -62,7 +62,7 @@ public class ItemGroupsService {
         itemGroup.setData(itemGroupData);
 
         try {
-            final ItemGroupData savedItemGroupData = itemGroupsRepository.save(itemGroup).getData();
+            final var savedItemGroupData = itemGroupsRepository.save(itemGroup).getData();
             producerService.produceMessages(savedItemGroupData);
             return savedItemGroupData;
         } catch (MongoException mex) {
