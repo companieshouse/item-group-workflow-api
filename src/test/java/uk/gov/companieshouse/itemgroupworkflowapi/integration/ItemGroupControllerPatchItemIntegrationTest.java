@@ -31,6 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
 
 /**
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
@@ -121,6 +127,9 @@ class ItemGroupControllerPatchItemIntegrationTest {
 
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isOk())
@@ -146,6 +155,9 @@ class ItemGroupControllerPatchItemIntegrationTest {
     void patchItemRejectsRequestWithoutStatus() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_without_status")))
                 .andExpect(status().isBadRequest())
@@ -158,6 +170,9 @@ class ItemGroupControllerPatchItemIntegrationTest {
     void patchItemRejectsRequestWithInvalidStatus() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_bad_status")))
                 .andExpect(status().isBadRequest())
@@ -175,6 +190,9 @@ class ItemGroupControllerPatchItemIntegrationTest {
 
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_without_document_location")))
                 .andExpect(status().isOk())
@@ -188,6 +206,9 @@ class ItemGroupControllerPatchItemIntegrationTest {
     void patchItemRejectsRequestWithInvalidDocumentLocation() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
                 .andExpect(status().isBadRequest())
@@ -205,6 +226,9 @@ class ItemGroupControllerPatchItemIntegrationTest {
     void patchItemReportsNotFoundWhenCannotFindItem() throws Exception {
         mockMvc.perform(patch(PATCH_UNKNOWN_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(APPLICATION_MERGE_PATCH)
                         .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isNotFound())
@@ -217,6 +241,9 @@ class ItemGroupControllerPatchItemIntegrationTest {
     void patchItemRejectsRequestWithoutApplicationMergePatchContentType() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isUnsupportedMediaType())
                 .andDo(print());

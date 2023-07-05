@@ -10,6 +10,13 @@ public class TestConstants {
     private TestConstants() {
     }
 
+    public static final String ERIC_IDENTITY_HEADER_NAME = "ERIC-Identity";
+    public static final String ERIC_IDENTITY_HEADER_VALUE = "any non-empty value";
+    public static final String ERIC_IDENTITY_TYPE_HEADER_VALUE = "any non-empty value";
+    public static final String ERIC_AUTHORISED_ROLES_HEADER_NAME = "ERIC-Authorised-Key-Roles";
+    public static final String ERIC_AUTHORISED_ROLES_HEADER_VALUE = "*";
+    public static final String ERIC_IDENTITY_TYPE_HEADER_NAME = "ERIC-Identity-Type";
+
     public static final ItemOrderedCertifiedCopy CERTIFIED_COPY = ItemOrderedCertifiedCopy.newBuilder()
             .setOrderNumber("ORD-152416-079544")
             .setItemId("CCD-768116-517930")

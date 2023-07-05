@@ -188,6 +188,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>api-security-java</artifactId>
+            <version>0.4.2</version>
+        </dependency>
     </dependencies>
 
     <build>
