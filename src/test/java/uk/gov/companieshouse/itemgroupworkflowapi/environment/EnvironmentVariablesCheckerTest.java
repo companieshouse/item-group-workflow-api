@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.RequiredEnvironmentVariables.BOOTSTRAP_SERVER_URL;
+import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.RequiredEnvironmentVariables.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.RequiredEnvironmentVariables.MONGODB_URL;
 
 @SpringBootTest
@@ -53,6 +54,12 @@ class EnvironmentVariablesCheckerTest {
     @Test
     void checkEnvironmentVariablesAllPresentReturnsFalseIfBootstrapServerUrlMissing() {
         populateAllVariablesExceptOneAndAssertSomethingMissing(BOOTSTRAP_SERVER_URL);
+    }
+
+    @DisplayName("returns false if ITEM_ORDERED_CERTIFIED_COPY_TOPIC is missing")
+    @Test
+    void checkEnvironmentVariablesAllPresentReturnsFalseIfItemOrderedCertifiedCopyTopicMissing() {
+        populateAllVariablesExceptOneAndAssertSomethingMissing(ITEM_ORDERED_CERTIFIED_COPY_TOPIC);
     }
 
     private void populateAllVariablesExceptOneAndAssertSomethingMissing(

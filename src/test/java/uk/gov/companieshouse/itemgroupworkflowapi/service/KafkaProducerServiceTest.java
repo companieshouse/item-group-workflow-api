@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFICATE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFIED_COPY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_MISSING_IMAGE_DELIVERY;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 
 /**
  * Unit tests the {@link KafkaProducerService} class.
@@ -59,10 +59,13 @@ class KafkaProducerServiceTest {
     @Mock
     private ItemOrderedCertifiedCopy message;
 
+
+
     @BeforeEach
     void setUp() {
         when(loggingUtils.getLogger()).thenReturn(logger);
-        service = new KafkaProducerService(kafkaTemplate, loggingUtils, certifiedCopyFactory);
+        service = new KafkaProducerService(
+                kafkaTemplate, loggingUtils, certifiedCopyFactory, ITEM_ORDERED_CERTIFIED_COPY_TOPIC);
         service.afterPropertiesSet();
     }
 

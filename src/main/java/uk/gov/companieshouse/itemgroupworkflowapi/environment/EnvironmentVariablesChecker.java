@@ -13,7 +13,8 @@ public class EnvironmentVariablesChecker {
 
     public enum RequiredEnvironmentVariables {
         MONGODB_URL("MONGODB_URL"),
-        BOOTSTRAP_SERVER_URL("BOOTSTRAP_SERVER_URL");
+        BOOTSTRAP_SERVER_URL("BOOTSTRAP_SERVER_URL"),
+        ITEM_ORDERED_CERTIFIED_COPY_TOPIC("ITEM_ORDERED_CERTIFIED_COPY_TOPIC");
 
         private final String name;
 

@@ -51,4 +51,7 @@ public class TestConstants {
             "delivery_method", "collection",
             "delivery_timescale", "standard"
         );
+
+    public static final String ITEM_ORDERED_CERTIFIED_COPY_TOPIC = "item-ordered-certified-copy";
+
 }

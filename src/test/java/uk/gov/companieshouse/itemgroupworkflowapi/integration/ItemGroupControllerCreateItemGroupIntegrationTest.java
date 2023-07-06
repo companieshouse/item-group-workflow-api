@@ -58,7 +58,6 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY_ITEM_OPTIONS;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
@@ -66,6 +65,7 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 
 /**
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
