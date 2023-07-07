@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,6 @@ import java.util.Map;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFICATE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CERTIFIED_COPY;
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_MISSING_IMAGE_DELIVERY;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 
 @Service
 public class KafkaProducerService implements InitializingBean {
@@ -47,13 +47,16 @@ public class KafkaProducerService implements InitializingBean {
         private final KafkaTemplate<String, ItemOrderedCertifiedCopy> kafkaTemplate;
         private final Logger logger;
         private final ItemOrderedCertifiedCopyFactory certifiedCopyFactory;
+        private final String itemOrderedCertifiedCopyTopic;
 
         CertifiedCopyMessageSender(KafkaTemplate<String, ItemOrderedCertifiedCopy> kafkaTemplate,
                                    Logger logger,
-                                   ItemOrderedCertifiedCopyFactory certifiedCopyFactory) {
+                                   ItemOrderedCertifiedCopyFactory certifiedCopyFactory,
+                                   String itemOrderedCertifiedCopyTopic) {
             this.kafkaTemplate = kafkaTemplate;
             this.logger = logger;
             this.certifiedCopyFactory = certifiedCopyFactory;
+            this.itemOrderedCertifiedCopyTopic = itemOrderedCertifiedCopyTopic;
         }
 
         @Override
@@ -62,16 +65,16 @@ public class KafkaProducerService implements InitializingBean {
                     getLogMap(item.getId()));
             final ItemOrderedCertifiedCopy message = certifiedCopyFactory.buildMessage(group, item);
             final ListenableFuture<SendResult<String, ItemOrderedCertifiedCopy>> future =
-                    kafkaTemplate.send(ITEM_ORDERED_CERTIFIED_COPY_TOPIC, message);
+                    kafkaTemplate.send(itemOrderedCertifiedCopyTopic, message);
             future.addCallback(new ListenableFutureCallback<>() {
                 @Override
                 public void onSuccess(SendResult<String, ItemOrderedCertifiedCopy> result) {
                     final var metadata =  result.getRecordMetadata();
                     final var partition = metadata.partition();
                     final var offset = metadata.offset();
-                    logger.info("Message " + message + " delivered to topic " + ITEM_ORDERED_CERTIFIED_COPY_TOPIC
+                    logger.info("Message " + message + " delivered to topic " + itemOrderedCertifiedCopyTopic
                                     + " on partition " + partition + " with offset " + offset + ".",
-                            getLogMap(message.getItemId(), ITEM_ORDERED_CERTIFIED_COPY_TOPIC, partition, offset));
+                            getLogMap(message.getItemId(), itemOrderedCertifiedCopyTopic, partition, offset));
                 }
 
                 @Override
@@ -88,14 +91,19 @@ public class KafkaProducerService implements InitializingBean {
     private final EnumMap<ItemKind, MessageSender> senders;
     private final ItemOrderedCertifiedCopyFactory certifiedCopyFactory;
 
+    private final String itemOrderedCertifiedCopyTopic;
+
     public KafkaProducerService(KafkaTemplate<String,
                                 ItemOrderedCertifiedCopy> kafkaTemplate,
                                 LoggingUtils logger,
-                                ItemOrderedCertifiedCopyFactory certifiedCopyFactory) {
+                                ItemOrderedCertifiedCopyFactory certifiedCopyFactory,
+                                @Value("${kafka.topics.item-ordered-certified-copy}")
+                                String itemOrderedCertifiedCopyTopic) {
         this.kafkaTemplate = kafkaTemplate;
         this.logger = logger.getLogger();
         this.senders = new EnumMap<>(ItemKind.class);
         this.certifiedCopyFactory = certifiedCopyFactory;
+        this.itemOrderedCertifiedCopyTopic = itemOrderedCertifiedCopyTopic;
     }
 
     public void produceMessages(final ItemGroupData groupCreated) {
@@ -106,7 +114,9 @@ public class KafkaProducerService implements InitializingBean {
     public void afterPropertiesSet() {
         senders.put(ITEM_CERTIFICATE, new DefaultMessageSender(logger));
         senders.put(ITEM_MISSING_IMAGE_DELIVERY, new DefaultMessageSender(logger));
-        senders.put(ITEM_CERTIFIED_COPY, new CertifiedCopyMessageSender(kafkaTemplate, logger, certifiedCopyFactory));
+        senders.put(ITEM_CERTIFIED_COPY,
+                new CertifiedCopyMessageSender(
+                        kafkaTemplate, logger, certifiedCopyFactory, itemOrderedCertifiedCopyTopic));
     }
 
     private void produceMessage(final ItemGroupData group, final Item item) {
