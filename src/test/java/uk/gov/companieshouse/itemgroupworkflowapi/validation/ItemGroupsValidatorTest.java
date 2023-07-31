@@ -1,18 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifier;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
+import org.junit.jupiter.api.*;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,6 +75,9 @@ class ItemGroupsValidatorTest {
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
         item.setItemCosts(itemCosts);
+
+        ItemLinks itemLinks = new ItemLinks();
+        item.setLinks(itemLinks);
 
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
@@ -185,6 +177,8 @@ class ItemGroupsValidatorTest {
         Item item = new Item();
         item.setDescriptionIdentifier(INVALID_DESC_ID); // Invalid
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
+        ItemLinks itemLinks = new ItemLinks();
+        item.setLinks(itemLinks);
 
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
@@ -231,6 +225,8 @@ class ItemGroupsValidatorTest {
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
         List<Item> items = new ArrayList<>();
+        ItemLinks itemLinks = new ItemLinks();
+        item.setLinks(itemLinks);
         items.add(item);
         dto.setItems(items);
 
@@ -267,6 +263,9 @@ class ItemGroupsValidatorTest {
 
         List<Item> items = new ArrayList<>();
         items.add(item);
+        ItemLinks itemLinks = new ItemLinks();
+        item.setLinks(itemLinks);
+
         dto.setItems(items);
 
         return dto;
@@ -301,6 +300,8 @@ class ItemGroupsValidatorTest {
         item.setCompanyNumber(VALID_COMPANY_NUMBER);    // company NAME missing
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
+        ItemLinks itemLinks = new ItemLinks();
+        item.setLinks(itemLinks);
 
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
@@ -344,6 +345,8 @@ class ItemGroupsValidatorTest {
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
         List<Item> items = new ArrayList<>();
+        ItemLinks itemLinks = new ItemLinks();
+        item.setLinks(itemLinks);
         items.add(item);
         dto.setItems(items);
 
