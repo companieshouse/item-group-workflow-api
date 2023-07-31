@@ -44,6 +44,7 @@ public class ItemGroupsValidator {
             linksPresentWithOrderNumber(dto, errors))
         {
             validateItemDescriptionIdentifier(dto, errors);
+            validateItemLinks(dto, errors);
             validateItemKind(dto, errors);
             validateItemCostsProductType(dto, errors);
             validateDeliveryDetailsCompanyNumberAndName(dto, errors);
@@ -135,6 +136,14 @@ public class ItemGroupsValidator {
                         errors.add(INVALID_ITEM_COST_PRODUCT_TYPE + productType);
                     }
                 }
+            }
+        }
+    }
+
+    private void validateItemLinks(ItemGroupData dto, List<String> errors){
+        for (Item item : dto.getItems()){
+            if(isNull(item.getLinks())){
+                errors.add(ITEM_GROUP_LINKS_MISSING);
             }
         }
     }
