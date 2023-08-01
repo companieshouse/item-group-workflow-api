@@ -134,7 +134,7 @@ class ItemGroupsValidatorTest {
         group.getItems().get(0).setLinks(null);
         final var errors = validator.validateCreateItemData(group);
 
-        expectError(errors, ItemGroupsValidator.ITEM_GROUP_LINKS_MISSING);
+        expectError(errors, ItemGroupsValidator.ITEM_LINKS_MISSING);
     }
 
     @Test

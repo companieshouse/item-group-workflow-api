@@ -29,6 +29,7 @@ public class ItemGroupsValidator {
     public static final String ORDER_NUMBER_INVALID = "Items Group : order number invalid";
     public static final String ITEM_GROUP_ITEMS_MISSING = "Items Group : items not provided";
     public static final String ITEM_GROUP_LINKS_MISSING = "Items Group : links not provided";
+    public static final String ITEM_LINKS_MISSING = "Items : links not provided";
     public static final String LINKS_ORDER_NUMBER_MISSING = "Items Group : link order number not provided";
     public static final String INVALID_DESCRIPTION_IDENTIFIER = "Items Group : invalid item description identifier : ";
     public static final String INVALID_ITEM_COST_PRODUCT_TYPE = "Items Group : invalid item cost product type : ";
@@ -143,7 +144,7 @@ public class ItemGroupsValidator {
     private void validateItemLinks(ItemGroupData dto, List<String> errors){
         for (Item item : dto.getItems()){
             if(isNull(item.getLinks())){
-                errors.add(ITEM_GROUP_LINKS_MISSING);
+                errors.add(ITEM_LINKS_MISSING);
             }
         }
     }
