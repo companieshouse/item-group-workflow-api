@@ -126,6 +126,18 @@ class ItemGroupsValidatorTest {
     }
 
     @Test
+    @DisplayName("item links missing")
+    void missingItemLinksTest() {
+        final var options = new HashMap<>(CERTIFIED_COPY_ITEM_OPTIONS);
+        final var group = createGroupWithCertifiedCopyItem(options);
+
+        group.getItems().get(0).setLinks(null);
+        final var errors = validator.validateCreateItemData(group);
+
+        expectError(errors, ItemGroupsValidator.ITEM_GROUP_LINKS_MISSING);
+    }
+
+    @Test
     @DisplayName("links missing")
     void missingLinksTest() {
         final ItemGroupData dto = new ItemGroupData();
