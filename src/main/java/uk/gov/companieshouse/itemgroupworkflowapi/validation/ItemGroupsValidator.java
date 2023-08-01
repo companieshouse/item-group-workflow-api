@@ -9,6 +9,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifie
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 
 import java.util.ArrayList;
 import java.util.List;
