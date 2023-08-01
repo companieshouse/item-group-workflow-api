@@ -1,7 +1,14 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.*;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifier;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 
 import java.util.ArrayList;
 import java.util.List;
