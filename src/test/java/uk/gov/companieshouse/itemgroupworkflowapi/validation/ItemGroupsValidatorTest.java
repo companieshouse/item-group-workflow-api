@@ -77,6 +77,7 @@ class ItemGroupsValidatorTest {
         item.setItemCosts(itemCosts);
 
         ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("http://original-item");
         item.setLinks(itemLinks);
 
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
@@ -132,11 +133,40 @@ class ItemGroupsValidatorTest {
         final var group = createGroupWithCertifiedCopyItem(options);
 
         group.getItems().get(0).setLinks(null);
+
         final var errors = validator.validateCreateItemData(group);
 
         expectError(errors, ItemGroupsValidator.ITEM_LINKS_MISSING);
     }
 
+    @Test
+    @DisplayName("item link original item missing")
+    void missingItemLinkOriginalItemTest() {
+        final var options = new HashMap<>(CERTIFIED_COPY_ITEM_OPTIONS);
+        final var group = createGroupWithCertifiedCopyItem(options);
+
+        ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem(null);
+        group.getItems().get(0).setLinks(itemLinks);
+
+        final var errors = validator.validateCreateItemData(group);
+
+        expectError(errors, ItemGroupsValidator.ITEM_LINKS_ORIGINAL_ITEM_MISSING);
+    }
+
+    @Test
+    @DisplayName("item link original item empty")
+    void emptyItemLinkOriginalItemTest() {
+        final var options = new HashMap<>(CERTIFIED_COPY_ITEM_OPTIONS);
+        final var group = createGroupWithCertifiedCopyItem(options);
+
+
+        group.getItems().get(0).getLinks().setOriginalItem("");
+
+        final var errors = validator.validateCreateItemData(group);
+
+        expectError(errors, ItemGroupsValidator.ITEM_LINKS_ORIGINAL_ITEM_MISSING);
+    }
     @Test
     @DisplayName("links missing")
     void missingLinksTest() {
@@ -190,6 +220,7 @@ class ItemGroupsValidatorTest {
         item.setDescriptionIdentifier(INVALID_DESC_ID); // Invalid
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
         ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("http://original-item");
         item.setLinks(itemLinks);
 
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
@@ -238,6 +269,7 @@ class ItemGroupsValidatorTest {
 
         List<Item> items = new ArrayList<>();
         ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("http://original-item");
         item.setLinks(itemLinks);
         items.add(item);
         dto.setItems(items);
@@ -276,6 +308,7 @@ class ItemGroupsValidatorTest {
         List<Item> items = new ArrayList<>();
         items.add(item);
         ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("http://original-item");
         item.setLinks(itemLinks);
 
         dto.setItems(items);
@@ -312,7 +345,9 @@ class ItemGroupsValidatorTest {
         item.setCompanyNumber(VALID_COMPANY_NUMBER);    // company NAME missing
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
+
         ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("http://");
         item.setLinks(itemLinks);
 
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
@@ -358,6 +393,7 @@ class ItemGroupsValidatorTest {
 
         List<Item> items = new ArrayList<>();
         ItemLinks itemLinks = new ItemLinks();
+        itemLinks.setOriginalItem("http://original-item");
         item.setLinks(itemLinks);
         items.add(item);
         dto.setItems(items);

@@ -17,6 +17,7 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 @Component
 public class ItemGroupsValidator {
@@ -31,6 +32,7 @@ public class ItemGroupsValidator {
     public static final String ITEM_GROUP_LINKS_MISSING = "Items Group : links not provided";
     public static final String ITEM_LINKS_MISSING = "Items : links not provided";
     public static final String LINKS_ORDER_NUMBER_MISSING = "Items Group : link order number not provided";
+    public static final String ITEM_LINKS_ORIGINAL_ITEM_MISSING = "Items: Original item missing from Item Links";
     public static final String INVALID_DESCRIPTION_IDENTIFIER = "Items Group : invalid item description identifier : ";
     public static final String INVALID_ITEM_COST_PRODUCT_TYPE = "Items Group : invalid item cost product type : ";
     public static final String INVALID_ITEM_KIND_NAME = "Items Group : invalid item kind : ";
@@ -143,8 +145,14 @@ public class ItemGroupsValidator {
 
     private void validateItemLinks(ItemGroupData dto, List<String> errors){
         for (Item item : dto.getItems()){
-            if(isNull(item.getLinks())){
+            ItemLinks itemLinks = item.getLinks();
+
+            if(isNull(itemLinks)){
                 errors.add(ITEM_LINKS_MISSING);
+                return;
+            }
+            if(isEmpty(itemLinks.getOriginalItem())){
+                errors.add(ITEM_LINKS_ORIGINAL_ITEM_MISSING);
             }
         }
     }
