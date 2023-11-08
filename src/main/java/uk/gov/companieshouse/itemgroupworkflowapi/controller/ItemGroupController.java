@@ -43,7 +43,8 @@ public class ItemGroupController {
     public static final String CREATE_ITEM_GROUP_CREATED_PREFIX = "create_item_group: created";
     public static final String CREATE_ITEM_GROUP_ERROR_PREFIX = "create_item_group: error: ";
     public static final String CREATE_ITEM_GROUP_VALIDATION_PREFIX = "create_item_group: validation failed";
-    public static final String CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX = "create_item_group: already exists";
+    public static final String CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX =
+        "create_item_group: item groups already exist with one or more of these items: ";
     private final LoggingUtils logger;
     private final ItemGroupsService itemGroupsService;
     private final ItemGroupsValidator itemGroupsValidator;
@@ -84,10 +85,10 @@ public class ItemGroupController {
         }
 
         try {
-            if (itemGroupsService.doesItemGroupExist(itemGroupData))
-                return buildItemAlreadyExistsResponse(xRequestId, itemGroupData);
+            if (itemGroupsService.existingItemGroupsContainSameItems(itemGroupData))
+                return buildExistingItemGroupsContainSameItemsResponse(xRequestId, itemGroupData);
 
-            final ItemGroupData savedItemGroupData = itemGroupsService.createItemGroup(itemGroupData);
+            final var savedItemGroupData = itemGroupsService.createItemGroup(itemGroupData);
             return buildCreateSuccessResponse(xRequestId, savedItemGroupData);
         }
         catch (IllegalArgumentException ex) {
@@ -140,7 +141,7 @@ public class ItemGroupController {
      */
     private ResponseEntity<Object> buildCreateSuccessResponse(String xRequestId,
                                                               final ItemGroupData savedItem) {
-        DataMap dataMap = new DataMap.Builder()
+        final var dataMap = new DataMap.Builder()
             .requestId(xRequestId)
             .orderId(savedItem.getOrderNumber())
             .build();
@@ -154,7 +155,7 @@ public class ItemGroupController {
      */
     private ResponseEntity<Object> buildValidationResponse(String xRequestId,
                                                            final List<String> errors) {
-        DataMap dataMap = new DataMap.Builder()
+        final var dataMap = new DataMap.Builder()
             .requestId(xRequestId)
             .errors(errors)
             .build();
@@ -166,14 +167,18 @@ public class ItemGroupController {
     /**
      * @return HttpStatus.CONFLICT
      */
-    private ResponseEntity<Object> buildItemAlreadyExistsResponse(String xRequestId,
-                                                                  final ItemGroupData itemGroupData) {
-        DataMap dataMap = new DataMap.Builder()
+    private ResponseEntity<Object> buildExistingItemGroupsContainSameItemsResponse(String xRequestId,
+                                                                                   final ItemGroupData itemGroupData) {
+        final var dataMap = new DataMap.Builder()
             .requestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .build();
 
-        log().error(CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX, dataMap.getLogMap());
+        final List<String> newItemGroupItemIds = itemGroupData.getItems().stream()
+            .map(Item::getId)
+            .collect(Collectors.toList());
+
+        log().error(CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX + newItemGroupItemIds, dataMap.getLogMap());
         return ResponseEntity.status(CONFLICT).body(itemGroupData);
     }
 
@@ -185,7 +190,7 @@ public class ItemGroupController {
         final Exception ex,
         final ItemGroupData itemGroupData,
         HttpStatus httpStatus) {
-        DataMap dataMap = new DataMap.Builder()
+        final var dataMap = new DataMap.Builder()
             .requestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .status(httpStatus.toString())
