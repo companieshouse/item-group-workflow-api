@@ -62,7 +62,7 @@ class ItemGroupControllerTest {
 
     @Test
     @DisplayName("create item group succeeds return 201 CREATED")
-    void createItemGroupReturnCreated201()  throws Exception {
+    void createItemGroupReturnCreated201() {
         final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
@@ -106,7 +106,7 @@ class ItemGroupControllerTest {
 
     @Test
     @DisplayName("validation fails return 400 BAD_REQUEST")
-    void validationFailsReturnBadRequest400()  throws Exception {
+    void validationFailsReturnBadRequest400() {
         final ItemGroupData itemGroupData = invalidItemGroupsDtoMissingAllValidationCriteria();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
@@ -126,12 +126,12 @@ class ItemGroupControllerTest {
 
     @Test
     @DisplayName("item group already exists return 409 CONFLICT")
-    void itemGroupAlreadyExistsReturnConflict409()  throws Exception {
+    void itemGroupAlreadyExistsReturnConflict409() {
         final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
 
-        when(itemGroupsService.doesItemGroupExist(itemGroupData)).thenReturn(true);
+        when(itemGroupsService.existingItemGroupsContainSameItems(itemGroupData)).thenReturn(true);
         when(loggingUtils.getLogger()).thenReturn(logger);
 
         final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
@@ -145,7 +145,7 @@ class ItemGroupControllerTest {
 
     @Test
     @DisplayName("Mongo EXISTS operation return 500 INTERNAL_SERVER_ERROR")
-    void mongoExistsReturnInternalServerError500()  throws Exception {
+    void mongoExistsReturnInternalServerError500() {
         final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);
@@ -155,7 +155,7 @@ class ItemGroupControllerTest {
         final MongoOperationException moe = new MongoOperationException(
                 MONGO_EXISTS_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(),
                 new MongoException(""));
-        when(itemGroupsService.doesItemGroupExist(itemGroupData)).thenThrow(moe);
+        when(itemGroupsService.existingItemGroupsContainSameItems(itemGroupData)).thenThrow(moe);
 
         when(loggingUtils.getLogger()).thenReturn(logger);
         //
@@ -172,7 +172,7 @@ class ItemGroupControllerTest {
 
     @Test
     @DisplayName("Mongo SAVE operation return 500 INTERNAL_SERVER_ERROR")
-    void mongoSaveReturnInternalServerError500()  throws Exception {
+    void mongoSaveReturnInternalServerError500() {
         final ItemGroupData itemGroupData = fairWeatherItemGroupsDto();
         ItemGroup itemGroup = new ItemGroup();
         itemGroup.setData(itemGroupData);

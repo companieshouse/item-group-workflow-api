@@ -1,6 +1,14 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
+import static java.time.LocalDateTime.now;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.ItemGroupDataUtils.getItemIds;
+
 import com.mongodb.MongoException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemNotFoundException;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
@@ -11,18 +19,13 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.logging.util.DataMap;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-
-import static java.time.LocalDateTime.now;
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
-
 @Service
 public class ItemGroupsService {
 
-    public static String MONGO_EXISTS_EXCEPTION_MESSAGE = "Mongo EXISTS operation failed for item group order number : ";
-    public static String MONGO_SAVE_EXCEPTION_MESSAGE = "Mongo SAVE operation failed for item group order number : ";
+    public static final String MONGO_EXISTS_EXCEPTION_MESSAGE =
+        "Mongo EXISTS operation failed for item group with items : ";
+    public static final String MONGO_SAVE_EXCEPTION_MESSAGE =
+        "Mongo SAVE operation failed for item group order number : ";
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
     private final LinksGeneratorService linksGenerator;
@@ -41,18 +44,20 @@ public class ItemGroupsService {
         this.idGenerator = idGenerator;
     }
 
-    public boolean doesItemGroupExist(ItemGroupData itemGroupData){
-        boolean itemExists;
+    public boolean existingItemGroupsContainSameItems(ItemGroupData itemGroupData){
+        boolean existingItemGroupsContainSameItems;
+        final List<String> newItemGroupItemIds = getItemIds(itemGroupData);
         try {
-            itemExists = itemGroupsRepository.existsItemGroupByDataOrderNumber(itemGroupData.getOrderNumber());
+            existingItemGroupsContainSameItems =
+                itemGroupsRepository.existItemGroupsWithSameItems(newItemGroupItemIds);
         } catch (MongoException mex) {
-            throw new MongoOperationException(MONGO_EXISTS_EXCEPTION_MESSAGE + itemGroupData.getOrderNumber(), mex);
+            throw new MongoOperationException(MONGO_EXISTS_EXCEPTION_MESSAGE + newItemGroupItemIds, mex);
         }
 
-        return itemExists;
+        return existingItemGroupsContainSameItems;
     }
     public ItemGroupData createItemGroup(ItemGroupData itemGroupData) {
-        final ItemGroup itemGroup = new ItemGroup();
+        final var itemGroup = new ItemGroup();
 
         String itemGroupId = idGenerator.generateId();
         itemGroup.setId(itemGroupId);
@@ -102,7 +107,7 @@ public class ItemGroupsService {
 
 
     private void setCreationTimeStamp(final ItemGroup itemGroup) {
-        final LocalDateTime now = LocalDateTime.now();
+        final var now = LocalDateTime.now();
         itemGroup.setCreatedAt(now);
         itemGroup.setUpdatedAt(now);
     }
