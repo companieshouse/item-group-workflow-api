@@ -1,7 +1,31 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 
+import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY_ITEM_OPTIONS;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import consumer.deserialization.AvroDeserializer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
@@ -42,30 +66,6 @@ import uk.gov.companieshouse.itemgroupworkflowapi.service.IdGenerator;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.CERTIFIED_COPY_ITEM_OPTIONS;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 
 /**
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
@@ -151,7 +151,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        resetMessageReceivedLatch();
+        resetMessageReceivedLatch(1);
         when(idGenerator.generateId()).thenReturn("IG-123456-123456");
     }
 
@@ -231,13 +231,17 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
     }
 
     @Test
-    @DisplayName("create duplicate itemGroup fails - 409 Conflict")
-    void createDuplicateItemGroupUnsuccessful409Conflict() throws Exception {
+    @DisplayName("Create item groups sharing the same item fails - 409 Conflict")
+    void createItemGroupsWithSameItemUnsuccessful409Conflict() throws Exception {
 
-        // Given
-        final ItemGroupData newItemGroupData = createValidNewItemGroupData();
+        resetMessageReceivedLatch(2); // one message for each item
 
-        // Create item group and get success status.
+        final ItemGroupData firstGroup = createItemGroupData(
+            List.of(createItem("CCD-289716-962308"),
+                    createItem("CCD-228916-028323")) // item shared with group 2
+        );
+
+        // Create first item group and get success status.
         mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
                         .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
@@ -245,14 +249,19 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
                         .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(newItemGroupData)))
+                        .content(mapper.writeValueAsString(firstGroup)))
                 .andExpect(status().isCreated())
                 .andDo(MockMvcResultHandlers.print());
 
         verifyWhetherMessageIsReceived(true);
-        resetMessageReceivedLatch();
+        resetMessageReceivedLatch(2); // one message for each item
 
-        // Attempt to create the same item group and get failure status, 409 - CONFLICT.
+        final ItemGroupData secondGroup = createItemGroupData(
+            List.of(createItem("CCD-228916-028323"), // item shared with group 1
+                    createItem("CCD-768116-517999"))
+        );
+
+        // Attempt to create the second item group and get failure status, 409 - CONFLICT.
         mockMvc.perform(post("/item-groups" )
                         .header(REQUEST_ID_HEADER_NAME, "12345")
                         .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
@@ -260,7 +269,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
                         .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(newItemGroupData)))
+                        .content(mapper.writeValueAsString(secondGroup)))
                 .andExpect(status().isConflict())
                 .andDo(MockMvcResultHandlers.print());
 
@@ -270,9 +279,19 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
     /**
      * Factory method that produces a DTO for a valid create item group payload.
      *
-     * @return a valid item DTO
+     * @return a valid item group DTO
      */
     private ItemGroupData createValidNewItemGroupData() {
+        return createItemGroupData(singletonList(createItem("111-222-333")));
+    }
+
+    /**
+     * Factory method that produces a DTO for a valid create item group payload.
+     *
+     * @param items the items belonging to the item group
+     * @return a valid item group DTO
+     */
+    private ItemGroupData createItemGroupData(final List<Item> items) {
         final ItemGroupData newItemGroupData = new ItemGroupData();
         newItemGroupData.setOrderNumber(EXPECTED_ORDER_NUMBER);
 
@@ -280,20 +299,31 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
         deliveryDetails.setCompanyName(VALID_DELIVERY_COMPANY_NAME);
         newItemGroupData.setDeliveryDetails(deliveryDetails);
 
+        Links links = new Links();
+        links.setOrder(EXPECTED_ORDER_NUMBER);
+        links.setSelf("/orderable/certificates/mycert-123");
+        newItemGroupData.setLinks(links);
+        newItemGroupData.setItems(items);
+
+        return newItemGroupData;
+    }
+
+    /**
+     * Creates (a valid) item for testing purposes
+     * @param itemId the ID of the item to create
+     * @return the new item
+     */
+    private Item createItem(final String itemId) {
+
         ItemCosts itemCost = new ItemCosts();
         itemCost.setProductType(ItemCostProductType.CERTIFIED_COPY_INCORPORATION.toString());
 
         List<ItemCosts> itemCosts = new ArrayList<>();
         itemCosts.add(itemCost);
 
-        Links links = new Links();
-        links.setOrder(EXPECTED_ORDER_NUMBER);
-        links.setSelf("/orderable/certificates/mycert-123");
-        newItemGroupData.setLinks(links);
-
         Item item = new Item();
         item.setCompanyNumber(VALID_COMPANY_NUMBER);
-        item.setId("111-222-333");
+        item.setId(itemId);
         item.setCompanyName(VALID_ITEM_COMPANY_NAME);
         item.setDescriptionIdentifier(ItemDescriptionIdentifier.CERTIFIED_COPY.toString());
         item.setKind(ItemKind.ITEM_CERTIFIED_COPY.toString());
@@ -305,11 +335,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
 
         item.setItemOptions(CERTIFIED_COPY_ITEM_OPTIONS);
 
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-        newItemGroupData.setItems(items);
-
-        return newItemGroupData;
+        return item;
     }
 
     /**
@@ -359,8 +385,8 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
         assertThat(received, is(messageIsReceived));
     }
 
-    private void resetMessageReceivedLatch() {
-        messageReceivedLatch = new CountDownLatch(1);
+    private void resetMessageReceivedLatch(final int numberOfMessagesExpected) {
+        messageReceivedLatch = new CountDownLatch(numberOfMessagesExpected);
     }
 
 }
