@@ -30,6 +30,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.ItemGroupDataUtils.getItemIds;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
 
 
@@ -173,12 +174,8 @@ public class ItemGroupController {
             .requestId(xRequestId)
             .orderId(itemGroupData.getOrderNumber())
             .build();
+        log().error(CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX + getItemIds(itemGroupData), dataMap.getLogMap());
 
-        final List<String> newItemGroupItemIds = itemGroupData.getItems().stream()
-            .map(Item::getId)
-            .collect(Collectors.toList());
-
-        log().error(CREATE_ITEM_GROUP_ALREADY_EXISTS_PREFIX + newItemGroupItemIds, dataMap.getLogMap());
         return ResponseEntity.status(CONFLICT).body(itemGroupData);
     }
 

@@ -3,12 +3,12 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.ItemGroupDataUtils.getItemIds;
 
 import com.mongodb.MongoException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemNotFoundException;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.MongoOperationException;
@@ -46,9 +46,7 @@ public class ItemGroupsService {
 
     public boolean existingItemGroupsContainSameItems(ItemGroupData itemGroupData){
         boolean existingItemGroupsContainSameItems;
-        final List<String> newItemGroupItemIds = itemGroupData.getItems().stream()
-            .map(Item::getId)
-            .collect(Collectors.toList());
+        final List<String> newItemGroupItemIds = getItemIds(itemGroupData);
         try {
             existingItemGroupsContainSameItems =
                 itemGroupsRepository.existItemGroupsWithSameItems(newItemGroupItemIds);
