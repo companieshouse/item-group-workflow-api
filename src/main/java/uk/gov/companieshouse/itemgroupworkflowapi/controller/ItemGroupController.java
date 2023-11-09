@@ -1,6 +1,17 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.ItemGroupDataUtils.getItemIds;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
+
 import jakarta.json.JsonMergePatch;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +31,6 @@ import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.PatchItemRequestValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.util.DataMap;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.ItemGroupDataUtils.getItemIds;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH_VALUE;
 
 
 @RestController
