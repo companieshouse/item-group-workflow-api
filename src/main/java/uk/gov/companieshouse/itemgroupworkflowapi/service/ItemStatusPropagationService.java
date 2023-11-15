@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMessage;
@@ -33,9 +34,16 @@ public class ItemStatusPropagationService {
 
     private final Logger logger;
 
-    public ItemStatusPropagationService(RestTemplate restTemplate, Logger logger) {
+    private final String chsKafkaApiUrl;
+
+    public ItemStatusPropagationService(
+        RestTemplate restTemplate,
+        Logger logger,
+        @Value("${chs.kafka.api.url}") String chsKafkaApiUrl) {
         this.restTemplate = restTemplate;
         this.logger = logger;
+        this.chsKafkaApiUrl = chsKafkaApiUrl;
+
     }
 
     // TODO DCAC-241 Name etc
@@ -43,7 +51,6 @@ public class ItemStatusPropagationService {
 
         final String uri = ITEM_STATUS_UPDATED_URL.expand().toString();
         final HttpHeaders headers = new HttpHeaders();
-        // TODO DCAC-241 headers.setBasicAuth(getBasicAuthCredentials()); ?
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         final var item = new ItemDto(
@@ -54,13 +61,11 @@ public class ItemStatusPropagationService {
             new ItemStatusUpdateDto("ORD-175015-948111", "/item-groups/IG-305816-983218/items/CCD-768116-5180948", item);
         final HttpEntity<ItemStatusUpdateDto> httpEntity = new HttpEntity<>(update, headers);
 
-        // TODO DCAC-241 configure API URL
-
         restTemplate.setMessageConverters(getJsonMessageConverters());
 
         final var message =
             restTemplate.exchange(
-                "http://chs-kafka-api:4081" + uri,
+                chsKafkaApiUrl + uri,
                 HttpMethod.POST,
                 httpEntity,
                 HttpMessage.class);
