@@ -138,7 +138,8 @@ public class ItemGroupController {
 
         itemGroupsService.updateItem(itemGroupId, itemId, patchedItem);
 
-        itemStatusPropagator.propagate();
+        var itemGroup = itemGroupsService.findGroup(itemGroupId, itemId);
+        itemStatusPropagator.propagateItemStatusUpdate(patchedItem, itemGroup);
 
         return ResponseEntity.ok().body(patchedItem);
     }

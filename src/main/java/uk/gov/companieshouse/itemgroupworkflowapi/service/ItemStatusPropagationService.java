@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemStatusUpdateDto;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.logging.Logger;
 
 /**
@@ -46,19 +48,21 @@ public class ItemStatusPropagationService {
 
     }
 
-    // TODO DCAC-241 Name etc
-    public void propagate() {
+    public void propagateItemStatusUpdate(final Item updatedItem, final ItemGroup itemGroup) {
 
-        final String uri = ITEM_STATUS_UPDATED_URL.expand().toString();
-        final HttpHeaders headers = new HttpHeaders();
+        final var uri = ITEM_STATUS_UPDATED_URL.expand().toString();
+        final var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         final var item = new ItemDto(
-            "CCD-768116-5180948",
-            "satisfied",
-            "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf");
+            updatedItem.getId(),
+            updatedItem.getStatus(),
+            updatedItem.getDigitalDocumentLocation());
         final var update =
-            new ItemStatusUpdateDto("ORD-175015-948111", "/item-groups/IG-305816-983218/items/CCD-768116-5180948", item);
+            new ItemStatusUpdateDto(
+                itemGroup.getData().getOrderNumber(),
+                "/item-groups/" + itemGroup.getId() + "/items/" + updatedItem.getId(),
+                item);
         final HttpEntity<ItemStatusUpdateDto> httpEntity = new HttpEntity<>(update, headers);
 
         restTemplate.setMessageConverters(getJsonMessageConverters());
