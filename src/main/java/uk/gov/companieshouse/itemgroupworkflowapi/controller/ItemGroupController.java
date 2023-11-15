@@ -26,6 +26,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
+import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemStatusPropagationService;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMerger;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.ItemGroupsValidator;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.PatchItemRequestValidator;
@@ -51,16 +52,20 @@ public class ItemGroupController {
     private final PatchItemRequestValidator patchItemRequestValidator;
     private final PatchMerger patcher;
 
+    private final ItemStatusPropagationService itemStatusPropagator;
+
     public ItemGroupController(LoggingUtils logger,
                                ItemGroupsService itemGroupsService,
                                ItemGroupsValidator itemGroupsValidator,
                                PatchItemRequestValidator patchItemRequestValidator,
-                               PatchMerger patcher) {
+                               PatchMerger patcher,
+        ItemStatusPropagationService itemStatusPropagator) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
         this.itemGroupsValidator = itemGroupsValidator;
         this.patchItemRequestValidator = patchItemRequestValidator;
         this.patcher = patcher;
+        this.itemStatusPropagator = itemStatusPropagator;
     }
 
     /**
@@ -132,6 +137,8 @@ public class ItemGroupController {
         log().info("Patched item = " + patchedItem, getLogMap(itemGroupId, itemId, requestId));
 
         itemGroupsService.updateItem(itemGroupId, itemId, patchedItem);
+
+        itemStatusPropagator.propagate();
 
         return ResponseEntity.ok().body(patchedItem);
     }
