@@ -14,7 +14,8 @@ public class EnvironmentVariablesChecker {
     public enum RequiredEnvironmentVariables {
         MONGODB_URL("MONGODB_URL"),
         BOOTSTRAP_SERVER_URL("BOOTSTRAP_SERVER_URL"),
-        ITEM_ORDERED_CERTIFIED_COPY_TOPIC("ITEM_ORDERED_CERTIFIED_COPY_TOPIC");
+        ITEM_ORDERED_CERTIFIED_COPY_TOPIC("ITEM_ORDERED_CERTIFIED_COPY_TOPIC"),
+        CHS_KAFKA_API_URL("CHS_KAFKA_API_URL");
 
         private final String name;
 

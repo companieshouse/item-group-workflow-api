@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.RequiredEnvironmentVariables.BOOTSTRAP_SERVER_URL;
+import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.RequiredEnvironmentVariables.CHS_KAFKA_API_URL;
 import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.RequiredEnvironmentVariables.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 import static uk.gov.companieshouse.itemgroupworkflowapi.environment.EnvironmentVariablesChecker.RequiredEnvironmentVariables.MONGODB_URL;
 
@@ -60,6 +61,12 @@ class EnvironmentVariablesCheckerTest {
     @Test
     void checkEnvironmentVariablesAllPresentReturnsFalseIfItemOrderedCertifiedCopyTopicMissing() {
         populateAllVariablesExceptOneAndAssertSomethingMissing(ITEM_ORDERED_CERTIFIED_COPY_TOPIC);
+    }
+
+    @DisplayName("returns false if CHS_KAFKA_API_URL is missing")
+    @Test
+    void checkEnvironmentVariablesAllPresentReturnsFalseIfChsKafkaApiUrlMissing() {
+        populateAllVariablesExceptOneAndAssertSomethingMissing(CHS_KAFKA_API_URL);
     }
 
     private void populateAllVariablesExceptOneAndAssertSomethingMissing(
