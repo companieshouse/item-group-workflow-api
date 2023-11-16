@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -55,16 +54,8 @@ public class ApplicationConfiguration {
 
     private List<HttpMessageConverter<?>> getJsonMessageConverters() {
         final List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        final var converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper( createObjectMapper());
-        converters.add(converter);
+        converters.add(new MappingJackson2HttpMessageConverter());
         return converters;
-    }
-
-    private ObjectMapper createObjectMapper() {
-        final var objectMapper = new ObjectMapper();
-        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-        return objectMapper;
     }
 
 }
