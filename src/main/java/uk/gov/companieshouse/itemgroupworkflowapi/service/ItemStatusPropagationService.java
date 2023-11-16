@@ -3,6 +3,7 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemStatusUpdateDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.util.DataMap;
 
 /**
  * Service that propagates the updated service of an item in an item group via the `chs-kafka-api`,
@@ -57,23 +59,51 @@ public class ItemStatusPropagationService {
         final HttpEntity<ItemStatusUpdateDto> httpEntity = new HttpEntity<>(update, headers);
 
         try {
-                restTemplate.exchange(
-                    chsKafkaApiUrl + ITEM_STATUS_UPDATED_URL,
-                    HttpMethod.POST,
-                    httpEntity,
-                    HttpMessage.class);
+            restTemplate.exchange(
+                chsKafkaApiUrl + ITEM_STATUS_UPDATED_URL,
+                HttpMethod.POST,
+                httpEntity,
+                HttpMessage.class);
             logger.info("Item status update propagation successful for order number "
-                + orderNumber + ", group item " + groupItem + ".");
+                + orderNumber + ", group item " + groupItem + ".",
+                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
         } catch (RestClientException rce) {
-            // Exception is NOT rethrown as the clients will not be able to recover from or retry.
+            // Exception is NOT rethrown as the clients will not be able to recover from or retry it.
             logger.error("Item status update propagation FAILED for order number "
                 + orderNumber + ", group item " + groupItem + ", caught RestClientException with message "
-                + rce.getMessage() + ".");
+                + rce.getMessage() + ".",
+                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId(), rce.getMessage()));
         }
     }
 
     private String getGroupItem(final ItemGroup group, final Item item) {
         return "/item-groups/" + group.getId() + "/items/" + item.getId();
+    }
+
+    private Map<String, Object> getLogMap(
+        final String orderNumber,
+        final String itemGroupId,
+        final String itemId) {
+        return new DataMap.Builder()
+            .orderId(orderNumber)
+            .itemGroupId(itemGroupId)
+            .itemId(itemId)
+            .build()
+            .getLogMap();
+    }
+
+    private Map<String, Object> getLogMap(
+        final String orderNumber,
+        final String itemGroupId,
+        final String itemId,
+        final String error) {
+        return new DataMap.Builder()
+            .orderId(orderNumber)
+            .itemGroupId(itemGroupId)
+            .itemId(itemId)
+            .errors(singletonList(error))
+            .build()
+            .getLogMap();
     }
 
 }
