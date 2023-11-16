@@ -1,21 +1,16 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import static java.util.Collections.singletonList;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMessage;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriTemplate;
 import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemStatusUpdateDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -30,7 +25,7 @@ import uk.gov.companieshouse.logging.Logger;
 @Service
 public class ItemStatusPropagationService {
 
-    private static final UriTemplate ITEM_STATUS_UPDATED_URL = new UriTemplate("/private/item-group-processed-send");
+    private static final String ITEM_STATUS_UPDATED_URL = "/private/item-group-processed-send";
 
     private final RestTemplate restTemplate;
 
@@ -45,51 +40,40 @@ public class ItemStatusPropagationService {
         this.restTemplate = restTemplate;
         this.logger = logger;
         this.chsKafkaApiUrl = chsKafkaApiUrl;
-
     }
 
     public void propagateItemStatusUpdate(final Item updatedItem, final ItemGroup itemGroup) {
 
-        final var uri = ITEM_STATUS_UPDATED_URL.expand().toString();
         final var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.setAccept(singletonList(APPLICATION_JSON));
         final var item = new ItemDto(
             updatedItem.getId(),
             updatedItem.getStatus(),
             updatedItem.getDigitalDocumentLocation());
-        final var update =
-            new ItemStatusUpdateDto(
-                itemGroup.getData().getOrderNumber(),
-                "/item-groups/" + itemGroup.getId() + "/items/" + updatedItem.getId(),
-                item);
+        final var groupItem = getGroupItem(itemGroup, updatedItem);
+        final var orderNumber = itemGroup.getData().getOrderNumber();
+        final var update = new ItemStatusUpdateDto(orderNumber, groupItem, item);
         final HttpEntity<ItemStatusUpdateDto> httpEntity = new HttpEntity<>(update, headers);
 
-        restTemplate.setMessageConverters(getJsonMessageConverters());
-
-        final var message =
-            restTemplate.exchange(
-                chsKafkaApiUrl + uri,
-                HttpMethod.POST,
-                httpEntity,
-                HttpMessage.class);
-
-        // TODO DCAC 241 return outcome?
-
+        try {
+                restTemplate.exchange(
+                    chsKafkaApiUrl + ITEM_STATUS_UPDATED_URL,
+                    HttpMethod.POST,
+                    httpEntity,
+                    HttpMessage.class);
+            logger.info("Item status update propagation successful for order number "
+                + orderNumber + ", group item " + groupItem + ".");
+        } catch (RestClientException rce) {
+            // Exception is NOT rethrown as the clients will not be able to recover from or retry.
+            logger.error("Item status update propagation FAILED for order number "
+                + orderNumber + ", group item " + groupItem + ", caught RestClientException with message "
+                + rce.getMessage() + ".");
+        }
     }
 
-    private List<HttpMessageConverter<?>> getJsonMessageConverters() {
-        final List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        final var converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper( createObjectMapper());
-        converters.add(converter);
-        return converters;
-    }
-
-    private ObjectMapper createObjectMapper() {
-        final var objectMapper = new ObjectMapper();
-        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-        return objectMapper;
+    private String getGroupItem(final ItemGroup group, final Item item) {
+        return "/item-groups/" + group.getId() + "/items/" + item.getId();
     }
 
 }
