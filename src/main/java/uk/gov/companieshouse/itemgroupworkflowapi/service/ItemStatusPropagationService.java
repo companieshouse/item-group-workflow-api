@@ -68,11 +68,11 @@ public class ItemStatusPropagationService {
                 + orderNumber + ", group item " + groupItem + ".",
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
         } catch (RestClientException rce) {
-            // Exception is NOT rethrown as the clients will not be able to recover from or retry it.
             logger.error("Item status update propagation FAILED for order number "
                 + orderNumber + ", group item " + groupItem + ", caught RestClientException with message "
                 + rce.getMessage() + ".",
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId(), rce.getMessage()));
+            throw rce;
         }
     }
 
