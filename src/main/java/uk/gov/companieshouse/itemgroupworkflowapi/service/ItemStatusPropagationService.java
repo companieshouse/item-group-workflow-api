@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemStatusUpdateDto;
+import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemStatusUpdatePropagationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.logging.Logger;
@@ -68,11 +69,12 @@ public class ItemStatusPropagationService {
                 + orderNumber + ", group item " + groupItem + ".",
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
         } catch (RestClientException rce) {
-            logger.error("Item status update propagation FAILED for order number "
+            final String error = "Item status update propagation FAILED for order number "
                 + orderNumber + ", group item " + groupItem + ", caught RestClientException with message "
-                + rce.getMessage() + ".",
+                + rce.getMessage() + ".";
+            logger.error(error,
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId(), rce.getMessage()));
-            throw rce;
+            throw new ItemStatusUpdatePropagationException(error);
         }
     }
 
