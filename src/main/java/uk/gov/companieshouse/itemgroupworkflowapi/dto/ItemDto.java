@@ -6,7 +6,7 @@ public class ItemDto {
 
     private final String id;
 
-    private final String status; // TODO DCAC-241 use enum? (relocate)
+    private final String status;
 
     @JsonProperty("digital_document_location")
     private final String digitalDocumentLocation;
