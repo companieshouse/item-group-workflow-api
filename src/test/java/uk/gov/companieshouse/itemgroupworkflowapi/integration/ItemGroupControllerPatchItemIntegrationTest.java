@@ -269,6 +269,33 @@ class ItemGroupControllerPatchItemIntegrationTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("patch item responds with error where issue encountered propagating status update")
+    void patchItemPatchesFailsShouldStatusUpdatePropagationFail() throws Exception {
+
+        setUpItemGroup();
+
+        givenThat(post(urlEqualTo(ITEM_STATUS_UPDATED_URL))
+            .willReturn(aResponse()
+                .withStatus(404)));
+
+        mockMvc.perform(patch(PATCH_ITEM_URI)
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body_without_document_location")))
+            .andExpect(status().is5xxServerError())
+            .andExpect(content().string(
+                "Error in item-group-workflow-api: Item status update propagation FAILED for order number"
+                    + " ORD-065216-517934, group item /item-groups/IG-922016-860413/items/111-222-333, caught"
+                    + " RestClientException with message 404 Not Found: [no body]."))
+            .andDo(print());
+
+        verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
+    }
+
     private void setUpItemGroup() throws IOException {
         final String itemGroup = getJsonFromFile("item_group");
         mongoTemplate.insert(Document.parse(itemGroup), "item_groups");
