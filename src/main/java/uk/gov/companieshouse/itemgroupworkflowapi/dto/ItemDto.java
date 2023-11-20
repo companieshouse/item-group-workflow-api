@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ItemDto {
 
-    private String id;
+    private final String id;
 
-    private String status; // TODO DCAC-241 use enum? (relocate)
+    private final String status; // TODO DCAC-241 use enum? (relocate)
 
     @JsonProperty("digital_document_location")
-    private String digitalDocumentLocation;
+    private final String digitalDocumentLocation;
 
     public ItemDto(String id, String status, String digitalDocumentLocation) {
         this.id = id;
@@ -21,23 +21,12 @@ public class ItemDto {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getDigitalDocumentLocation() {
         return digitalDocumentLocation;
     }
 
-    public void setDigitalDocumentLocation(String digitalDocumentLocation) {
-        this.digitalDocumentLocation = digitalDocumentLocation;
-    }
 }
