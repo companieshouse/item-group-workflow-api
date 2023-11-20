@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
 
 @ExtendWith(MockitoExtension.class)
-public class UserAuthorisationInterceptorTest {
+class UserAuthorisationInterceptorTest {
     @InjectMocks
     private UserAuthorisationInterceptor userAuthorisationInterceptor;
     @Mock

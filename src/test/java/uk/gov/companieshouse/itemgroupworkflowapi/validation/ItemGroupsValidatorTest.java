@@ -98,7 +98,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(errors.get(0), ItemGroupsValidator.ORDER_NUMBER_INVALID);
+        Assertions.assertEquals(ItemGroupsValidator.ORDER_NUMBER_INVALID, errors.get(0));
     }
 
     @Test
@@ -110,7 +110,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(errors.get(0), ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING);
+        Assertions.assertEquals(ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING, errors.get(0));
     }
 
     @Test
@@ -123,7 +123,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(errors.get(0), ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING);
+        Assertions.assertEquals(ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING, errors.get(0));
     }
 
     @Test
@@ -177,7 +177,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(errors.get(0), ItemGroupsValidator.ITEM_GROUP_LINKS_MISSING);
+        Assertions.assertEquals( ItemGroupsValidator.ITEM_GROUP_LINKS_MISSING, errors.get(0));
     }
 
     @Test
@@ -191,7 +191,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(errors.get(0), ItemGroupsValidator.LINKS_ORDER_NUMBER_MISSING);
+        Assertions.assertEquals(ItemGroupsValidator.LINKS_ORDER_NUMBER_MISSING, errors.get(0));
     }
 
     @Test
