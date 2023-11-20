@@ -23,7 +23,7 @@ public class MongoConfig {
     @Bean
     public MappingMongoConverter mappingMongoConverter(final MongoDatabaseFactory factory,
                                                        final MongoMappingContext context) {
-        final MappingMongoConverter mappingConverter = new MappingMongoConverter(
+        final var mappingConverter = new MappingMongoConverter(
             new DefaultDbRefResolver(factory),
             context);
         //

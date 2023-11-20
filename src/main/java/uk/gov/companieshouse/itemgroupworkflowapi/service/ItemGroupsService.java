@@ -105,7 +105,6 @@ public class ItemGroupsService {
         return getSavedItem(savedItemGroup, itemId);
     }
 
-
     private void setCreationTimeStamp(final ItemGroup itemGroup) {
         final var now = LocalDateTime.now();
         itemGroup.setCreatedAt(now);
@@ -118,7 +117,7 @@ public class ItemGroupsService {
         return new ItemNotFoundException(error);
     }
 
-    private ItemGroup findGroup(final String itemGroupId, final String itemId) {
+    public ItemGroup findGroup(final String itemGroupId, final String itemId) {
         return itemGroupsRepository.findById(itemGroupId)
                 .orElseThrow(() -> itemNotFound(itemGroupId, itemId));
     }

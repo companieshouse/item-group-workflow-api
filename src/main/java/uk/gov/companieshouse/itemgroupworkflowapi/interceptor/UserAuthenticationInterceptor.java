@@ -1,24 +1,15 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.interceptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
-import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
-import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration;
-import uk.gov.companieshouse.itemgroupworkflowapi.util.EricHeaderHelper;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.logging.util.DataMap;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.*;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
+import uk.gov.companieshouse.itemgroupworkflowapi.util.EricHeaderHelper;
+import uk.gov.companieshouse.logging.util.DataMap;
 
 @Component
 public class UserAuthenticationInterceptor implements HandlerInterceptor {
@@ -36,12 +27,12 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String identityType = EricHeaderHelper.getIdentityType(request);
         if(identityType == null) {
-            DataMap dataMap = new DataMap.Builder()
+            var dataMap = new DataMap.Builder()
                     .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
                     .status(UNAUTHORIZED.toString())
                     .build();
 
-            String errorMessage = "UserAuthenticationInterceptor error: no ERIC-Identity-Type header";
+            var errorMessage = "UserAuthenticationInterceptor error: no ERIC-Identity-Type header";
             logFailureToAuthenticate(errorMessage, dataMap);
             response.setStatus(UNAUTHORIZED.value());
             return false;  // NOT Authorised.
@@ -49,11 +40,11 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
         String identity = EricHeaderHelper.getIdentity(request);
         if(identity == null) {
-            DataMap dataMap = new DataMap.Builder()
+            var dataMap = new DataMap.Builder()
                     .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
                     .status(UNAUTHORIZED.toString())
                     .build();
-            String errorMessage = "UserAuthenticationInterceptor error: no ERIC-Identity header";
+            var errorMessage = "UserAuthenticationInterceptor error: no ERIC-Identity header";
 
             logFailureToAuthenticate(errorMessage, dataMap);
             response.setStatus(UNAUTHORIZED.value());
@@ -63,7 +54,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private void logFailureToAuthenticate(String errorMessage, DataMap dataMap){
-        logger.getLogger().info("UserAuthenticationInterceptor error: no ERIC-Identity-Type header",
+        logger.getLogger().info(errorMessage,
                 dataMap.getLogMap());
     }
 }

@@ -1,24 +1,20 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifier;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 @Component
 public class ItemGroupsValidator {
@@ -79,7 +75,7 @@ public class ItemGroupsValidator {
     }
 
     private boolean linksPresentWithOrderNumber(ItemGroupData dto, List<String> errors) {
-        Links links = dto.getLinks();
+        var links = dto.getLinks();
 
         if (isNull(links)) {
             errors.add(ITEM_GROUP_LINKS_MISSING);
@@ -101,7 +97,7 @@ public class ItemGroupsValidator {
      * Working assumption : if delivery_details.company_name is present then both these fields are mandatory.
      */
     private void validateDeliveryDetailsCompanyNumberAndName(ItemGroupData dto, List<String> errors) {
-        DeliveryDetails deliveryDetails = dto.getDeliveryDetails();
+        var deliveryDetails = dto.getDeliveryDetails();
         if (isNull(deliveryDetails))
             return;
 
@@ -146,7 +142,7 @@ public class ItemGroupsValidator {
 
     private void validateItemLinks(ItemGroupData dto, List<String> errors){
         for (Item item : dto.getItems()){
-            ItemLinks itemLinks = item.getLinks();
+            var itemLinks = item.getLinks();
 
             if(isNull(itemLinks)){
                 errors.add(ITEM_LINKS_MISSING);

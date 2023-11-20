@@ -1,23 +1,15 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.interceptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.api.util.security.AuthorisationUtil;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
-import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.logging.util.DataMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.*;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 
 @Component
 public class UserAuthorisationInterceptor implements HandlerInterceptor {
@@ -41,14 +33,14 @@ public class UserAuthorisationInterceptor implements HandlerInterceptor {
 
     private boolean hasInternalUserRole(HttpServletRequest request) {
         if(AuthorisationUtil.hasInternalUserRole(request)) {
-            DataMap dataMap = new DataMap.Builder()
+            var dataMap = new DataMap.Builder()
                     .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
                     .build();
             logger.getLogger().trace("API is permitted to view the resource",
                     dataMap.getLogMap());
             return true;
         } else {
-            DataMap dataMap = new DataMap.Builder()
+            var dataMap = new DataMap.Builder()
                     .requestId(request.getHeader(REQUEST_ID_HEADER_NAME))
                     .status(UNAUTHORIZED.toString())
                     .build();

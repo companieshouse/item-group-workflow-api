@@ -1,5 +1,32 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemStatusPropagationService.ITEM_STATUS_UPDATED_URL;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -7,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -17,35 +45,15 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.TimestampedEntity;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.TimestampedEntityVerifier;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
-
 /**
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
  * handling of the PATCH item request only.
  */
-@SpringBootTest
+@SpringBootTest(properties = "chs.kafka.api.url=http://localhost:${wiremock.server.port}")
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
+@AutoConfigureWireMock(port = 0)
 class ItemGroupControllerPatchItemIntegrationTest {
 
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
@@ -125,6 +133,10 @@ class ItemGroupControllerPatchItemIntegrationTest {
         final var timestamps = new TimestampedEntityVerifier();
         timestamps.start();
 
+        givenThat(post(urlEqualTo(ITEM_STATUS_UPDATED_URL))
+            .willReturn(aResponse()
+                .withStatus(201)));
+
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
@@ -148,6 +160,8 @@ class ItemGroupControllerPatchItemIntegrationTest {
         timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(new ItemGroupTimeStampedEntity(retrievedGroup));
         timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(
                 new ItemTimestampedEntity(retrievedItem, retrievedGroup));
+
+        verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
     }
 
     @Test
@@ -188,6 +202,10 @@ class ItemGroupControllerPatchItemIntegrationTest {
 
         setUpItemGroup();
 
+        givenThat(post(urlEqualTo(ITEM_STATUS_UPDATED_URL))
+            .willReturn(aResponse()
+                .withStatus(201)));
+
         mockMvc.perform(patch(PATCH_ITEM_URI)
                         .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
                         .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
@@ -199,6 +217,8 @@ class ItemGroupControllerPatchItemIntegrationTest {
                 .andExpect(jsonPath("$.digital_document_location").doesNotHaveJsonPath())
                 .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
                 .andDo(print());
+
+        verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
     }
 
     @Test
@@ -247,6 +267,33 @@ class ItemGroupControllerPatchItemIntegrationTest {
                         .content(getJsonFromFile("patch_item_body")))
                 .andExpect(status().isUnsupportedMediaType())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("patch item responds with error where issue encountered propagating status update")
+    void patchItemPatchesFailsShouldStatusUpdatePropagationFail() throws Exception {
+
+        setUpItemGroup();
+
+        givenThat(post(urlEqualTo(ITEM_STATUS_UPDATED_URL))
+            .willReturn(aResponse()
+                .withStatus(404)));
+
+        mockMvc.perform(patch(PATCH_ITEM_URI)
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body_without_document_location")))
+            .andExpect(status().is5xxServerError())
+            .andExpect(content().string(
+                "Error in item-group-workflow-api: Item status update propagation FAILED for order number"
+                    + " ORD-065216-517934, group item /item-groups/IG-922016-860413/items/111-222-333, caught"
+                    + " RestClientException with message 404 Not Found: [no body]."))
+            .andDo(print());
+
+        verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
     }
 
     private void setUpItemGroup() throws IOException {
