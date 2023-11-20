@@ -28,7 +28,7 @@ import uk.gov.companieshouse.logging.util.DataMap;
 @Service
 public class ItemStatusPropagationService {
 
-    private static final String ITEM_STATUS_UPDATED_URL = "/private/item-group-processed-send";
+    public static final String ITEM_STATUS_UPDATED_URL = "/private/item-group-processed-send";
 
     private final RestTemplate restTemplate;
 
