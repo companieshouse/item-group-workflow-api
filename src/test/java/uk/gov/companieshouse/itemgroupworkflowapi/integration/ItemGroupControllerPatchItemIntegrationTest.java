@@ -285,7 +285,7 @@ class ItemGroupControllerPatchItemIntegrationTest {
                 .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
                 .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                 .contentType(APPLICATION_MERGE_PATCH)
-                .content(getJsonFromFile("patch_item_body_without_document_location")))
+                .content(getJsonFromFile("patch_item_body")))
             .andExpect(status().is5xxServerError())
             .andExpect(content().string(
                 "Error in item-group-workflow-api: Item status update propagation FAILED for order number"

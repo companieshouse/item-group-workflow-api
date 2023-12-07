@@ -40,7 +40,7 @@ public class ItemGroupProcessedProducerService {
         // TODO DCAC-80 Check utility of all of these log messages
 
         final var orderNumber = itemGroup.getData().getOrderNumber();
-        logger.info("Sending an ItemGroupProcessed message for for order number "
+        logger.info("Sending an ItemGroupProcessed message for order number "
                 + orderNumber + ", group item URI " + updatedItem.getLinks().getSelf() + ".",
             getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
 
