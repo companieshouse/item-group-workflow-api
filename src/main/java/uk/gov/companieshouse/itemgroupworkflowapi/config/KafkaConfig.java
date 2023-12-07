@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import uk.gov.companieshouse.itemgroupprocessedsend.ItemGroupProcessedSend;
+import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemGroupProcessedAvroSerializer;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemOrderedCertifiedCopyAvroSerializer;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 
@@ -38,6 +40,31 @@ public class KafkaConfig {
     @Bean
     public ItemOrderedCertifiedCopyAvroSerializer avroSerializer() {
         return new ItemOrderedCertifiedCopyAvroSerializer();
+    }
+
+    // TODO DCAC-80 Use ItemGroupProcessed.
+
+    @Bean
+    public ProducerFactory<String, ItemGroupProcessedSend> itemGroupProcessedProducerFactory(
+        @Value("${spring.kafka.bootstrap-servers}" ) final String bootstrapServers) {
+        final Map<String, Object> config = new HashMap<>();
+        config.put(
+            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+            StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ItemGroupProcessedAvroSerializer.class);
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        return new DefaultKafkaProducerFactory<>(config);
+    }
+
+    @Bean
+    public KafkaTemplate<String, ItemGroupProcessedSend> itemGroupProcessedKafkaTemplate(
+        @Value("${spring.kafka.bootstrap-servers}" ) final String bootstrapServers) {
+        return new KafkaTemplate<>(itemGroupProcessedProducerFactory(bootstrapServers));
+    }
+
+    @Bean
+    public ItemGroupProcessedAvroSerializer itemGroupProcessedAvroSerializer() {
+        return new ItemGroupProcessedAvroSerializer();
     }
 
 }
