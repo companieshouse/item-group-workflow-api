@@ -7,24 +7,23 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFutureCallback;
-import uk.gov.companieshouse.itemgroupprocessedsend.ItemGroupProcessedSend;
+import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemGroupProcessedFactory;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.util.DataMap;
 
-// TODO DCAC-80 Use ItemGroupProcessed.
 @Service
 public class ItemGroupProcessedProducerService {
 
-    private final KafkaTemplate<String, ItemGroupProcessedSend> kafkaTemplate;
+    private final KafkaTemplate<String, ItemGroupProcessed> kafkaTemplate;
     private final Logger logger;
     private final ItemGroupProcessedFactory itemGroupProcessedFactory;
 
     private final String itemGroupProcessedTopic;
 
-    public ItemGroupProcessedProducerService(KafkaTemplate<String, ItemGroupProcessedSend> kafkaTemplate,
+    public ItemGroupProcessedProducerService(KafkaTemplate<String, ItemGroupProcessed> kafkaTemplate,
                                 Logger logger,
                                 ItemGroupProcessedFactory itemGroupProcessedFactory,
                                 @Value("${kafka.topics.item-group-processed}")
@@ -48,7 +47,7 @@ public class ItemGroupProcessedProducerService {
         final var future = kafkaTemplate.send(itemGroupProcessedTopic, message);
         future.addCallback(new ListenableFutureCallback<>() {
             @Override
-            public void onSuccess(SendResult<String, ItemGroupProcessedSend> result) {
+            public void onSuccess(SendResult<String, ItemGroupProcessed> result) {
                 final var metadata =  result.getRecordMetadata();
                 final var partition = metadata.partition();
                 final var offset = metadata.offset();

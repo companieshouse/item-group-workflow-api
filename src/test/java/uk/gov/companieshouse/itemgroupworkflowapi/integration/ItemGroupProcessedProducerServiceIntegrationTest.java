@@ -29,7 +29,7 @@ import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import uk.gov.companieshouse.itemgroupprocessedsend.ItemGroupProcessedSend;
+import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.config.KafkaConfig;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemGroupProcessedFactory;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -42,7 +42,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 /**
  * Integration tests the {@link ItemGroupProcessedProducerService}.
  */
-// TODO DCAC-80 Use ItemGroupProcessed.
 @SpringBootTest
 @SpringJUnitConfig(classes = {
     KafkaConfig.class,
@@ -69,7 +68,7 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
 
     private static final Item ITEM = new Item();
     private static final ItemGroup ITEM_GROUP = new ItemGroup();
-    private static final ItemGroupProcessedSend EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE;
+    private static final ItemGroupProcessed EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE;
 
     static {
         ITEM_GROUP.getData().setOrderNumber(ORDER_NUMBER);
@@ -79,7 +78,7 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
         ITEM.setId(ITEM_ID);
         ITEM.setStatus(STATUS);
         ITEM.setDigitalDocumentLocation(DIGITAL_DOCUMENT_LOCATION);
-        EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE = ItemGroupProcessedSend.newBuilder()
+        EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE = ItemGroupProcessed.newBuilder()
             .setOrderNumber(ORDER_NUMBER)
             .setGroupItem(GROUP_ITEM)
             .setItem(buildAvroItem(ITEM))
@@ -93,14 +92,14 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
     private Logger logger;
 
     private final CountDownLatch messageReceivedLatch = new CountDownLatch(1);
-    private ItemGroupProcessedSend messageReceived;
+    private ItemGroupProcessed messageReceived;
 
     @Configuration
     @EnableKafka
     static class Config {
 
         @Bean
-        public ConsumerFactory<String, ItemGroupProcessedSend> consumerFactory(
+        public ConsumerFactory<String, ItemGroupProcessed> consumerFactory(
             @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers) {
             return new DefaultKafkaConsumerFactory<>(
                 Map.of(
@@ -113,13 +112,13 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
                     ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"),
                 new StringDeserializer(),
                 new ErrorHandlingDeserializer<>(
-                    new AvroDeserializer<>(ItemGroupProcessedSend.class)));
+                    new AvroDeserializer<>(ItemGroupProcessed.class)));
         }
 
         @Bean
-        public ConcurrentKafkaListenerContainerFactory<String, ItemGroupProcessedSend> kafkaListenerContainerFactory(
-            ConsumerFactory<String, ItemGroupProcessedSend> consumerFactory) {
-            ConcurrentKafkaListenerContainerFactory<String, ItemGroupProcessedSend> factory =
+        public ConcurrentKafkaListenerContainerFactory<String, ItemGroupProcessed> kafkaListenerContainerFactory(
+            ConsumerFactory<String, ItemGroupProcessed> consumerFactory) {
+            ConcurrentKafkaListenerContainerFactory<String, ItemGroupProcessed> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
             factory.setConsumerFactory(consumerFactory);
             factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
@@ -138,7 +137,7 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
     }
 
     @KafkaListener(topics = ITEM_GROUP_PROCESSED_TOPIC, groupId = "test-group")
-    public void receiveMessage(final @Payload ItemGroupProcessedSend message) {
+    public void receiveMessage(final @Payload ItemGroupProcessed message) {
         LOGGER.info("Received message: " + message);
         messageReceived = message;
         messageReceivedLatch.countDown();
@@ -160,8 +159,8 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
         assertThat(received, is(messageIsReceived));
     }
 
-    private static uk.gov.companieshouse.itemgroupprocessedsend.Item buildAvroItem(final Item item) {
-        return uk.gov.companieshouse.itemgroupprocessedsend.Item.newBuilder()
+    private static uk.gov.companieshouse.itemgroupprocessed.Item buildAvroItem(final Item item) {
+        return uk.gov.companieshouse.itemgroupprocessed.Item.newBuilder()
             .setId(item.getId())
             .setStatus(item.getStatus())
             .setDigitalDocumentLocation(item.getDigitalDocumentLocation())

@@ -48,7 +48,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.companieshouse.itemgroupprocessedsend.ItemGroupProcessedSend;
+import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
@@ -100,7 +100,8 @@ class ItemGroupControllerPatchItemIntegrationTest {
 
     private static final Item ITEM = new Item();
     private static final ItemGroup ITEM_GROUP = new ItemGroup();
-    private static final ItemGroupProcessedSend EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE;
+    private static final ItemGroupProcessed EXPECTED_COMPLETE_MESSAGE;
+    private static final ItemGroupProcessed EXPECTED_INCOMPLETE_MESSAGE;
 
     static {
         ITEM_GROUP.getData().setOrderNumber(ORDER_NUMBER);
@@ -109,8 +110,13 @@ class ItemGroupControllerPatchItemIntegrationTest {
         ITEM.setLinks(links);
         ITEM.setId(ITEM_ID);
         ITEM.setStatus(STATUS);
+        EXPECTED_INCOMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
+            .setOrderNumber(ORDER_NUMBER)
+            .setGroupItem(GROUP_ITEM)
+            .setItem(buildAvroItem(ITEM))
+            .build();
         ITEM.setDigitalDocumentLocation(DIGITAL_DOCUMENT_LOCATION);
-        EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE = ItemGroupProcessedSend.newBuilder()
+        EXPECTED_COMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
             .setOrderNumber(ORDER_NUMBER)
             .setGroupItem(GROUP_ITEM)
             .setItem(buildAvroItem(ITEM))
@@ -169,7 +175,7 @@ class ItemGroupControllerPatchItemIntegrationTest {
     private MongoTemplate mongoTemplate;
 
     private CountDownLatch messageReceivedLatch;
-    private ItemGroupProcessedSend messageReceived;
+    private ItemGroupProcessed messageReceived;
 
     @BeforeEach
     void setUp() {
@@ -219,7 +225,7 @@ class ItemGroupControllerPatchItemIntegrationTest {
                 new ItemTimestampedEntity(retrievedItem, retrievedGroup));
 
         verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
-        verifyExpectedMessageIsReceived();
+        verifyExpectedMessageIsReceived(EXPECTED_COMPLETE_MESSAGE);
     }
 
     @Test
@@ -277,7 +283,7 @@ class ItemGroupControllerPatchItemIntegrationTest {
                 .andDo(print());
 
         verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
-        verifyExpectedMessageIsReceived();
+        verifyExpectedMessageIsReceived(EXPECTED_INCOMPLETE_MESSAGE);
     }
 
     @Test
@@ -366,16 +372,17 @@ class ItemGroupControllerPatchItemIntegrationTest {
 
 
     @KafkaListener(topics = ITEM_GROUP_PROCESSED_TOPIC, groupId = "test-group")
-    public void receiveMessage(final @Payload ItemGroupProcessedSend message) {
+    public void receiveMessage(final @Payload ItemGroupProcessed message) {
         LOGGER.info("Received message: " + message);
         messageReceived = message;
         messageReceivedLatch.countDown();
     }
 
-    private void verifyExpectedMessageIsReceived() throws InterruptedException {
+    private void verifyExpectedMessageIsReceived(final ItemGroupProcessed expectedMessage)
+        throws InterruptedException {
         verifyWhetherMessageIsReceived(true);
         assertThat(messageReceived, is(notNullValue()));
-        assertThat(Objects.deepEquals(messageReceived, EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE),
+        assertThat(Objects.deepEquals(messageReceived, expectedMessage),
             is(true));
     }
 
@@ -388,8 +395,8 @@ class ItemGroupControllerPatchItemIntegrationTest {
         assertThat(received, is(messageIsReceived));
     }
 
-    private static uk.gov.companieshouse.itemgroupprocessedsend.Item buildAvroItem(final Item item) {
-        return uk.gov.companieshouse.itemgroupprocessedsend.Item.newBuilder()
+    private static uk.gov.companieshouse.itemgroupprocessed.Item buildAvroItem(final Item item) {
+        return uk.gov.companieshouse.itemgroupprocessed.Item.newBuilder()
             .setId(item.getId())
             .setStatus(item.getStatus())
             .setDigitalDocumentLocation(item.getDigitalDocumentLocation())

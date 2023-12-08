@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import uk.gov.companieshouse.itemgroupprocessedsend.ItemGroupProcessedSend;
+import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemGroupProcessedAvroSerializer;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemOrderedCertifiedCopyAvroSerializer;
 import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
@@ -42,10 +42,8 @@ public class KafkaConfig {
         return new ItemOrderedCertifiedCopyAvroSerializer();
     }
 
-    // TODO DCAC-80 Use ItemGroupProcessed.
-
     @Bean
-    public ProducerFactory<String, ItemGroupProcessedSend> itemGroupProcessedProducerFactory(
+    public ProducerFactory<String, ItemGroupProcessed> itemGroupProcessedProducerFactory(
         @Value("${spring.kafka.bootstrap-servers}" ) final String bootstrapServers) {
         final Map<String, Object> config = new HashMap<>();
         config.put(
@@ -57,7 +55,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, ItemGroupProcessedSend> itemGroupProcessedKafkaTemplate(
+    public KafkaTemplate<String, ItemGroupProcessed> itemGroupProcessedKafkaTemplate(
         @Value("${spring.kafka.bootstrap-servers}" ) final String bootstrapServers) {
         return new KafkaTemplate<>(itemGroupProcessedProducerFactory(bootstrapServers));
     }
