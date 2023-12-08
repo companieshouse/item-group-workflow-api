@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -45,6 +46,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.itemgroupprocessedsend.ItemGroupProcessedSend;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -63,6 +65,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @SpringBootTest(properties = "chs.kafka.api.url=http://localhost:${wiremock.server.port}")
 @EmbeddedKafka
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
 @AutoConfigureWireMock(port = 0)
 class ItemGroupControllerPatchItemIntegrationTest {
