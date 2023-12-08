@@ -3,6 +3,10 @@ package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.GROUP_ITEM;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_GROUP;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ORDER_NUMBER;
 
 import consumer.deserialization.AvroDeserializer;
 import java.util.Map;
@@ -33,8 +37,6 @@ import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.config.KafkaConfig;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemGroupProcessedFactory;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupProcessedProducerService;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -58,32 +60,12 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
 
     private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 10;
 
-
-    private static final String ORDER_NUMBER = "ORD-065216-517934";
-    private static final String GROUP_ITEM = "/item-groups/IG-197316-994337/items/CCD-768116-517930";
-    private static final String ITEM_ID = "CCD-768116-517930";
-    private static final String STATUS = "satisfied";
-    private static final String DIGITAL_DOCUMENT_LOCATION =
-        "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
-
-    private static final Item ITEM = new Item();
-    private static final ItemGroup ITEM_GROUP = new ItemGroup();
-    private static final ItemGroupProcessed EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE;
-
-    static {
-        ITEM_GROUP.getData().setOrderNumber(ORDER_NUMBER);
-        final ItemLinks links = new ItemLinks();
-        links.setSelf(GROUP_ITEM);
-        ITEM.setLinks(links);
-        ITEM.setId(ITEM_ID);
-        ITEM.setStatus(STATUS);
-        ITEM.setDigitalDocumentLocation(DIGITAL_DOCUMENT_LOCATION);
-        EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE = ItemGroupProcessed.newBuilder()
-            .setOrderNumber(ORDER_NUMBER)
-            .setGroupItem(GROUP_ITEM)
-            .setItem(buildAvroItem(ITEM))
-            .build();
-    }
+    private static final ItemGroupProcessed EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE
+        = ItemGroupProcessed.newBuilder()
+        .setOrderNumber(ORDER_NUMBER)
+        .setGroupItem(GROUP_ITEM)
+        .setItem(buildAvroItem(ITEM))
+        .build();
 
     @Autowired
     private ItemGroupProcessedProducerService serviceUnderTest;

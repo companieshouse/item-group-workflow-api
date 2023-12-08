@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.util;
 
-import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
-
 import java.util.List;
 import java.util.Map;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
+import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 
 public class TestConstants {
 
@@ -53,5 +55,25 @@ public class TestConstants {
         );
 
     public static final String ITEM_ORDERED_CERTIFIED_COPY_TOPIC = "item-ordered-certified-copy";
+
+    public static final String ORDER_NUMBER = "ORD-065216-517934";
+    public static final String GROUP_ITEM = "/item-groups/IG-197316-994337/items/CCD-768116-517930";
+    public static final String ITEM_ID = "CCD-768116-517930";
+    public static final String STATUS = "satisfied";
+    public static final String DIGITAL_DOCUMENT_LOCATION =
+        "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
+
+    public static final Item ITEM = new Item();
+    public static final ItemGroup ITEM_GROUP = new ItemGroup();
+
+    static {
+        ITEM_GROUP.getData().setOrderNumber(ORDER_NUMBER);
+        final ItemLinks links = new ItemLinks();
+        links.setSelf(GROUP_ITEM);
+        ITEM.setLinks(links);
+        ITEM.setId(ITEM_ID);
+        ITEM.setStatus(STATUS);
+        ITEM.setDigitalDocumentLocation(DIGITAL_DOCUMENT_LOCATION);
+    }
 
 }

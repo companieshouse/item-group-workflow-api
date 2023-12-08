@@ -24,6 +24,10 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.GROUP_ITEM;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ID;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ORDER_NUMBER;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,7 +55,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.TimestampedEntity;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.TimestampedEntityVerifier;
@@ -59,7 +62,8 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 /**
- * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
+ * Integration tests the
+ * {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
  * handling of the PATCH item request only.
  */
 @SpringBootTest(properties = "chs.kafka.api.url=http://localhost:${wiremock.server.port}")
@@ -76,51 +80,37 @@ class ItemGroupControllerPatchItemIntegrationTest {
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
 
     private static final String ITEM_GROUP_ID = "IG-922016-860413";
-    private static final String ITEM_ID = "111-222-333";
- //private static final String ITEM_ID = "CCD-768116-517930";
+
     private static final String UNKNOWN_ITEM_ID = "111-222-4444";
-    private static final String PATCH_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/" + ITEM_ID;
-    private static final String PATCH_UNKNOWN_ITEM_URI = "/item-groups/" + ITEM_GROUP_ID + "/items/" + UNKNOWN_ITEM_ID;
+    private static final String PATCH_ITEM_URI =
+        "/item-groups/" + ITEM_GROUP_ID + "/items/" + ITEM_ID;
+    private static final String PATCH_UNKNOWN_ITEM_URI =
+        "/item-groups/" + ITEM_GROUP_ID + "/items/" + UNKNOWN_ITEM_ID;
     private static final String REQUEST_ID = "WmuRTepX70C635NKm5rbYTciSsOR";
 
     private static final String EXPECTED_DIGITAL_DOCUMENT_LOCATION =
-            "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
+        "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
     private static final String EXPECTED_STATUS = "satisfied";
 
     private static final String ITEM_GROUP_PROCESSED_TOPIC = "item-group-processed";
 
     private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 10;
 
-
-    private static final String ORDER_NUMBER = "ORD-065216-517934";
-    private static final String GROUP_ITEM = "/item-groups/IG-256616-866507/items/CCD-768116-517930";
-    private static final String STATUS = "satisfied";
-    private static final String DIGITAL_DOCUMENT_LOCATION =
-        "s3://document-api-images-cidev/docs/--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf";
-
-    private static final Item ITEM = new Item();
-    private static final ItemGroup ITEM_GROUP = new ItemGroup();
     private static final ItemGroupProcessed EXPECTED_COMPLETE_MESSAGE;
     private static final ItemGroupProcessed EXPECTED_INCOMPLETE_MESSAGE;
 
     static {
-        ITEM_GROUP.getData().setOrderNumber(ORDER_NUMBER);
-        final ItemLinks links = new ItemLinks();
-        links.setSelf(GROUP_ITEM);
-        ITEM.setLinks(links);
-        ITEM.setId(ITEM_ID);
-        ITEM.setStatus(STATUS);
-        EXPECTED_INCOMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
-            .setOrderNumber(ORDER_NUMBER)
-            .setGroupItem(GROUP_ITEM)
-            .setItem(buildAvroItem(ITEM))
-            .build();
-        ITEM.setDigitalDocumentLocation(DIGITAL_DOCUMENT_LOCATION);
         EXPECTED_COMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
             .setOrderNumber(ORDER_NUMBER)
             .setGroupItem(GROUP_ITEM)
             .setItem(buildAvroItem(ITEM))
             .build();
+        EXPECTED_INCOMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
+            .setOrderNumber(ORDER_NUMBER)
+            .setGroupItem(GROUP_ITEM)
+            .setItem(buildAvroItem(ITEM))
+            .build();
+        EXPECTED_INCOMPLETE_MESSAGE.getItem().setDigitalDocumentLocation(null);
     }
 
 
@@ -201,16 +191,17 @@ class ItemGroupControllerPatchItemIntegrationTest {
                 .withStatus(201)));
 
         mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
-                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
-                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.digital_document_location", is(EXPECTED_DIGITAL_DOCUMENT_LOCATION)))
-                .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
-                .andDo(print());
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body")))
+            .andExpect(status().isOk())
+            .andExpect(
+                jsonPath("$.digital_document_location", is(EXPECTED_DIGITAL_DOCUMENT_LOCATION)))
+            .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
+            .andDo(print());
 
         timestamps.end();
 
@@ -218,11 +209,13 @@ class ItemGroupControllerPatchItemIntegrationTest {
         assertThat(optionalGroup.isPresent(), is(true));
         final var retrievedGroup = optionalGroup.get();
         final var retrievedItem = retrievedGroup.getData().getItems().get(0);
-        assertThat(retrievedItem.getDigitalDocumentLocation(), is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
+        assertThat(retrievedItem.getDigitalDocumentLocation(),
+            is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
         assertThat(retrievedItem.getStatus(), is(EXPECTED_STATUS));
-        timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(new ItemGroupTimeStampedEntity(retrievedGroup));
         timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(
-                new ItemTimestampedEntity(retrievedItem, retrievedGroup));
+            new ItemGroupTimeStampedEntity(retrievedGroup));
+        timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(
+            new ItemTimestampedEntity(retrievedItem, retrievedGroup));
 
         verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
         verifyExpectedMessageIsReceived(EXPECTED_COMPLETE_MESSAGE);
@@ -232,32 +225,32 @@ class ItemGroupControllerPatchItemIntegrationTest {
     @DisplayName("patch item rejects request missing the status field")
     void patchItemRejectsRequestWithoutStatus() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
-                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
-                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_without_status")))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("status: must not be null")))
-                .andDo(print());
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body_without_status")))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(containsString("status: must not be null")))
+            .andDo(print());
     }
 
     @Test
     @DisplayName("patch item rejects request with an invalid status field value")
     void patchItemRejectsRequestWithInvalidStatus() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
-                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
-                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_with_bad_status")))
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                        content().string(containsString(
-                                "status: must be one of [pending, processing, satisfied, cancelled, failed]")))
-                .andDo(print());
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body_with_bad_status")))
+            .andExpect(status().isBadRequest())
+            .andExpect(
+                content().string(containsString(
+                    "status: must be one of [pending, processing, satisfied, cancelled, failed]")))
+            .andDo(print());
     }
 
     @Test
@@ -271,16 +264,16 @@ class ItemGroupControllerPatchItemIntegrationTest {
                 .withStatus(201)));
 
         mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
-                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
-                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_without_document_location")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.digital_document_location").doesNotHaveJsonPath())
-                .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
-                .andDo(print());
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body_without_document_location")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.digital_document_location").doesNotHaveJsonPath())
+            .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
+            .andDo(print());
 
         verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
         verifyExpectedMessageIsReceived(EXPECTED_INCOMPLETE_MESSAGE);
@@ -290,48 +283,48 @@ class ItemGroupControllerPatchItemIntegrationTest {
     @DisplayName("patch item rejects request with an invalid digital_document_location field value")
     void patchItemRejectsRequestWithInvalidDocumentLocation() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
-                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
-                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                        content().string(containsString(
-                                "digital_document_location: " +
-                                        "s3:// document-api-images-cidev/docs/" +
-                                        "--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf " +
-                                        "is not a valid URI.")))
-                .andDo(print());
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body_with_invalid_document_location")))
+            .andExpect(status().isBadRequest())
+            .andExpect(
+                content().string(containsString(
+                    "digital_document_location: " +
+                        "s3:// document-api-images-cidev/docs/" +
+                        "--EdB7fbldt5oujK6Nz7jZ3hGj_x6vW8Q_2gQTyjWBM/application-pdf " +
+                        "is not a valid URI.")))
+            .andDo(print());
     }
 
     @Test
     @DisplayName("patch item reports item not found when it cannot find it")
     void patchItemReportsNotFoundWhenCannotFindItem() throws Exception {
         mockMvc.perform(patch(PATCH_UNKNOWN_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
-                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
-                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
-                        .contentType(APPLICATION_MERGE_PATCH)
-                        .content(getJsonFromFile("patch_item_body")))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("")) // NOTE actual response does have meaningful content
-                .andDo(print());
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .contentType(APPLICATION_MERGE_PATCH)
+                .content(getJsonFromFile("patch_item_body")))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("")) // NOTE actual response does have meaningful content
+            .andDo(print());
     }
 
     @Test
     @DisplayName("patch item rejects request without a Content-Type=application/merge-patch+json header value")
     void patchItemRejectsRequestWithoutApplicationMergePatchContentType() throws Exception {
         mockMvc.perform(patch(PATCH_ITEM_URI)
-                        .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
-                        .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
-                        .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
-                        .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
-                        .content(getJsonFromFile("patch_item_body")))
-                .andExpect(status().isUnsupportedMediaType())
-                .andDo(print());
+                .header(REQUEST_ID_HEADER_NAME, REQUEST_ID)
+                .header(ERIC_IDENTITY_TYPE_HEADER_NAME, ERIC_IDENTITY_TYPE_HEADER_VALUE)
+                .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
+                .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
+                .content(getJsonFromFile("patch_item_body")))
+            .andExpect(status().isUnsupportedMediaType())
+            .andDo(print());
     }
 
     @Test
@@ -354,7 +347,7 @@ class ItemGroupControllerPatchItemIntegrationTest {
             .andExpect(status().is5xxServerError())
             .andExpect(content().string(
                 "Error in item-group-workflow-api: Item status update propagation FAILED for order number"
-                    + " ORD-065216-517934, group item /item-groups/IG-922016-860413/items/111-222-333, caught"
+                    + " ORD-065216-517934, group item /item-groups/IG-922016-860413/items/CCD-768116-517930, caught"
                     + " RestClientException with message 404 Not Found: [no body]."))
             .andDo(print());
 
@@ -367,7 +360,8 @@ class ItemGroupControllerPatchItemIntegrationTest {
     }
 
     private String getJsonFromFile(final String fileBasename) throws IOException {
-        return new String(Files.readAllBytes(Paths.get("src/test/resources/testdata/" + fileBasename + ".json")));
+        return new String(
+            Files.readAllBytes(Paths.get("src/test/resources/testdata/" + fileBasename + ".json")));
     }
 
 
