@@ -21,7 +21,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.util.DataMap;
 
 /**
- * Service that propagates the updated service of an item in an item group via the <code>chs-kafka-api</code>,
+ * Service that propagates the updated status of an item in an item group via the <code>chs-kafka-api</code>,
  * which in turn produces <code>item-group-processed-send</code> Kafka messages to be consumed by the
  * <code>order-notification-sender</code>.
  */

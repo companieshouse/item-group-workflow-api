@@ -11,6 +11,11 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.util.DataMap;
 
+/**
+ * Service that propagates the updated status of an item in an item group by producing
+ * <code>item-group-processed</code> Kafka messages to be consumed by the
+ * <code>item-group-status-updater</code>.
+ */
 @Service
 public class ItemGroupProcessedProducerService {
 
