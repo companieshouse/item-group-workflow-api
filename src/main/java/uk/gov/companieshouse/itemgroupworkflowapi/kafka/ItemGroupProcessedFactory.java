@@ -11,7 +11,7 @@ public class ItemGroupProcessedFactory {
     public ItemGroupProcessed buildMessage(final Item item, final ItemGroup itemGroup) {
         return ItemGroupProcessed.newBuilder()
             .setOrderNumber(itemGroup.getData().getOrderNumber())
-            .setGroupItem(item.getLinks().getSelf()) // TODO DCAC-80 Is this right?
+            .setGroupItem(item.getLinks().getSelf())
             .setItem(buildAvroItem(item))
             .build();
     }
