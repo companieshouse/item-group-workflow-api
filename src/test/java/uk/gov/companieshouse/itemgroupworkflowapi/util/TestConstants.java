@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.util;
 
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestUtils.buildAvroItem;
+
 import java.util.List;
 import java.util.Map;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -66,6 +68,8 @@ public class TestConstants {
     public static final Item ITEM = new Item();
     public static final ItemGroup ITEM_GROUP = new ItemGroup();
 
+    public static final uk.gov.companieshouse.itemgroupprocessed.Item AVRO_ITEM;
+
     static {
         ITEM_GROUP.getData().setOrderNumber(ORDER_NUMBER);
         final ItemLinks links = new ItemLinks();
@@ -74,6 +78,7 @@ public class TestConstants {
         ITEM.setId(ITEM_ID);
         ITEM.setStatus(STATUS);
         ITEM.setDigitalDocumentLocation(DIGITAL_DOCUMENT_LOCATION);
+        AVRO_ITEM = buildAvroItem(ITEM);
     }
 
 }

@@ -3,6 +3,7 @@ package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.AVRO_ITEM;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.GROUP_ITEM;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_GROUP;
@@ -36,7 +37,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.config.KafkaConfig;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemGroupProcessedFactory;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupProcessedProducerService;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -64,7 +64,7 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
         = ItemGroupProcessed.newBuilder()
         .setOrderNumber(ORDER_NUMBER)
         .setGroupItem(GROUP_ITEM)
-        .setItem(buildAvroItem(ITEM))
+        .setItem(AVRO_ITEM)
         .build();
 
     @Autowired
@@ -139,14 +139,6 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
         final var received = messageReceivedLatch.await(MESSAGE_WAIT_TIMEOUT_SECONDS,
             TimeUnit.SECONDS);
         assertThat(received, is(messageIsReceived));
-    }
-
-    private static uk.gov.companieshouse.itemgroupprocessed.Item buildAvroItem(final Item item) {
-        return uk.gov.companieshouse.itemgroupprocessed.Item.newBuilder()
-            .setId(item.getId())
-            .setStatus(item.getStatus())
-            .setDigitalDocumentLocation(item.getDigitalDocumentLocation())
-            .build();
     }
 
 }

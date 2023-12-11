@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemStatusPropagationService.ITEM_STATUS_UPDATED_URL;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.AVRO_ITEM;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
@@ -28,6 +29,7 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.GROU
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ID;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ORDER_NUMBER;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestUtils.buildAvroItem;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -103,7 +105,7 @@ class ItemGroupControllerPatchItemIntegrationTest {
         EXPECTED_COMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
             .setOrderNumber(ORDER_NUMBER)
             .setGroupItem(GROUP_ITEM)
-            .setItem(buildAvroItem(ITEM))
+            .setItem(AVRO_ITEM)
             .build();
         EXPECTED_INCOMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
             .setOrderNumber(ORDER_NUMBER)
@@ -387,14 +389,6 @@ class ItemGroupControllerPatchItemIntegrationTest {
         final var received = messageReceivedLatch.await(MESSAGE_WAIT_TIMEOUT_SECONDS,
             TimeUnit.SECONDS);
         assertThat(received, is(messageIsReceived));
-    }
-
-    private static uk.gov.companieshouse.itemgroupprocessed.Item buildAvroItem(final Item item) {
-        return uk.gov.companieshouse.itemgroupprocessed.Item.newBuilder()
-            .setId(item.getId())
-            .setStatus(item.getStatus())
-            .setDigitalDocumentLocation(item.getDigitalDocumentLocation())
-            .build();
     }
 
 }
