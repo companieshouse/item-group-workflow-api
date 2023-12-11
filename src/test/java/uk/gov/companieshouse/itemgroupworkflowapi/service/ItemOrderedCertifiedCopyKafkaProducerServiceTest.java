@@ -30,13 +30,13 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_MIS
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ORDERED_CERTIFIED_COPY_TOPIC;
 
 /**
- * Unit tests the {@link KafkaProducerService} class.
+ * Unit tests the {@link ItemOrderedCertifiedCopyKafkaProducerService} class.
  */
 @ExtendWith(MockitoExtension.class)
-class KafkaProducerServiceTest {
+class ItemOrderedCertifiedCopyKafkaProducerServiceTest {
 
     @InjectMocks
-    private KafkaProducerService service;
+    private ItemOrderedCertifiedCopyKafkaProducerService service;
 
     @Mock
     private ItemGroupData group;
@@ -64,7 +64,7 @@ class KafkaProducerServiceTest {
     @BeforeEach
     void setUp() {
         when(loggingUtils.getLogger()).thenReturn(logger);
-        service = new KafkaProducerService(
+        service = new ItemOrderedCertifiedCopyKafkaProducerService(
                 kafkaTemplate, loggingUtils, certifiedCopyFactory, ITEM_ORDERED_CERTIFIED_COPY_TOPIC);
         service.afterPropertiesSet();
     }

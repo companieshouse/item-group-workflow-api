@@ -24,7 +24,7 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_CER
 import static uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind.ITEM_MISSING_IMAGE_DELIVERY;
 
 @Service
-public class KafkaProducerService implements InitializingBean {
+public class ItemOrderedCertifiedCopyKafkaProducerService implements InitializingBean {
 
     private static class DefaultMessageSender implements MessageSender {
 
@@ -93,7 +93,7 @@ public class KafkaProducerService implements InitializingBean {
 
     private final String itemOrderedCertifiedCopyTopic;
 
-    public KafkaProducerService(KafkaTemplate<String,
+    public ItemOrderedCertifiedCopyKafkaProducerService(KafkaTemplate<String,
                                 ItemOrderedCertifiedCopy> kafkaTemplate,
                                 LoggingUtils logger,
                                 ItemOrderedCertifiedCopyFactory certifiedCopyFactory,

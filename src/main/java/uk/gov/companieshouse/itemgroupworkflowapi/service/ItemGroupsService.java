@@ -29,13 +29,13 @@ public class ItemGroupsService {
     private final LoggingUtils logger;
     private final ItemGroupsRepository itemGroupsRepository;
     private final LinksGeneratorService linksGenerator;
-    private final KafkaProducerService producerService;
+    private final ItemOrderedCertifiedCopyKafkaProducerService producerService;
     private final IdGenerator idGenerator;
 
     public ItemGroupsService(LoggingUtils logger,
                              ItemGroupsRepository itemGroupsRepository,
                              LinksGeneratorService linksGenerator,
-                             KafkaProducerService producerService,
+                             ItemOrderedCertifiedCopyKafkaProducerService producerService,
                              IdGenerator idGenerator) {
         this.logger = logger;
         this.itemGroupsRepository = itemGroupsRepository;
