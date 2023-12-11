@@ -3,11 +3,9 @@ package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.AVRO_ITEM;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.GROUP_ITEM;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.AVRO_ITEM_GROUP_PROCESSED;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_GROUP;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ORDER_NUMBER;
 
 import consumer.deserialization.AvroDeserializer;
 import java.util.Map;
@@ -60,12 +58,7 @@ class ItemGroupProcessedProducerServiceIntegrationTest {
 
     private static final int MESSAGE_WAIT_TIMEOUT_SECONDS = 10;
 
-    private static final ItemGroupProcessed EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE
-        = ItemGroupProcessed.newBuilder()
-        .setOrderNumber(ORDER_NUMBER)
-        .setGroupItem(GROUP_ITEM)
-        .setItem(AVRO_ITEM)
-        .build();
+    private static final ItemGroupProcessed EXPECTED_ITEM_GROUP_PROCESSED_MESSAGE = AVRO_ITEM_GROUP_PROCESSED;
 
     @Autowired
     private ItemGroupProcessedProducerService serviceUnderTest;

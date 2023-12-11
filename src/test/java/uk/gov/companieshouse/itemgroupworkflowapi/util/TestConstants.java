@@ -4,6 +4,7 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestUtils.buildAvr
 
 import java.util.List;
 import java.util.Map;
+import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
@@ -70,6 +71,8 @@ public class TestConstants {
 
     public static final uk.gov.companieshouse.itemgroupprocessed.Item AVRO_ITEM;
 
+    public static final ItemGroupProcessed AVRO_ITEM_GROUP_PROCESSED;
+
     static {
         ITEM_GROUP.getData().setOrderNumber(ORDER_NUMBER);
         final ItemLinks links = new ItemLinks();
@@ -79,6 +82,11 @@ public class TestConstants {
         ITEM.setStatus(STATUS);
         ITEM.setDigitalDocumentLocation(DIGITAL_DOCUMENT_LOCATION);
         AVRO_ITEM = buildAvroItem(ITEM);
+        AVRO_ITEM_GROUP_PROCESSED = ItemGroupProcessed.newBuilder()
+            .setOrderNumber(ORDER_NUMBER)
+            .setGroupItem(GROUP_ITEM)
+            .setItem(AVRO_ITEM)
+            .build();
     }
 
 }

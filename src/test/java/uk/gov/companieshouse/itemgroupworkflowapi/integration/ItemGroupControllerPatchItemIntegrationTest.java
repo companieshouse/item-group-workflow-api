@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.itemgroupworkflowapi.service.ItemStatusPropagationService.ITEM_STATUS_UPDATED_URL;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMediaType.APPLICATION_MERGE_PATCH;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.AVRO_ITEM;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.AVRO_ITEM_GROUP_PROCESSED;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_NAME;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_AUTHORISED_ROLES_HEADER_VALUE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
@@ -102,11 +102,7 @@ class ItemGroupControllerPatchItemIntegrationTest {
     private static final ItemGroupProcessed EXPECTED_INCOMPLETE_MESSAGE;
 
     static {
-        EXPECTED_COMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
-            .setOrderNumber(ORDER_NUMBER)
-            .setGroupItem(GROUP_ITEM)
-            .setItem(AVRO_ITEM)
-            .build();
+        EXPECTED_COMPLETE_MESSAGE = AVRO_ITEM_GROUP_PROCESSED;
         EXPECTED_INCOMPLETE_MESSAGE = ItemGroupProcessed.newBuilder()
             .setOrderNumber(ORDER_NUMBER)
             .setGroupItem(GROUP_ITEM)
