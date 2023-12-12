@@ -27,7 +27,7 @@
           "company_number" : "00000000"
         },
         "etag" : "etag",
-        "id" : "111-222-333",
+        "id" : "CCD-768116-517930",
         "item_costs" : [
           {
             "calculated_cost" : "25",
@@ -43,7 +43,7 @@
         "kind" : "item#certified-copy",
         "links" : {
           "original_item" : "/orderable/certified-copies/CCD-768116-517930",
-          "self" : "/item-groups/IG-256616-866507/items/CCD-768116-517930"
+          "self" : "/item-groups/IG-197316-994337/items/CCD-768116-517930"
         },
         "postage_cost" : "0",
         "postal_delivery" : true,
@@ -53,7 +53,7 @@
     ],
     "links" : {
       "order" : "/orders/ORD-065216-517934",
-      "self" : "/item-groups/IG-256616-866507"
+      "self" : "/item-groups/IG-197316-994337"
     },
     "order_number" : "ORD-065216-517934",
     "ordered_at" : ISODate("2023-05-31T14:03:57.000Z"),

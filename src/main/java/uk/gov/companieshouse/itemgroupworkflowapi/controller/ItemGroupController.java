@@ -25,6 +25,7 @@ import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
+import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupProcessedProducerService;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemGroupsService;
 import uk.gov.companieshouse.itemgroupworkflowapi.service.ItemStatusPropagationService;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.PatchMerger;
@@ -54,18 +55,22 @@ public class ItemGroupController {
 
     private final ItemStatusPropagationService itemStatusPropagator;
 
+    private final ItemGroupProcessedProducerService itemGroupProcessedProducerService;
+
     public ItemGroupController(LoggingUtils logger,
                                ItemGroupsService itemGroupsService,
                                ItemGroupsValidator itemGroupsValidator,
                                PatchItemRequestValidator patchItemRequestValidator,
                                PatchMerger patcher,
-        ItemStatusPropagationService itemStatusPropagator) {
+        ItemStatusPropagationService itemStatusPropagator,
+        ItemGroupProcessedProducerService itemGroupProcessedProducerService) {
         this.logger = logger;
         this.itemGroupsService = itemGroupsService;
         this.itemGroupsValidator = itemGroupsValidator;
         this.patchItemRequestValidator = patchItemRequestValidator;
         this.patcher = patcher;
         this.itemStatusPropagator = itemStatusPropagator;
+        this.itemGroupProcessedProducerService = itemGroupProcessedProducerService;
     }
 
     /**
@@ -139,6 +144,7 @@ public class ItemGroupController {
         itemGroupsService.updateItem(itemGroupId, itemId, patchedItem);
 
         var itemGroup = itemGroupsService.findGroup(itemGroupId, itemId);
+        itemGroupProcessedProducerService.sendMessage(patchedItem, itemGroup);
         itemStatusPropagator.propagateItemStatusUpdate(patchedItem, itemGroup);
 
         return ResponseEntity.ok().body(patchedItem);
