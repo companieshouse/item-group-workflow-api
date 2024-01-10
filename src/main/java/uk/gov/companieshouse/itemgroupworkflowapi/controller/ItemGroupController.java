@@ -145,7 +145,7 @@ public class ItemGroupController {
 
         var itemGroup = itemGroupsService.findGroup(itemGroupId, itemId);
         itemGroupProcessedProducerService.sendMessage(patchedItem, itemGroup);
-        itemStatusPropagator.propagateItemStatusUpdate(patchedItem, itemGroup);
+        itemStatusPropagator.propagateItemSatisfiedStatusUpdate(patchedItem, itemGroup);
 
         return ResponseEntity.ok().body(patchedItem);
     }
