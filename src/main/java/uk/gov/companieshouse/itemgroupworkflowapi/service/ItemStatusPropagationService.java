@@ -17,16 +17,20 @@ import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemStatusUpdateDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.exception.ItemStatusUpdatePropagationException;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
+import uk.gov.companieshouse.itemgroupworkflowapi.validation.Status;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.util.DataMap;
 
 /**
- * Service that propagates the updated status of an item in an item group via the <code>chs-kafka-api</code>,
- * which in turn produces <code>item-group-processed-send</code> Kafka messages to be consumed by the
+ * Service that propagates the <b><code>satisfied</code></b> status of an item in an item group via
+ * the <code>chs-kafka-api</code>. The latter in turn produces
+ * <code>item-group-processed-send</code> Kafka messages to be consumed by the
  * <code>order-notification-sender</code>.
  */
 @Service
 public class ItemStatusPropagationService {
+
+    private static final String SATISFIED = Status.SATISFIED.toString();
 
     public static final String ITEM_STATUS_UPDATED_URL = "/private/item-group-processed-send";
 
@@ -45,18 +49,29 @@ public class ItemStatusPropagationService {
         this.chsKafkaApiUrl = chsKafkaApiUrl;
     }
 
-    public void propagateItemStatusUpdate(final Item updatedItem, final ItemGroup itemGroup) {
+    public void propagateItemSatisfiedStatusUpdate(final Item updatedItem,
+        final ItemGroup itemGroup) {
 
+        final var groupItem = getGroupItem(itemGroup, updatedItem);
+        final var orderNumber = itemGroup.getData().getOrderNumber();
+        final var status = updatedItem.getStatus();
+
+        if (!status.equals(SATISFIED)) {
+            logger.info("Item status update propagation SUPPRESSED for order number "
+                    + orderNumber + ", group item " + groupItem + ", because the updated status `" +
+                    status + "` is not `" + SATISFIED + "`.",
+                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
+            return;
+        }
+
+        final var item = new ItemDto(
+            updatedItem.getId(),
+            status,
+            updatedItem.getDigitalDocumentLocation());
+        final var update = new ItemStatusUpdateDto(orderNumber, groupItem, item);
         final var headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
         headers.setAccept(singletonList(APPLICATION_JSON));
-        final var item = new ItemDto(
-            updatedItem.getId(),
-            updatedItem.getStatus(),
-            updatedItem.getDigitalDocumentLocation());
-        final var groupItem = getGroupItem(itemGroup, updatedItem);
-        final var orderNumber = itemGroup.getData().getOrderNumber();
-        final var update = new ItemStatusUpdateDto(orderNumber, groupItem, item);
         final HttpEntity<ItemStatusUpdateDto> httpEntity = new HttpEntity<>(update, headers);
 
         try {
@@ -66,11 +81,12 @@ public class ItemStatusPropagationService {
                 httpEntity,
                 HttpMessage.class);
             logger.info("Item status update propagation successful for order number "
-                + orderNumber + ", group item " + groupItem + ".",
+                    + orderNumber + ", group item " + groupItem + ".",
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
         } catch (RestClientException rce) {
             final String error = "Item status update propagation FAILED for order number "
-                + orderNumber + ", group item " + groupItem + ", caught RestClientException with message "
+                + orderNumber + ", group item " + groupItem
+                + ", caught RestClientException with message "
                 + rce.getMessage() + ".";
             logger.error(error,
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId(), rce.getMessage()));
