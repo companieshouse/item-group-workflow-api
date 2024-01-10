@@ -57,9 +57,9 @@ public class ItemStatusPropagationService {
         final var status = updatedItem.getStatus();
 
         if (!status.equals(SATISFIED)) {
-            logger.info("Item status update propagation SUPPRESSED for order number "
-                    + orderNumber + ", group item " + groupItem + ", because the updated status `" +
-                    status + "` is not `" + SATISFIED + "`.",
+            logger.info(getPropagationLogMessage("SUPPRESSED", orderNumber, groupItem,
+                    ", because the updated status `" +
+                        status + "` is not `" + SATISFIED + "`."),
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
             return;
         }
@@ -80,14 +80,12 @@ public class ItemStatusPropagationService {
                 HttpMethod.POST,
                 httpEntity,
                 HttpMessage.class);
-            logger.info("Item status update propagation successful for order number "
-                    + orderNumber + ", group item " + groupItem + ".",
+            logger.info(getPropagationLogMessage("successful", orderNumber, groupItem, "."),
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
         } catch (RestClientException rce) {
-            final String error = "Item status update propagation FAILED for order number "
-                + orderNumber + ", group item " + groupItem
-                + ", caught RestClientException with message "
-                + rce.getMessage() + ".";
+            final String error = getPropagationLogMessage("FAILED", orderNumber, groupItem,
+                ", caught RestClientException with message "
+                    + rce.getMessage() + ".");
             logger.error(error,
                 getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId(), rce.getMessage()));
             throw new ItemStatusUpdatePropagationException(error);
@@ -96,6 +94,12 @@ public class ItemStatusPropagationService {
 
     private String getGroupItem(final ItemGroup group, final Item item) {
         return "/item-groups/" + group.getId() + "/items/" + item.getId();
+    }
+
+    private String getPropagationLogMessage(final String outcomeOrAction,
+        final String orderNumber, final String groupItem, final String suffix) {
+        return "Item status update propagation " + outcomeOrAction + " for order number "
+            + orderNumber + ", group item " + groupItem + suffix;
     }
 
     private Map<String, Object> getLogMap(
