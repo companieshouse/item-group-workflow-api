@@ -1,7 +1,20 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.validation;
 
-import org.junit.jupiter.api.*;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.*;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCosts;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemDescriptionIdentifier;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemKind;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
+import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +111,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(ItemGroupsValidator.ORDER_NUMBER_INVALID, errors.get(0));
+        Assertions.assertEquals(ItemGroupsValidator.ORDER_NUMBER_INVALID, errors.getFirst());
     }
 
     @Test
@@ -110,7 +123,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING, errors.get(0));
+        Assertions.assertEquals(ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING, errors.getFirst());
     }
 
     @Test
@@ -123,7 +136,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING, errors.get(0));
+        Assertions.assertEquals(ItemGroupsValidator.ITEM_GROUP_ITEMS_MISSING, errors.getFirst());
     }
 
     @Test
@@ -132,7 +145,7 @@ class ItemGroupsValidatorTest {
         final var options = new HashMap<>(CERTIFIED_COPY_ITEM_OPTIONS);
         final var group = createGroupWithCertifiedCopyItem(options);
 
-        group.getItems().get(0).setLinks(null);
+        group.getItems().getFirst().setLinks(null);
 
         final var errors = validator.validateCreateItemData(group);
 
@@ -147,7 +160,7 @@ class ItemGroupsValidatorTest {
 
         ItemLinks itemLinks = new ItemLinks();
         itemLinks.setOriginalItem(null);
-        group.getItems().get(0).setLinks(itemLinks);
+        group.getItems().getFirst().setLinks(itemLinks);
 
         final var errors = validator.validateCreateItemData(group);
 
@@ -161,7 +174,7 @@ class ItemGroupsValidatorTest {
         final var group = createGroupWithCertifiedCopyItem(options);
 
 
-        group.getItems().get(0).getLinks().setOriginalItem("");
+        group.getItems().getFirst().getLinks().setOriginalItem("");
 
         final var errors = validator.validateCreateItemData(group);
 
@@ -177,7 +190,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals( ItemGroupsValidator.ITEM_GROUP_LINKS_MISSING, errors.get(0));
+        Assertions.assertEquals( ItemGroupsValidator.ITEM_GROUP_LINKS_MISSING, errors.getFirst());
     }
 
     @Test
@@ -191,7 +204,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertEquals(ItemGroupsValidator.LINKS_ORDER_NUMBER_MISSING, errors.get(0));
+        Assertions.assertEquals(ItemGroupsValidator.LINKS_ORDER_NUMBER_MISSING, errors.getFirst());
     }
 
     @Test
@@ -202,8 +215,8 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.INVALID_DESCRIPTION_IDENTIFIER));
-        Assertions.assertTrue(errors.get(0).contains(INVALID_DESC_ID));
+        Assertions.assertTrue(errors.getFirst().contains(ItemGroupsValidator.INVALID_DESCRIPTION_IDENTIFIER));
+        Assertions.assertTrue(errors.getFirst().contains(INVALID_DESC_ID));
     }
     /**
      * DTO for invalid ItemDescriptionIdentifier
@@ -240,8 +253,8 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.INVALID_ITEM_COST_PRODUCT_TYPE));
-        Assertions.assertTrue(errors.get(0).contains(INVALID_ITEM_COST_PRODUCT_TYPE));
+        Assertions.assertTrue(errors.getFirst().contains(ItemGroupsValidator.INVALID_ITEM_COST_PRODUCT_TYPE));
+        Assertions.assertTrue(errors.getFirst().contains(INVALID_ITEM_COST_PRODUCT_TYPE));
     }
     /**
      * DTO for invalid ItemCostProductType
@@ -285,8 +298,8 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.INVALID_ITEM_KIND_NAME));
-        Assertions.assertTrue(errors.get(0).contains(INVALID_ITEM_KIND));
+        Assertions.assertTrue(errors.getFirst().contains(ItemGroupsValidator.INVALID_ITEM_KIND_NAME));
+        Assertions.assertTrue(errors.getFirst().contains(INVALID_ITEM_KIND));
     }
     /**
      * DTO for invalid ItemKind
@@ -324,7 +337,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.COMPANY_NAME_MISSING));
+        Assertions.assertTrue(errors.getFirst().contains(ItemGroupsValidator.COMPANY_NAME_MISSING));
     }
     /**
      * DTO for delivery details company name present - missing item company NAME
@@ -367,7 +380,7 @@ class ItemGroupsValidatorTest {
         List<String> errors = validator.validateCreateItemData(dto);
 
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.get(0).contains(ItemGroupsValidator.COMPANY_NUMBER_MISSING));
+        Assertions.assertTrue(errors.getFirst().contains(ItemGroupsValidator.COMPANY_NUMBER_MISSING));
     }
     /**
      * DTO for delivery details company name present - missing item company NUMBER
@@ -460,7 +473,7 @@ class ItemGroupsValidatorTest {
                                                                                 final String fhdFieldValue) {
         final var options = new HashMap<>(CERTIFIED_COPY_ITEM_OPTIONS);
         final var documents = new ArrayList<>(((List<Object>) options.get("filing_history_documents")));
-        final var document = new HashMap<>((Map<String, Object>) documents.get(0));
+        final var document = new HashMap<>((Map<String, Object>) documents.getFirst());
         document.put(fhdFieldName, fhdFieldValue);
         documents.set(0, document);
         options.put("filing_history_documents", documents);
@@ -469,13 +482,13 @@ class ItemGroupsValidatorTest {
 
     private ItemGroupData createGroupWithCertifiedCopyItem(final Map<String, Object> itemOptions) {
         final var group = fairWeatherAllValidationTriggeredDto();
-        group.getItems().get(0).setItemOptions(itemOptions);
+        group.getItems().getFirst().setItemOptions(itemOptions);
         return group;
     }
 
     private void expectError(final List<String> errors, final String expectedError) {
         assertThat(errors.size(), is(1));
-        assertThat(errors.get(0), is(expectedError));
+        assertThat(errors.getFirst(), is(expectedError));
     }
 
 }

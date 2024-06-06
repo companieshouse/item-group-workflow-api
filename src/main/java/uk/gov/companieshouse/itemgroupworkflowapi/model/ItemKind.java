@@ -17,7 +17,7 @@ public enum ItemKind {
             .collect(Collectors.toMap(ItemKind::toString, Function.identity()));
     }
 
-    private ItemKind(String itemKindName) {
+    ItemKind(String itemKindName) {
         this.itemKindName = itemKindName;
     }
     private final String itemKindName;

@@ -15,9 +15,9 @@ import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemPatchValidationDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.FieldNameConverter;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.TestMergePatchFactory;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import java.io.IOException;
 import java.util.List;
 
@@ -188,8 +188,8 @@ class PatchItemRequestValidatorTest {
 
     private void expectError(final List<ApiError> errors, final String error, final String errorMessage) {
         assertThat(errors.size(), is(1));
-        assertThat(errors.get(0).getError(), is(error));
-        assertThat(errors.get(0).getErrorValues().get("error_message"), is(errorMessage));
+        assertThat(errors.getFirst().getError(), is(error));
+        assertThat(errors.getFirst().getErrorValues().get("error_message"), is(errorMessage));
     }
 
 }

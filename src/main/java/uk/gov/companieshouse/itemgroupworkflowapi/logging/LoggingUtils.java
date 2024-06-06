@@ -5,12 +5,7 @@ import uk.gov.companieshouse.logging.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoggingUtils {
-    private final Logger logger;
-
-    public LoggingUtils(Logger logger) {
-        this.logger = logger;
-    }
+public record LoggingUtils(Logger logger) {
 
     public Map<String, Object> createLogMap() {
         return new HashMap<>();
@@ -20,9 +15,5 @@ public class LoggingUtils {
         if (loggingObject != null) {
             logMap.put(key, loggingObject);
         }
-    }
-
-    public Logger getLogger() {
-        return logger;
     }
 }

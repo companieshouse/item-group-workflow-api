@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.util;
 
 import org.apache.commons.lang.StringUtils;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public final class EricHeaderHelper {
     public static final String ERIC_IDENTITY = "ERIC-Identity";

@@ -28,13 +28,13 @@ import uk.gov.companieshouse.logging.LoggerFactory;
     KafkaConfig.class,
     ItemGroupProcessedProducerService.class,
     ItemGroupProcessedFactory.class,
-    ItemGroupProcessedInTiltProducer.Config.class
+    ItemGroupProcessedInTiltProducerTest.Config.class
 })
 @SuppressWarnings("squid:S3577") // This is NOT to be run as part of an automated test suite.
-class ItemGroupProcessedInTiltProducer {
+class ItemGroupProcessedInTiltProducerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(
-        "ItemGroupProcessedInTiltProducer");
+        "ItemGroupProcessedInTiltProducerTest");
 
     @Autowired
     private ItemGroupProcessedProducerService testProducer;

@@ -212,7 +212,7 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
 
         // Given
         final ItemGroupData newItemGroupData = createValidNewItemGroupData();
-        newItemGroupData.getItems().get(0).setItemOptions(null);
+        newItemGroupData.getItems().getFirst().setItemOptions(null);
 
         // When and Then
         mockMvc.perform(post("/item-groups" )

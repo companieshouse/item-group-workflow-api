@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import uk.gov.companieshouse.itemgroupworkflowapi.adapter.LocalDateTimeTypeAdapter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,6 +85,7 @@ public class ItemGroupData {
 
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()).create()
+                .toJson(this);
     }
 }
