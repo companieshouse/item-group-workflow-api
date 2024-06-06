@@ -4,7 +4,7 @@ locals {
   name_prefix                = "${local.stack_name}-${var.environment}"
   global_prefix              = "global-${var.environment}"
   service_name               = "item-group-workflow-api"
-  container_port             = 8080
+  container_port             = "8080"
   eric_port                  = "10000"
   docker_repo                = "item-group-workflow-api"
   kms_alias                  = "alias/${var.aws_profile}/environment-services-kms"
@@ -54,7 +54,7 @@ locals {
 
   ssm_service_version_map = [
     for sec in module.secrets.secrets :
-      { "name"  = "${replace(upper(local.service_name), "-", "_")}_${var.ssm_version_prefix}${replace(upper(basename(sec.name)), "-", "_")}", "value" = "sec.version" }
+      { "name"  = "${replace(upper(local.service_name), "-", "_")}_${var.ssm_version_prefix}${replace(upper(basename(sec.name)), "-", "_")}", "value" = sec.version }
   ]
 
   # secrets to go in list
