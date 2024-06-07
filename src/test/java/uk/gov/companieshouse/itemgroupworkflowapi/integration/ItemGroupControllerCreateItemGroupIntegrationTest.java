@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import uk.gov.companieshouse.itemgroupworkflowapi.config.AbstractMongoConfig;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.DeliveryDetails;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemCostProductType;
@@ -71,12 +74,13 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  * Integration tests the {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
  * handling of the create item group POST request only.
  */
+@Testcontainers
 @SpringBootTest
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
-class ItemGroupControllerCreateItemGroupIntegrationTest {
+class ItemGroupControllerCreateItemGroupIntegrationTest extends AbstractMongoConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("ItemGroupControllerIntegrationTest");
 
@@ -148,6 +152,11 @@ class ItemGroupControllerCreateItemGroupIntegrationTest {
 
     private CountDownLatch messageReceivedLatch;
     private ItemOrderedCertifiedCopy messageReceived;
+
+    @BeforeAll
+    static void setup() {
+        mongoDBContainer.start();
+    }
 
     @BeforeEach
     void setUp() {
