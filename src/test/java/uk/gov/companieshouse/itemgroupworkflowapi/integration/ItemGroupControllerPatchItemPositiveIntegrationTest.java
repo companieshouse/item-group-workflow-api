@@ -107,46 +107,32 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest {
     }
 
 
-    private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
-
-        private final ItemGroup group;
-
-        private ItemGroupTimeStampedEntity(ItemGroup group) {
-            this.group = group;
-        }
+    private record ItemGroupTimeStampedEntity(ItemGroup group) implements TimestampedEntity {
 
         @Override
-        public LocalDateTime getCreatedAt() {
-            return group.getCreatedAt();
+            public LocalDateTime getCreatedAt() {
+                return group.getCreatedAt();
+            }
+
+            @Override
+            public LocalDateTime getUpdatedAt() {
+                return group.getUpdatedAt();
+            }
         }
+
+    private record ItemTimestampedEntity(Item item, ItemGroup group) implements TimestampedEntity {
 
         @Override
-        public LocalDateTime getUpdatedAt() {
-            return group.getUpdatedAt();
+            public LocalDateTime getCreatedAt() {
+                // use item group's creation time as there is none on the item
+                return group.getCreatedAt();
+            }
+
+            @Override
+            public LocalDateTime getUpdatedAt() {
+                return item.getUpdatedAt();
+            }
         }
-    }
-
-    private static final class ItemTimestampedEntity implements TimestampedEntity {
-
-        private final Item item;
-        private final ItemGroup group;
-
-        private ItemTimestampedEntity(Item item, ItemGroup group) {
-            this.item = item;
-            this.group = group;
-        }
-
-        @Override
-        public LocalDateTime getCreatedAt() {
-            // use item group's creation time as there is none on the item
-            return group.getCreatedAt();
-        }
-
-        @Override
-        public LocalDateTime getUpdatedAt() {
-            return item.getUpdatedAt();
-        }
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -201,7 +187,7 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest {
         final var optionalGroup = repository.findById(ITEM_GROUP_ID);
         assertThat(optionalGroup.isPresent(), is(true));
         final var retrievedGroup = optionalGroup.get();
-        final var retrievedItem = retrievedGroup.getData().getItems().get(0);
+        final var retrievedItem = retrievedGroup.getData().getItems().getFirst();
         assertThat(retrievedItem.getDigitalDocumentLocation(),
             is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
         assertThat(retrievedItem.getStatus(), is(EXPECTED_STATUS));

@@ -31,7 +31,7 @@ public enum ItemCostProductType {
             .collect(Collectors.toMap(ItemCostProductType::toString, Function.identity()));
     }
 
-    private ItemCostProductType(String productTypeName) {
+    ItemCostProductType(String productTypeName) {
         this.productTypeName = productTypeName;
     }
     private final String productTypeName;

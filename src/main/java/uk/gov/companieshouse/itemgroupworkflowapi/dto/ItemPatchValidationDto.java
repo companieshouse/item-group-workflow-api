@@ -6,7 +6,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.validation.Status;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.Uri;
 import uk.gov.companieshouse.itemgroupworkflowapi.validation.ValueOfEnum;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Instantiated from PATCH request JSON body to facilitate PATCH request validation.

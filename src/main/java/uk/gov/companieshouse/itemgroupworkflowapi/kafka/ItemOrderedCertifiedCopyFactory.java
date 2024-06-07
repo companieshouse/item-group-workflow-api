@@ -29,7 +29,7 @@ public class ItemOrderedCertifiedCopyFactory {
 
     protected Map<String, Object> getFilingHistoryDocument(final Item item) {
         final var options = item.getItemOptions();
-        return (Map<String, Object>) ((List<Object>) options.get("filing_history_documents")).get(0);
+        return (Map<String, Object>) ((List<Object>) options.get("filing_history_documents")).getFirst();
     }
 
 }

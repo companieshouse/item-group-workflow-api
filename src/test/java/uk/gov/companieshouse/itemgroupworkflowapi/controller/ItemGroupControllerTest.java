@@ -68,7 +68,7 @@ class ItemGroupControllerTest {
         itemGroup.setData(itemGroupData);
 
         when(itemGroupsService.createItemGroup(itemGroupData)).thenReturn(itemGroupData);
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
         //
         // Verify HttpStatus.CREATED returned.
         //
@@ -88,7 +88,7 @@ class ItemGroupControllerTest {
         // Item
         //
         assertEquals(1, createdItemGroupData.getItems().size());
-        Item item = createdItemGroupData.getItems().get(0);
+        Item item = createdItemGroupData.getItems().getFirst();
         assertNotNull(item);
 
         assertThat(item.getCompanyNumber(), is(VALID_COMPANY_NUMBER));
@@ -99,7 +99,7 @@ class ItemGroupControllerTest {
         // ItemCosts
         //
         assertEquals(1, item.getItemCosts().size());
-        ItemCosts itemCosts = item.getItemCosts().get(0);
+        ItemCosts itemCosts = item.getItemCosts().getFirst();
         assertNotNull(itemCosts);
         assertThat(itemCosts.getProductType(), is(ItemCostProductType.CERTIFIED_COPY_INCORPORATION.toString()));
     }
@@ -112,7 +112,7 @@ class ItemGroupControllerTest {
         itemGroup.setData(itemGroupData);
 
         when(requestValidator.validateCreateItemData(itemGroupData)).thenReturn(Arrays.asList(EXAMPLE_ERROR_MESSAGE));
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
 
         final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
 
@@ -121,7 +121,7 @@ class ItemGroupControllerTest {
         List<String> errors = (List<String>) response.getBody();
         assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertThat(errors.get(0), is(EXAMPLE_ERROR_MESSAGE));
+        assertThat(errors.getFirst(), is(EXAMPLE_ERROR_MESSAGE));
     }
 
     @Test
@@ -132,7 +132,7 @@ class ItemGroupControllerTest {
         itemGroup.setData(itemGroupData);
 
         when(itemGroupsService.existingItemGroupsContainSameItems(itemGroupData)).thenReturn(true);
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
 
         final ResponseEntity<Object> response = controller.createItemGroup(X_REQUEST_ID, itemGroupData);
 
@@ -157,7 +157,7 @@ class ItemGroupControllerTest {
                 new MongoException(""));
         when(itemGroupsService.existingItemGroupsContainSameItems(itemGroupData)).thenThrow(moe);
 
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
         //
         // Verify HttpStatus.INTERNAL_SERVER_ERROR returned.
         //
@@ -184,7 +184,7 @@ class ItemGroupControllerTest {
                 new MongoException(""));
         when(itemGroupsService.createItemGroup(itemGroupData)).thenThrow(moe);
 
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
         //
         // Verify HttpStatus.INTERNAL_SERVER_ERROR returned.
         //
@@ -235,8 +235,6 @@ class ItemGroupControllerTest {
      * Invalid DTO. No validation criteria met.
      */
     private ItemGroupData invalidItemGroupsDtoMissingAllValidationCriteria() {
-        final ItemGroupData dto = new ItemGroupData();
-
-        return dto;
+        return new ItemGroupData();
     }
 }

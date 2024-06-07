@@ -9,7 +9,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 public class EnvironmentVariablesChecker {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAMESPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsConfiguration.APPLICATION_NAME_SPACE);
 
     public enum RequiredEnvironmentVariables {
         MONGODB_URL("MONGODB_URL"),

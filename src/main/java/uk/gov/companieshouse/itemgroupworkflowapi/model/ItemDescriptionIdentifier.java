@@ -17,7 +17,7 @@ public enum ItemDescriptionIdentifier {
             .collect(Collectors.toMap(ItemDescriptionIdentifier::toString, Function.identity()));
     }
 
-    private ItemDescriptionIdentifier(String identifierName) {
+    ItemDescriptionIdentifier(String identifierName) {
         this.identifierName = identifierName;
     }
     private final String identifierName;

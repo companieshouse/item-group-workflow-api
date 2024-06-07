@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsonp.JSONPModule;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.impl.client.HttpClients;
+
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +47,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        final var httpClient = HttpClients.custom().disableRedirectHandling().build();
+        final HttpClient httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
         final var requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
         return builder.additionalMessageConverters(getJsonMessageConverters())
                       .requestFactory(() -> requestFactory)

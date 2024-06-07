@@ -7,11 +7,11 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Configuration
 public class LoggingUtilsConfiguration {
-    public static final String APPLICATION_NAMESPACE = "item-group-workflow-api";
+    public static final String APPLICATION_NAME_SPACE = "item-group-workflow-api";
 
     @Bean
     Logger getLogger(){
-        return LoggerFactory.getLogger(APPLICATION_NAMESPACE);
+        return LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
     }
 
     @Bean
