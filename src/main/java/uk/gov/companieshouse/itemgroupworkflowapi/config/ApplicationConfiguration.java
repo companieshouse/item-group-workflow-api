@@ -19,9 +19,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class ApplicationConfiguration {
+public class ApplicationConfiguration implements WebMvcConfigurer {
 
     @Bean
     @Primary
@@ -58,6 +60,11 @@ public class ApplicationConfiguration {
         final List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(new MappingJackson2HttpMessageConverter());
         return converters;
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        configurer.setUseTrailingSlashMatch(true);
     }
 
 }
