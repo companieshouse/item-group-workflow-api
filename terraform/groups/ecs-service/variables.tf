@@ -120,11 +120,7 @@ variable "use_set_environment_files" {
   default     = false
   description = "Toggle default global and shared environment files"
 }
-variable "log_level" {
-  default     = "info"
-  type        = string
-  description = "The log level for services to use: trace, debug, info or error"
-}
+
 variable "item_group_workflow_api_version" {
   type        = string
   description = "The version of the item-group-workflow-api container to run."
