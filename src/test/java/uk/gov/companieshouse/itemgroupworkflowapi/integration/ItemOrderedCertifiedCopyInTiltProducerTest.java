@@ -13,6 +13,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,7 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.SAME
  * <code>item-ordered-certified-copy</code> topic in Tilt. This is NOT to be run as part
  * of an automated test suite. It is for manual testing only.
  */
+@Disabled
 @SpringBootTest
 @TestPropertySource(properties = "spring.kafka.bootstrap-servers=${BOOTSTRAP_SERVER_URL}")
 @ActiveProfiles("manual")
