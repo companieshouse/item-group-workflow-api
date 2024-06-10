@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+
 /**
  * Custom configuration for Mongo added so that _class attributes are not saved on objects stored in MongoDB.
  * Taken from uk.gov.companieshouse.certificates.orders.api.config => MongoConfig.java

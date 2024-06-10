@@ -160,7 +160,7 @@ public class ItemGroupController {
             .orderId(savedItem.getOrderNumber())
             .build();
 
-        logger.getLogger().info(CREATE_ITEM_GROUP_CREATED_PREFIX, dataMap.getLogMap());
+        logger.logger().info(CREATE_ITEM_GROUP_CREATED_PREFIX, dataMap.getLogMap());
         return ResponseEntity.status(CREATED).body(savedItem);
     }
 
@@ -210,7 +210,7 @@ public class ItemGroupController {
     }
 
     private Logger log() {
-        return logger.getLogger();
+        return logger.logger();
     }
 
     private Map<String, Object> getLogMap(final String requestId) {

@@ -9,8 +9,8 @@ import uk.gov.companieshouse.itemgroupworkflowapi.dto.ItemPatchValidationDto;
 import uk.gov.companieshouse.itemgroupworkflowapi.util.FieldNameConverter;
 
 import jakarta.json.JsonMergePatch;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;

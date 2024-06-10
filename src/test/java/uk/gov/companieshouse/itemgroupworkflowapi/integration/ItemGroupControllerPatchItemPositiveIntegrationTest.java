@@ -38,6 +38,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,9 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
+import uk.gov.companieshouse.itemgroupworkflowapi.config.AbstractMongoConfig;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroup;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.TimestampedEntity;
@@ -66,13 +69,14 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  * {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
  * handling of the PATCH item request only.
  */
+@Testcontainers
 @SpringBootTest(properties = "chs.kafka.api.url=http://localhost:${wiremock.server.port}")
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
 @AutoConfigureWireMock(port = 0)
-class ItemGroupControllerPatchItemPositiveIntegrationTest {
+class ItemGroupControllerPatchItemPositiveIntegrationTest extends AbstractMongoConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(
         "ItemGroupControllerPatchItemPositiveIntegrationTest");
@@ -107,46 +111,32 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest {
     }
 
 
-    private static final class ItemGroupTimeStampedEntity implements TimestampedEntity {
-
-        private final ItemGroup group;
-
-        private ItemGroupTimeStampedEntity(ItemGroup group) {
-            this.group = group;
-        }
+    private record ItemGroupTimeStampedEntity(ItemGroup group) implements TimestampedEntity {
 
         @Override
-        public LocalDateTime getCreatedAt() {
-            return group.getCreatedAt();
+            public LocalDateTime getCreatedAt() {
+                return group.getCreatedAt();
+            }
+
+            @Override
+            public LocalDateTime getUpdatedAt() {
+                return group.getUpdatedAt();
+            }
         }
+
+    private record ItemTimestampedEntity(Item item, ItemGroup group) implements TimestampedEntity {
 
         @Override
-        public LocalDateTime getUpdatedAt() {
-            return group.getUpdatedAt();
+            public LocalDateTime getCreatedAt() {
+                // use item group's creation time as there is none on the item
+                return group.getCreatedAt();
+            }
+
+            @Override
+            public LocalDateTime getUpdatedAt() {
+                return item.getUpdatedAt();
+            }
         }
-    }
-
-    private static final class ItemTimestampedEntity implements TimestampedEntity {
-
-        private final Item item;
-        private final ItemGroup group;
-
-        private ItemTimestampedEntity(Item item, ItemGroup group) {
-            this.item = item;
-            this.group = group;
-        }
-
-        @Override
-        public LocalDateTime getCreatedAt() {
-            // use item group's creation time as there is none on the item
-            return group.getCreatedAt();
-        }
-
-        @Override
-        public LocalDateTime getUpdatedAt() {
-            return item.getUpdatedAt();
-        }
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -159,6 +149,11 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest {
 
     private CountDownLatch messageReceivedLatch;
     private ItemGroupProcessed messageReceived;
+
+    @BeforeAll
+    static void setup() {
+        mongoDBContainer.start();
+    }
 
     @BeforeEach
     void setUp() {
@@ -201,7 +196,7 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest {
         final var optionalGroup = repository.findById(ITEM_GROUP_ID);
         assertThat(optionalGroup.isPresent(), is(true));
         final var retrievedGroup = optionalGroup.get();
-        final var retrievedItem = retrievedGroup.getData().getItems().get(0);
+        final var retrievedItem = retrievedGroup.getData().getItems().getFirst();
         assertThat(retrievedItem.getDigitalDocumentLocation(),
             is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
         assertThat(retrievedItem.getStatus(), is(EXPECTED_STATUS));

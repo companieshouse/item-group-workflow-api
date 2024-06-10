@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import uk.gov.companieshouse.itemgroupworkflowapi.config.AbstractMongoConfig;
 import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepository;
 
 /**
@@ -43,12 +46,13 @@ import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepositor
  * {@link uk.gov.companieshouse.itemgroupworkflowapi.controller.ItemGroupController} class's
  * handling of the PATCH item request only.
  */
+@Testcontainers
 @SpringBootTest(properties = "chs.kafka.api.url=http://localhost:${wiremock.server.port}")
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
 @AutoConfigureWireMock(port = 0)
-class ItemGroupControllerPatchItemNegativeIntegrationTest {
+class ItemGroupControllerPatchItemNegativeIntegrationTest extends AbstractMongoConfig {
 
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
 
@@ -69,6 +73,11 @@ class ItemGroupControllerPatchItemNegativeIntegrationTest {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @BeforeAll
+    static void setup() {
+        mongoDBContainer.start();
+    }
 
     @AfterEach
     void tearDown() {

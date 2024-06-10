@@ -10,8 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,12 +34,12 @@ class UserAuthorisationInterceptorTest {
 
     @BeforeEach
     void beforeEach() {
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
     }
 
     @Test
     @DisplayName("preHandle ERIC-Authorised-Key-Roles is present and CORRECT value")
-    void willAuthoriseIfEricHeadersArePresentAndCorrectValue() throws Exception {
+    void willAuthoriseIfEricHeadersArePresentAndCorrectValue() {
         lenient()
                 .doReturn("*")
                 .when(request)
@@ -49,7 +49,7 @@ class UserAuthorisationInterceptorTest {
     }
     @Test
     @DisplayName("preHandle ERIC-Authorised-Key-Roles is MISSING")
-    void willNotAuthoriseIfEricHeadersAreMissing() throws Exception {
+    void willNotAuthoriseIfEricHeadersAreMissing() {
         lenient()
                 .doReturn(null)
                 .when(request)
@@ -59,7 +59,7 @@ class UserAuthorisationInterceptorTest {
     }
     @Test
     @DisplayName("preHandle ERIC-Authorised-Key-Roles is present and INCORRECT value")
-    void willNotAuthoriseIfEricHeadersPresentAndIncorrectValue() throws Exception {
+    void willNotAuthoriseIfEricHeadersPresentAndIncorrectValue() {
         lenient()
                 .doReturn("xxx")
                 .when(request)

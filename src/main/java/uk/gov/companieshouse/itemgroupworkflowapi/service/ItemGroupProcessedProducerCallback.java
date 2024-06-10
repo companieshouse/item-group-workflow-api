@@ -2,14 +2,15 @@ package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.BiConsumer;
+
 import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.util.DataMap;
 
 class ItemGroupProcessedProducerCallback implements
-    ListenableFutureCallback<SendResult<String, ItemGroupProcessed>> {
+        BiConsumer<SendResult<String, ItemGroupProcessed>, Throwable> {
 
     private final ItemGroupProcessed message;
     private final String itemGroupProcessedTopic;
@@ -22,14 +23,12 @@ class ItemGroupProcessedProducerCallback implements
         this.logger = logger;
     }
 
-    @Override
     public void onFailure(Throwable ex) {
         logger.error("Unable to deliver message " + message + " to topic " + itemGroupProcessedTopic
                 + ". Error: " + ex.getMessage() + ".",
             getLogMap(message, itemGroupProcessedTopic, ex.getMessage()));
     }
 
-    @Override
     public void onSuccess(SendResult<String, ItemGroupProcessed> result) {
         final var metadata = result.getRecordMetadata();
         final var partition = metadata.partition();
@@ -70,5 +69,14 @@ class ItemGroupProcessedProducerCallback implements
             .offset(offset)
             .build()
             .getLogMap();
+    }
+
+    @Override
+    public void accept(SendResult<String, ItemGroupProcessed> sendResult, Throwable throwable) {
+        if(throwable != null) {
+            onFailure(throwable);
+        } else {
+            onSuccess(sendResult);
+        }
     }
 }

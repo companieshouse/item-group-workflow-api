@@ -3,8 +3,9 @@ package uk.gov.companieshouse.itemgroupworkflowapi.interceptor;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.Constants.REQUEST_ID_HEADER_NAME;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
@@ -24,7 +25,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
      * or false and sets response status to UNAUTHORIZED
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         String identityType = EricHeaderHelper.getIdentityType(request);
         if(identityType == null) {
             var dataMap = new DataMap.Builder()
@@ -54,7 +55,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private void logFailureToAuthenticate(String errorMessage, DataMap dataMap){
-        logger.getLogger().info(errorMessage,
+        logger.logger().info(errorMessage,
                 dataMap.getLogMap());
     }
 }

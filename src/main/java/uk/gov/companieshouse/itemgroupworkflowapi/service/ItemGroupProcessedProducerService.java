@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.service;
 
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,7 @@ public class ItemGroupProcessedProducerService {
 
         final var message = itemGroupProcessedFactory.buildMessage(updatedItem, itemGroup);
         final var future = kafkaTemplate.send(itemGroupProcessedTopic, message);
-        future.addCallback(
-            new ItemGroupProcessedProducerCallback(message, itemGroupProcessedTopic, logger));
+        future.whenComplete(new ItemGroupProcessedProducerCallback(message, itemGroupProcessedTopic, logger));
     }
 
     private Map<String, Object> getLogMap(

@@ -3,6 +3,7 @@ package uk.gov.companieshouse.itemgroupworkflowapi.integration;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_GROUP;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,19 +23,20 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  * <code>item-group-processed</code> topic in Tilt. This is NOT to be run as part of an
  * automated test suite. It is for manual testing only.
  */
+@Disabled
 @SpringBootTest
 @TestPropertySource(locations = "classpath:item-group-processed-in-tilt.properties")
 @SpringJUnitConfig(classes = {
     KafkaConfig.class,
     ItemGroupProcessedProducerService.class,
     ItemGroupProcessedFactory.class,
-    ItemGroupProcessedInTiltProducer.Config.class
+    ItemGroupProcessedInTiltProducerTest.Config.class
 })
 @SuppressWarnings("squid:S3577") // This is NOT to be run as part of an automated test suite.
-class ItemGroupProcessedInTiltProducer {
+class ItemGroupProcessedInTiltProducerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(
-        "ItemGroupProcessedInTiltProducer");
+        "ItemGroupProcessedInTiltProducerTest");
 
     @Autowired
     private ItemGroupProcessedProducerService testProducer;

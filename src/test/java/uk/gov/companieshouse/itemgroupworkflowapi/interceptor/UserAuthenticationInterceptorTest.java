@@ -9,17 +9,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
-import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
 import uk.gov.companieshouse.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.*;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_NAME;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_HEADER_VALUE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_NAME;
 
 @ExtendWith(MockitoExtension.class)
 class UserAuthenticationInterceptorTest {
@@ -38,7 +39,7 @@ class UserAuthenticationInterceptorTest {
     class UserAuthenticationInterceptorFailureTest {
         @BeforeEach
         void beforeEach() {
-            when(loggingUtils.getLogger()).thenReturn(logger);
+            when(loggingUtils.logger()).thenReturn(logger);
         }
 
         @Test

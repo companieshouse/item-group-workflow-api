@@ -113,7 +113,7 @@ public class ItemGroupsService {
 
     private ItemNotFoundException itemNotFound(final String itemGroupId, final String itemId) {
         final String error = "Not able to find item " + itemId + " in group " + itemGroupId + ".";
-        logger.getLogger().error(error, getLogMap(itemGroupId, itemId, error));
+        logger.logger().error(error, getLogMap(itemGroupId, itemId, error));
         return new ItemNotFoundException(error);
     }
 

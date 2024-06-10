@@ -1,8 +1,9 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.itemgroupworkflowapi.adapter.LocalDateTimeTypeAdapter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -207,7 +208,8 @@ public class Item {
 
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()).create()
+                .toJson(this);
     }
 
     @Override

@@ -71,7 +71,7 @@ class ItemGroupsServiceTest {
     void getItemThrowsItemNotFoundExceptionForUnknownGroup() {
 
         when(itemGroupsRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
 
         final var exception = assertThrows(ItemNotFoundException.class,
                 () -> serviceUnderTest.getItem("IG1", "IT1"));
@@ -83,7 +83,7 @@ class ItemGroupsServiceTest {
     void getItemThrowsItemNotFoundExceptionForUnknownItem() {
 
         setUpItemWithId("unknown");
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
 
         final var exception = assertThrows(ItemNotFoundException.class,
                 () -> serviceUnderTest.getItem("IG1", "IT1"));
@@ -106,7 +106,7 @@ class ItemGroupsServiceTest {
     void updateItemThrowsItemNotFoundExceptionForUnknownGroup() {
 
         when(itemGroupsRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
 
         final var exception = assertThrows(ItemNotFoundException.class,
                 () -> serviceUnderTest.updateItem("IG1", "IT1", item));
@@ -120,7 +120,7 @@ class ItemGroupsServiceTest {
         setUpItemWithId("unknown");
         when(itemGroupsRepository.save(group)).thenReturn(group);
         when(group.getId()).thenReturn("IG1");
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
 
         final var exception = assertThrows(ItemNotFoundException.class,
                 () -> serviceUnderTest.updateItem("IG1", "IT1", item));

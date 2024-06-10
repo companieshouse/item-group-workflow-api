@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
 import uk.gov.companieshouse.itemgroupworkflowapi.kafka.ItemOrderedCertifiedCopyFactory;
 import uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtils;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -18,6 +17,7 @@ import uk.gov.companieshouse.itemorderedcertifiedcopy.ItemOrderedCertifiedCopy;
 import uk.gov.companieshouse.logging.Logger;
 
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -54,7 +54,7 @@ class ItemOrderedCertifiedCopyKafkaProducerServiceTest {
     private ItemOrderedCertifiedCopyFactory certifiedCopyFactory;
 
     @Mock
-    private ListenableFuture<SendResult<String, ItemOrderedCertifiedCopy>> future;
+    private CompletableFuture<SendResult<String, ItemOrderedCertifiedCopy>> future;
 
     @Mock
     private ItemOrderedCertifiedCopy message;
@@ -63,7 +63,7 @@ class ItemOrderedCertifiedCopyKafkaProducerServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(loggingUtils.getLogger()).thenReturn(logger);
+        when(loggingUtils.logger()).thenReturn(logger);
         service = new ItemOrderedCertifiedCopyKafkaProducerService(
                 kafkaTemplate, loggingUtils, certifiedCopyFactory, ITEM_ORDERED_CERTIFIED_COPY_TOPIC);
         service.afterPropertiesSet();

@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.itemgroupworkflowapi.controller;
 
-import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.APPLICATION_NAMESPACE;
+import static uk.gov.companieshouse.itemgroupworkflowapi.logging.LoggingUtilsConfiguration.APPLICATION_NAME_SPACE;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleItemStatusUpdatePropagationFailure(
         final ItemStatusUpdatePropagationException isupe) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Error in " + APPLICATION_NAMESPACE + ": " + isupe.getMessage());
+            .body("Error in " + APPLICATION_NAME_SPACE + ": " + isupe.getMessage());
     }
 
 }
