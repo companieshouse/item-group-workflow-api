@@ -6,7 +6,7 @@ Rest API to handle item group workflow requests.
 
 In order to build `item-group-workflow-api` locally you will need the following:
 
-- Java 11
+- Java 21
 - Maven
 - Git
 
