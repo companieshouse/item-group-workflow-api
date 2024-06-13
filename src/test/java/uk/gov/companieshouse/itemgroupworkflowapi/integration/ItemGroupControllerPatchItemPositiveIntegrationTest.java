@@ -163,6 +163,7 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest extends AbstractMongoC
     @AfterEach
     void tearDown() {
         repository.deleteAll();
+        messageReceived = null;
     }
 
     @Test
