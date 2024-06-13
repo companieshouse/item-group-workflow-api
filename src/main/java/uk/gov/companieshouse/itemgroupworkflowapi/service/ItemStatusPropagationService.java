@@ -57,10 +57,10 @@ public class ItemStatusPropagationService {
         final var status = updatedItem.getStatus();
 
         if (!status.equals(SATISFIED)) {
-            /**logger.info(getPropagationLogMessage("SUPPRESSED", orderNumber, groupItem,
+            logger.info(getPropagationLogMessage("SUPPRESSED", orderNumber, groupItem,
                     ", because the updated status `" +
                         status + "` is not `" + SATISFIED + "`."),
-                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));**/
+                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
             return;
         }
 
@@ -80,14 +80,14 @@ public class ItemStatusPropagationService {
                 HttpMethod.POST,
                 httpEntity,
                 HttpMessage.class);
-            /**logger.info(getPropagationLogMessage("successful", orderNumber, groupItem, "."),
-                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));**/
+            logger.info(getPropagationLogMessage("successful", orderNumber, groupItem, "."),
+                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId()));
         } catch (RestClientException rce) {
             final String error = getPropagationLogMessage("FAILED", orderNumber, groupItem,
                 ", caught RestClientException with message "
                     + rce.getMessage() + ".");
-            /**logger.error(error,
-                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId(), rce.getMessage()));**/
+            logger.error(error,
+                getLogMap(orderNumber, itemGroup.getId(), updatedItem.getId(), rce.getMessage()));
             throw new ItemStatusUpdatePropagationException(error);
         }
     }
