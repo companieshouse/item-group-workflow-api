@@ -70,7 +70,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  * handling of the PATCH item request only.
  */
 @Testcontainers
-@SpringBootTest(properties = "chs.kafka.api.url=http://localhost:${wiremock.server.port}")
+@SpringBootTest
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
@@ -185,10 +185,10 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest extends AbstractMongoC
                 .header(ERIC_IDENTITY_HEADER_NAME, ERIC_IDENTITY_HEADER_VALUE)
                 .header(ERIC_AUTHORISED_ROLES_HEADER_NAME, ERIC_AUTHORISED_ROLES_HEADER_VALUE)
                 .contentType(APPLICATION_MERGE_PATCH)
-                .content(getJsonFromFile("patch_item_body_without_document_location")))
+                .content(getJsonFromFile("patch_item_body")))
             .andExpect(status().isOk())
-            //.andExpect(
-            //    jsonPath("$.digital_document_location", is(EXPECTED_DIGITAL_DOCUMENT_LOCATION)))
+            .andExpect(
+                jsonPath("$.digital_document_location", is(EXPECTED_DIGITAL_DOCUMENT_LOCATION)))
             .andExpect(jsonPath("$.status", is(EXPECTED_STATUS)))
             .andDo(print());
 
@@ -198,8 +198,8 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest extends AbstractMongoC
         assertThat(optionalGroup.isPresent(), is(true));
         final var retrievedGroup = optionalGroup.get();
         final var retrievedItem = retrievedGroup.getData().getItems().getFirst();
-        //assertThat(retrievedItem.getDigitalDocumentLocation(),
-        //    is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
+        assertThat(retrievedItem.getDigitalDocumentLocation(),
+            is(EXPECTED_DIGITAL_DOCUMENT_LOCATION));
         assertThat(retrievedItem.getStatus(), is(EXPECTED_STATUS));
         timestamps.verifyUpdatedAtTimestampWithinExecutionInterval(
             new ItemGroupTimeStampedEntity(retrievedGroup));
@@ -207,7 +207,7 @@ class ItemGroupControllerPatchItemPositiveIntegrationTest extends AbstractMongoC
             new ItemTimestampedEntity(retrievedItem, retrievedGroup));
 
         verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
-        verifyExpectedMessageIsReceived(EXPECTED_INCOMPLETE_MESSAGE);
+        verifyExpectedMessageIsReceived(EXPECTED_COMPLETE_MESSAGE);
     }
 
     @Test
