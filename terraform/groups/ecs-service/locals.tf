@@ -8,7 +8,7 @@ locals {
   eric_port                  = "10000"
   docker_repo                = "item-group-workflow-api"
   kms_alias                  = "alias/${var.aws_profile}/environment-services-kms"
-  lb_listener_rule_priority  = 92
+  lb_listener_rule_priority  = 34
   lb_listener_paths          = ["/item-groups", "/item-groups/*/items/*", "/item-group-workflow-api/healthcheck"]
   healthcheck_path           = "/item-group-workflow-api/healthcheck" # healthcheck path for item-group-workflow-api
   healthcheck_matcher        = "200"

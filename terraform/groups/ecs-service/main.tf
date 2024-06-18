@@ -44,7 +44,8 @@ module "ecs-service" {
   lb_listener_paths                 = local.lb_listener_paths
   health_check_grace_period_seconds = 240
   healthcheck_healthy_threshold     = "2"
-
+  multilb_setup                   = false
+  
   # ECS Task container health check
   use_task_container_healthcheck = true
   healthcheck_path               = local.healthcheck_path
