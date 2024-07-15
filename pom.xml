@@ -152,10 +152,6 @@
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-compress</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.eclipse.jetty.http2</groupId>
                     <artifactId>http2-common</artifactId>
                 </exclusion>
