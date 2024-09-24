@@ -37,7 +37,7 @@
         <spring-kafka-test.version>3.2.0</spring-kafka-test.version>
         <spring-retry.version>2.0.5</spring-retry.version>
         <!--Overriding spring-web version to remove vulnerability-->
-        <spring-web.version>6.1.6</spring-web.version>
+        <spring-web.version>6.1.12</spring-web.version>
         <!-- system-rules: 1.17.2 is the latest version that works with JUnit 5.
              See https://github.com/stefanbirkner/system-rules/issues/70 -->
         <system-rules-version>1.17.2</system-rules-version>
