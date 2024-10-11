@@ -6,7 +6,7 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.5</version>
+        <version>2.1.6</version>
         <relativePath/>
     </parent>
 
@@ -22,6 +22,7 @@
         <maven.compiler.target>21</maven.compiler.target>
 
         <!-- external dependencies -->
+        <avro.version>1.12.0</avro.version>
         <docker-java-api.version>3.3.6</docker-java-api.version>
         <guava.version>33.2.1-jre</guava.version>
         <handlebars.version>4.4.0</handlebars.version>
@@ -31,13 +32,11 @@
         <jackson.version>2.17.1</jackson.version>
         <log4j-bom.version>2.22.1</log4j-bom.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-        <spring-boot-dependencies.version>3.2.6</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.3.4</spring-boot-dependencies.version>
         <spring-boot-maven-plugin.version>3.2.4</spring-boot-maven-plugin.version>
         <spring-cloud-contract-wiremock.version>4.1.3</spring-cloud-contract-wiremock.version>
         <spring-kafka-test.version>3.2.0</spring-kafka-test.version>
         <spring-retry.version>2.0.5</spring-retry.version>
-        <!--Overriding spring-web version to remove vulnerability-->
-        <spring-web.version>6.1.6</spring-web.version>
         <!-- system-rules: 1.17.2 is the latest version that works with JUnit 5.
              See https://github.com/stefanbirkner/system-rules/issues/70 -->
         <system-rules-version>1.17.2</system-rules-version>
@@ -82,12 +81,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <!--Overriding spring-web version to remove vulnerability-->
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring-web.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -175,12 +168,31 @@
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-webapp</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-fileupload</groupId>
+                    <artifactId>commons-fileupload</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.avro</groupId>
+                    <artifactId>avro</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>ch-kafka</artifactId>
             <version>${ch-kafka.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.avro</groupId>
+                    <artifactId>avro</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${avro.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
