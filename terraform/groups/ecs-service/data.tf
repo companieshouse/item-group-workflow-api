@@ -42,7 +42,6 @@ data "aws_lb_listener" "service_lb_listener" {
   port = 443
 }
 
-
 # retrieve all secrets for this stack using the stack path
 data "aws_ssm_parameters_by_path" "secrets" {
   path = "/${local.name_prefix}"
