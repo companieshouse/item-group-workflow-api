@@ -145,10 +145,10 @@
             <version>${kafka-models.version}</version>
             <scope>compile</scope>
             <exclusions>
-                <exclusion>
+                <!-- <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-compress</artifactId>
-                </exclusion>
+                </exclusion> -->
                 <exclusion>
                     <groupId>org.eclipse.jetty.http2</groupId>
                     <artifactId>http2-common</artifactId>
