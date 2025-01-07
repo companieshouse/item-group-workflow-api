@@ -6,7 +6,7 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.6</version>
+        <version>2.1.11</version>
         <relativePath/>
     </parent>
 
@@ -36,6 +36,14 @@
         <spring-boot-maven-plugin.version>3.3.5</spring-boot-maven-plugin.version>
         <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
         <spring-kafka-test.version>3.2.4</spring-kafka-test.version>
+
+        <!-- Sonar -->
+        <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
+        <sonar.login></sonar.login>
+        <sonar.password></sonar.password>
+        <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+        <sonar.projectKey>uk.companieshouse.gov.uk:item-group-workflow-api</sonar.projectKey>
+        <sonar.projectName>item-group-workflow-api</sonar.projectName>
         <!-- system-rules: 1.17.2 is the latest version that works with JUnit 5.
              See https://github.com/stefanbirkner/system-rules/issues/70 -->
         <system-rules-version>1.17.2</system-rules-version>
