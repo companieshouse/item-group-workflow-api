@@ -51,7 +51,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepositor
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
-@AutoConfigureWireMock(port = 0)
+@AutoConfigureWireMock(port = 11419)
 class ItemGroupControllerPatchItemNegativeIntegrationTest extends AbstractMongoConfig {
 
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
@@ -185,7 +185,7 @@ class ItemGroupControllerPatchItemNegativeIntegrationTest extends AbstractMongoC
             .andExpect(content().string(
                 "Error in item-group-workflow-api: Item status update propagation FAILED for order number"
                     + " ORD-065216-517934, group item /item-groups/IG-922016-860413/items/CCD-768116-517930, caught"
-                    + " RestClientException with message 404 Not Found: [no body]."))
+                    + " RestClientException with message 404 Not Found on POST request for \"http://localhost:11419/private/item-group-processed-send\": [no body]."))
             .andDo(print());
 
         verify(postRequestedFor(urlEqualTo(ITEM_STATUS_UPDATED_URL)));
