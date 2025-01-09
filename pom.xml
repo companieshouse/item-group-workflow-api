@@ -39,8 +39,8 @@
 
         <!-- Sonar -->
         <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
-        <sonar.login>@null</sonar.login>
-        <sonar.password>@null</sonar.password>
+        <sonar.login></sonar.login>
+        <sonar.password></sonar.password>
         <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
         <sonar.projectKey>uk.companieshouse.gov.uk:item-group-workflow-api</sonar.projectKey>
         <sonar.projectName>item-group-workflow-api</sonar.projectName>
