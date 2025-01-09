@@ -42,7 +42,7 @@
         <sonar.login></sonar.login>
         <sonar.password></sonar.password>
         <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
-        <sonar.projectKey>uk.companieshouse.gov.uk:item-group-workflow-api</sonar.projectKey>
+        <sonar.projectKey>uk.gov.companieshouse:item-group-workflow-api</sonar.projectKey>
         <sonar.projectName>item-group-workflow-api</sonar.projectName>
         <!-- system-rules: 1.17.2 is the latest version that works with JUnit 5.
              See https://github.com/stefanbirkner/system-rules/issues/70 -->
