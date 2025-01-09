@@ -63,7 +63,10 @@ sonar:
 
 .PHONY: sonar-pr-analysis
 sonar-pr-analysis:
-	mvn sonar:sonar -P sonar-pr-analysis -Dsonar.token=${CODE_ANALYSIS_TOKEN}
+	mvn sonar:sonar -P sonar-pr-analysis \
+		-Dsonar.login= \
+		-Dsonar.password= \
+		-Dsonar.token=${CODE_ANALYSIS_TOKEN}
 
 .PHONY: dependency-check
 dependency-check:
