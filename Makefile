@@ -59,11 +59,11 @@ dist: clean build package
 
 .PHONY: sonar
 sonar:
-	mvn sonar:sonar -Dsonar.dependencyCheck.htmlReportPath=${project.basedir}/dependency-check-report.html
+	mvn sonar:sonar
 
 .PHONY: sonar-pr-analysis
-sonar-pr-analysis:
-	mvn sonar:sonar -P sonar-pr-analysis -Dsonar.dependencyCheck.htmlReportPath=${project.basedir}/dependency-check-report.html
+sonar-pr-analysis: dependency-check
+	mvn sonar:sonar -P sonar-pr-analysis
 
 .PHONY: dependency-check
 dependency-check:
@@ -88,7 +88,7 @@ dependency-check:
 	suppressions_path="$${suppressions_home}/suppressions/$(dependency_check_base_suppressions)"; \
 	if [  -f "$${suppressions_path}" ]; then \
 		cp -av "$${suppressions_path}" $(suppressions_file); \
-		mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -Dodc.outputDirectory=${project.basedir} -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file); \
+		mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file); \
 	else \
 		printf -- "\n ERROR Cannot find suppressions file at '%s'\n" "$${suppressions_path}" >&2; \
 		exit 1; \

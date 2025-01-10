@@ -33,6 +33,3 @@ build/
 .vscode/
 
 .DS_Store
-
-#Dependency Check
-dependency-check-report*
