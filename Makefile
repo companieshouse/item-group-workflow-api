@@ -59,11 +59,11 @@ dist: clean build package
 
 .PHONY: sonar
 sonar:
-	mvn sonar:sonar
+	mvn sonar:sonar -Dsonar.dependencyCheck.htmlReportPath=${project.basedir}/target/dependency-check-report.html
 
 .PHONY: sonar-pr-analysis
 sonar-pr-analysis: dependency-check
-	mvn sonar:sonar -P sonar-pr-analysis
+	mvn sonar:sonar -P sonar-pr-analysis -Dsonar.dependencyCheck.htmlReportPath=${project.basedir}/target/dependency-check-report.html
 
 .PHONY: dependency-check
 dependency-check:
