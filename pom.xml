@@ -57,7 +57,7 @@
         <system-rules-version>1.17.2</system-rules-version>
 
         <!-- internal dependencies -->
-        <api-sdk-java.version>6.3.1</api-sdk-java.version>
+        <api-sdk-java.version>6.3.5</api-sdk-java.version>
         <api-security-java.version>2.0.8</api-security-java.version>
         <ch-kafka.version>3.0.4</ch-kafka.version>
         <environment-reader-library.version>3.0.2</environment-reader-library.version>
