@@ -6,7 +6,7 @@ import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemGroupData;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.ItemLinks;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Links;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Service that generates the links for the item group/item identified.
