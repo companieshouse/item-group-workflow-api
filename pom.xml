@@ -32,11 +32,14 @@
         <jackson.version>2.19.1</jackson.version>
         <log4j-bom.version>2.24.1</log4j-bom.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-        <spring-boot-dependencies.version>3.5.7</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.5.3</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>3.5.13</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>3.5.13</spring-boot-maven-plugin.version>
         <spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
-        <spring-kafka-test.version>3.3.7</spring-kafka-test.version>
+        <spring-kafka-test.version>3.3.13</spring-kafka-test.version>
         <opentelemetry.version>2.17.0</opentelemetry.version>
+        <zookeeper.version>3.8.6</zookeeper.version>
+        <log4j.version>2.25.4</log4j.version>
+        <kotlin-lib.version>2.2.21</kotlin-lib.version>
         <jose4j.version>0.9.6</jose4j.version>
         <log4j-api.version>2.25.3</log4j-api.version>
 
@@ -62,7 +65,7 @@
         <api-sdk-java.version>6.6.0</api-sdk-java.version>
         <api-security-java.version>2.0.8</api-security-java.version>
         <ch-kafka.version>3.0.7</ch-kafka.version>
-        <environment-reader-library.version>3.0.2</environment-reader-library.version>
+        <environment-reader-library.version>3.0.5</environment-reader-library.version>
         <kafka-models.version>3.0.18</kafka-models.version>
         <structured-logging.version>3.0.37</structured-logging.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
@@ -94,28 +97,50 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- CVE-2026-24308/ CVE-2026-24281 -->
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
+            <!-- CVE-2025-68161(6.3) -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <!-- CVE-2020-29582(5.3) -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin-lib.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- CVE-2020-29582(5.3) -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk7</artifactId>
+                <version>${kotlin-lib.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- CVE-2020-29582(5.3) -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin-lib.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- CVE-2024-29371 -->
+            <dependency>
+                <groupId>org.bitbucket.b_c</groupId>
+                <artifactId>jose4j</artifactId>
+                <version>${jose4j.version}</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-
-        <!-- Transitive dependencies -->
-        <!-- CVE-2024-29371 -->
-        <dependency>
-            <groupId>org.bitbucket.b_c</groupId>
-            <artifactId>jose4j</artifactId>
-            <version>${jose4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j-api.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Transitive dependencies -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -364,6 +389,13 @@
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-spring-boot-starter</artifactId>
+            <!-- kotlin-stdlib-common is deprecated/removed in Kotlin 2.x (content merged into kotlin-stdlib); exclude to avoid CVE-2020-29582 false positive -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-stdlib-common</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
