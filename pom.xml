@@ -41,7 +41,6 @@
         <log4j.version>2.25.4</log4j.version>
         <kotlin-lib.version>2.2.21</kotlin-lib.version>
         <jose4j.version>0.9.6</jose4j.version>
-        <log4j-api.version>2.25.3</log4j-api.version>
 
         <!-- Sonar -->
         <sonar-maven-plugin.version>5.1.0.4751</sonar-maven-plugin.version>
@@ -135,6 +134,13 @@
                 <groupId>org.bitbucket.b_c</groupId>
                 <artifactId>jose4j</artifactId>
                 <version>${jose4j.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- CVE-2025-67030 -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>4.0.3</version>
                 <scope>compile</scope>
             </dependency>
         </dependencies>
