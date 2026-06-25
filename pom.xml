@@ -39,7 +39,6 @@
         <opentelemetry.version>2.29.0</opentelemetry.version>
         <zookeeper.version>3.8.6</zookeeper.version>
         <log4j.version>2.25.4</log4j.version>
-        <log4j-to-slf4j.version>2.25.4</log4j-to-slf4j.version>
         <kotlin-lib.version>2.2.21</kotlin-lib.version>
         <jose4j.version>0.9.6</jose4j.version>
         <handlebars.version>4.5.2</handlebars.version>
@@ -145,6 +144,19 @@
                 <version>4.0.3</version>
                 <scope>compile</scope>
             </dependency>
+            <!-- Override vulnerable version from spring-boot-starter-logging -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>4.2.13.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -184,13 +196,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
-        </dependency>
-
-        <!-- Override vulnerable version from spring-boot-starter-logging -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-            <version>${log4j-to-slf4j.version}</version>
         </dependency>
 
         <dependency>
@@ -351,14 +356,6 @@
             <artifactId>handlebars-helpers</artifactId>
             <version>${handlebars.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-bom</artifactId>
-            <version>4.2.13.Final</version>
-            <type>pom</type>
-            <scope>import</scope>
         </dependency>
 
         <!-- Structured logging -->
