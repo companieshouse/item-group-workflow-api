@@ -23,7 +23,8 @@
 
         <!-- external dependencies -->
         <avro.version>1.12.1</avro.version>
-        <docker-java-api.version>3.5.3</docker-java-api.version>
+        <!-- Must match the docker-java version used by Testcontainers -->
+        <docker-java-api.version>3.4.2</docker-java-api.version>
         <guava.version>33.4.8-jre</guava.version>
         <handlebars.version>4.5.0</handlebars.version>
         <httpclient5.version>5.6.4</httpclient5.version>
@@ -36,7 +37,7 @@
         <spring-boot-dependencies.version>4.1.1</spring-boot-dependencies.version>
         <spring-boot-maven-plugin.version>4.1.1</spring-boot-maven-plugin.version>
         <spring-framework.version>7.0.9</spring-framework.version>
-        <spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
+        <wiremock.version>3.13.2</wiremock.version>
         <opentelemetry.version>2.29.0</opentelemetry.version>
         <zookeeper.version>3.8.6</zookeeper.version>
         <log4j.version>2.26.1</log4j.version>
@@ -47,7 +48,7 @@
         <tomcat-embed-core.version>11.0.25</tomcat-embed-core.version>
         <jetty.version>12.1.13</jetty.version>
         <ch-boms.version>0.1.13</ch-boms.version>
-        <testcontainers.version>1.21.3</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
 
         <!-- Sonar -->
         <sonar-maven-plugin.version>5.1.0.4751</sonar-maven-plugin.version>
@@ -104,6 +105,13 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
                 <version>${spring-framework.version}</version>
@@ -114,13 +122,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>${testcontainers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -395,9 +396,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-contract-wiremock</artifactId>
-            <version>${spring-cloud-contract-wiremock.version}</version>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
 

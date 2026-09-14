@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -21,6 +22,7 @@ import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ERIC_IDENTITY_TYPE_HEADER_VALUE;
 import static uk.gov.companieshouse.itemgroupworkflowapi.util.TestConstants.ITEM_ID;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,10 +31,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -47,12 +49,17 @@ import uk.gov.companieshouse.itemgroupworkflowapi.repository.ItemGroupsRepositor
  * handling of the PATCH item request only.
  */
 @Testcontainers
-@SpringBootTest(properties = "chs.kafka.api.url=http://localhost:${wiremock.server.port}")
+@SpringBootTest(properties = "chs.kafka.api.url=http://localhost:11419")
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
-@AutoConfigureWireMock(port = 11419)
 class ItemGroupControllerPatchItemNegativeIntegrationTest extends AbstractMongoConfig {
+
+    @RegisterExtension
+    static final WireMockExtension WIREMOCK = WireMockExtension.newInstance()
+        .options(wireMockConfig().port(11419))
+        .configureStaticDsl(true)
+        .build();
 
     public static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
 
