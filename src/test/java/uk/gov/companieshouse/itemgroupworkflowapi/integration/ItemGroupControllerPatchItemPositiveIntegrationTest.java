@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
@@ -42,10 +43,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -54,6 +55,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import uk.gov.companieshouse.itemgroupprocessed.ItemGroupProcessed;
 import uk.gov.companieshouse.itemgroupworkflowapi.config.AbstractMongoConfig;
 import uk.gov.companieshouse.itemgroupworkflowapi.model.Item;
@@ -70,13 +72,18 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  * handling of the PATCH item request only.
  */
 @Testcontainers
-@SpringBootTest
+@SpringBootTest(properties = "chs.kafka.api.url=http://localhost:11420")
 @EmbeddedKafka
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @ComponentScan("uk.gov.companieshouse.itemgroupworkflowapi")
-@AutoConfigureWireMock(port = 0)
 class ItemGroupControllerPatchItemPositiveIntegrationTest extends AbstractMongoConfig {
+
+    @RegisterExtension
+    static final WireMockExtension WIREMOCK = WireMockExtension.newInstance()
+        .options(wireMockConfig().port(11420))
+        .configureStaticDsl(true)
+        .build();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(
         "ItemGroupControllerPatchItemPositiveIntegrationTest");
