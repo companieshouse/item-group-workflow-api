@@ -1,3 +1,5 @@
+SonarQube analysis checks code quality; it does not replace the project's automated tests.
+
 # item-group-workflow-api
 
 Rest API to handle item group workflow requests.
