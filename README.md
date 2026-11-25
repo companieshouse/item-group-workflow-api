@@ -44,6 +44,7 @@ Application specific attributes | Value                                | Descrip
 
 
 ### Contributing
+
 - Please refer to the [ECS Development and Infrastructure Documentation](https://companieshouse.atlassian.net/wiki/spaces/DEVOPS/pages/4390649858/Copy+of+ECS+Development+and+Infrastructure+Documentation+Updated) for detailed information on the infrastructure being deployed.
 
 ### Testing
